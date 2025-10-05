@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import PWAProvider from '@/components/PWAProvider';
 
 export const metadata: Metadata = {
   title: 'Aplikasi Chat Dinamis',
@@ -18,6 +19,28 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'default',
     title: 'Chat App',
+    startupImage: [
+      {
+        url: '/icons/icon-512x512.png',
+        media: '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)',
+      },
+    ],
+  },
+  icons: {
+    icon: [
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/icons/chat-icon.svg',
+        color: '#3b82f6',
+      },
+    ],
   },
   openGraph: {
     type: 'website',
@@ -63,11 +86,20 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <link rel="mask-icon" href="/icons/chat-icon.svg" color="#3b82f6" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Chat App" />
+        <meta name="application-name" content="Chat App" />
+        <meta name="msapplication-TileColor" content="#3b82f6" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <PWAProvider>
+          {children}
+        </PWAProvider>
+      </body>
     </html>
   );
 }

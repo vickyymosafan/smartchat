@@ -7,6 +7,7 @@ import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorBoundary from './ErrorBoundary';
+import PWAInstallPrompt from './PWAInstallPrompt';
 
 /**
  * Komponen internal ChatInterface yang menggunakan context
@@ -156,6 +157,12 @@ function ChatInterfaceContent() {
           isLoading={state.isLoading || !state.isOnline}
         />
       </main>
+
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt 
+        onInstall={() => console.log('PWA berhasil diinstall')}
+        onDismiss={() => console.log('PWA install prompt ditutup')}
+      />
     </div>
   );
 }

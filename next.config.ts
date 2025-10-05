@@ -4,6 +4,11 @@ const nextConfig: NextConfig = {
   // Optimasi untuk production
   output: 'standalone',
 
+  // Environment variables
+  env: {
+    NEXT_PUBLIC_ENABLE_PWA: process.env.NEXT_PUBLIC_ENABLE_PWA || 'true',
+  },
+
   // PWA dan Service Worker headers
   async headers() {
     return [
