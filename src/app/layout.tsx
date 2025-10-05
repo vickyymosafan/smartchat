@@ -95,7 +95,7 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#3b82f6" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
-      <body className="antialiased">
+      <body className="antialiased text-body-large bg-background text-text">
         <PWAProvider>
           {children}
         </PWAProvider>

@@ -102,8 +102,8 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
   const isSubmitDisabled = isLoading || !!error || message.trim().length === 0;
 
   return (
-    <div className="border-t border-slate-200 bg-white p-4">
-      <form onSubmit={handleSubmit} className="mx-auto max-w-4xl">
+    <div className="border-t border-border bg-background p-3 sm:p-4">
+      <form onSubmit={handleSubmit} className="mx-auto w-full">
         <div className="relative">
           {/* Textarea Input */}
           <textarea
@@ -111,18 +111,18 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
             value={message}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            placeholder="Ketik pesan Anda di sini... (Enter untuk kirim, Shift+Enter untuk baris baru)"
+            placeholder="Ketik pesan Anda di sini..."
             disabled={isLoading}
             className={`
-              w-full resize-none rounded-lg border px-4 py-3 pr-12 text-base
+              text-body-large input-field w-full resize-none rounded-2xl border px-4 py-3 pr-14
               transition-colors duration-200 focus:outline-none focus:ring-2
               ${error 
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-                : 'border-slate-300 focus:border-blue-500 focus:ring-blue-200'
+                ? 'border-error focus:border-error focus:ring-error/20' 
+                : 'border-border focus:border-primary focus:ring-primary/20'
               }
-              ${isLoading ? 'bg-slate-50 text-slate-500' : 'bg-white text-slate-900'}
-              placeholder:text-slate-500
-              sm:text-sm
+              ${isLoading ? 'bg-surface text-text-muted' : 'bg-background text-text'}
+              placeholder:text-text-muted
+              sm:px-5 sm:py-4 sm:pr-16 sm:text-body-medium
             `}
             rows={1}
             maxLength={5000}
@@ -131,18 +131,18 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
             aria-describedby={error ? 'message-error' : undefined}
           />
 
-          {/* Tombol Kirim */}
+          {/* Tombol Kirim - Touch optimized */}
           <button
             type="submit"
             disabled={isSubmitDisabled}
             className={`
-              absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center
-              rounded-md transition-all duration-200
+              absolute bottom-2 right-2 flex h-10 w-10 items-center justify-center
+              rounded-full transition-all duration-200 touch-manipulation focus-ring
               ${isSubmitDisabled
-                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                : 'bg-blue-500 text-white hover:bg-blue-600 focus:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200'
+                ? 'btn-primary:disabled'
+                : 'btn-primary hover:bg-primary-hover focus:bg-primary-hover active:scale-95'
               }
-              sm:h-9 sm:w-9
+              sm:bottom-3 sm:right-3 sm:h-12 sm:w-12
             `}
             aria-label="Kirim pesan"
           >
@@ -170,7 +170,7 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
         {error && (
           <div
             id="message-error"
-            className="mt-2 flex items-center text-sm text-red-600"
+            className="text-body-medium mt-2 flex items-center text-error"
             role="alert"
           >
             <svg
@@ -190,18 +190,19 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
           </div>
         )}
 
-        {/* Character Counter */}
-        <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
-          <div className="flex items-center space-x-4">
-            <span>Enter untuk kirim • Shift+Enter untuk baris baru</span>
+        {/* Character Counter and Help Text */}
+        <div className="text-label-small mt-2 flex flex-col space-y-1 text-text-muted sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <span className="hidden sm:inline">Enter untuk kirim • Shift+Enter untuk baris baru</span>
+            <span className="sm:hidden">Tekan kirim untuk mengirim pesan</span>
             {isValidating && (
               <span className="flex items-center">
-                <div className="mr-1 h-3 w-3 animate-spin rounded-full border border-slate-300 border-t-transparent" />
-                Memvalidasi...
+                <div className="mr-1 h-3 w-3 animate-spin rounded-full border border-text-muted border-t-transparent" />
+                <span className="hidden sm:inline">Memvalidasi...</span>
               </span>
             )}
           </div>
-          <span className={message.length > 4500 ? 'text-amber-600' : ''}>
+          <span className={`${message.length > 4500 ? 'text-warning' : ''} text-right`}>
             {message.length}/5000
           </span>
         </div>

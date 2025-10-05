@@ -63,18 +63,18 @@ function ChatInterfaceContent() {
   };
 
   /**
-   * Show offline indicator
+   * Show offline indicator - Responsive design
    */
   const OfflineIndicator = () => {
     if (state.isOnline) return null;
 
     return (
-      <div className="bg-amber-50 border-b border-amber-200 px-4 py-2">
-        <div className="mx-auto max-w-4xl flex items-center justify-center text-amber-800">
-          <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="border-b border-warning/20 bg-warning/10 px-3 py-2 sm:px-4 sm:py-3">
+        <div className="mx-auto flex max-w-none items-center justify-center text-warning sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
+          <svg className="mr-2 h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span className="text-sm font-medium">
+          <span className="text-label-medium font-medium sm:text-label-large">
             Anda sedang offline. Pesan akan dikirim saat koneksi kembali.
           </span>
         </div>
@@ -83,23 +83,23 @@ function ChatInterfaceContent() {
   };
 
   /**
-   * Error display component
+   * Error display component - Responsive design with touch-optimized close button
    */
   const ErrorDisplay = () => {
     if (!state.error) return null;
 
     return (
-      <div className="bg-red-50 border-b border-red-200 px-4 py-2">
-        <div className="mx-auto max-w-4xl flex items-center justify-between text-red-800">
-          <div className="flex items-center">
-            <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="border-b border-error/20 bg-error/10 px-3 py-2 sm:px-4 sm:py-3">
+        <div className="mx-auto flex max-w-none items-center justify-between text-error sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
+          <div className="flex min-w-0 flex-1 items-center">
+            <svg className="mr-2 h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span className="text-sm font-medium">{state.error}</span>
+            <span className="text-label-medium truncate font-medium sm:text-label-large">{state.error}</span>
           </div>
           <button
             onClick={() => setError(null)}
-            className="text-red-600 hover:text-red-800 focus:outline-none"
+            className="ml-3 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-error/70 transition-colors hover:bg-error/10 hover:text-error focus:outline-none focus:ring-2 focus:ring-error/20 sm:h-6 sm:w-6"
             aria-label="Tutup pesan error"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,24 +112,24 @@ function ChatInterfaceContent() {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-slate-50">
-      {/* Header */}
-      <header className="border-b border-slate-200 bg-white px-4 py-4 shadow-sm">
-        <div className="mx-auto max-w-4xl">
+    <div className="flex h-screen flex-col bg-surface">
+      {/* Header - Mobile-first responsive design */}
+      <header className="sticky top-0 z-10 border-b border-border bg-background shadow-sm">
+        <div className="mx-auto w-full max-w-none px-3 py-3 sm:max-w-2xl sm:px-4 sm:py-4 lg:max-w-4xl lg:px-6 xl:max-w-6xl">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-semibold text-slate-900 sm:text-xl">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-headline-medium truncate text-text sm:text-headline-large lg:text-display-small">
                 Chat Dinamis
               </h1>
-              <p className="text-sm text-slate-600">
+              <p className="text-body-small hidden text-text-muted sm:block sm:text-body-medium">
                 Asisten AI yang siap membantu Anda
               </p>
             </div>
             
-            {/* Connection Status Indicator */}
-            <div className="flex items-center space-x-2">
-              <div className={`h-2 w-2 rounded-full ${state.isOnline ? 'bg-emerald-500' : 'bg-red-500'}`} />
-              <span className="text-xs text-slate-500 sm:text-sm">
+            {/* Connection Status Indicator - Optimized for touch */}
+            <div className="flex items-center space-x-2 rounded-full bg-surface px-2 py-1 sm:px-3 sm:py-1.5">
+              <div className={`h-2 w-2 rounded-full ${state.isOnline ? 'status-online' : 'status-offline'}`} />
+              <span className="text-label-medium font-medium text-text-muted sm:text-label-large">
                 {state.isOnline ? 'Online' : 'Offline'}
               </span>
             </div>
@@ -143,19 +143,21 @@ function ChatInterfaceContent() {
       {/* Error Display */}
       <ErrorDisplay />
 
-      {/* Main Chat Area */}
+      {/* Main Chat Area - Responsive container */}
       <main className="flex flex-1 flex-col overflow-hidden">
-        {/* Message List */}
-        <MessageList 
-          messages={state.messages} 
-          isLoading={state.isLoading} 
-        />
+        <div className="mx-auto flex h-full w-full max-w-none flex-col sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
+          {/* Message List */}
+          <MessageList 
+            messages={state.messages} 
+            isLoading={state.isLoading} 
+          />
 
-        {/* Message Input */}
-        <MessageInput 
-          onSendMessage={handleSendMessage}
-          isLoading={state.isLoading || !state.isOnline}
-        />
+          {/* Message Input */}
+          <MessageInput 
+            onSendMessage={handleSendMessage}
+            isLoading={state.isLoading || !state.isOnline}
+          />
+        </div>
       </main>
 
       {/* PWA Install Prompt */}

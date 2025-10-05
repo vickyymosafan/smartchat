@@ -35,32 +35,32 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
     return (
       <div
         key={message.id}
-        className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} ${
+        className={`flex w-full px-1 ${isUser ? 'justify-end' : 'justify-start'} ${
           isSystem ? 'justify-center' : ''
         }`}
       >
         <div
           className={`
-            max-w-[85%] rounded-lg px-4 py-3 shadow-sm
+            max-w-[90%] rounded-2xl px-3 py-2 shadow-sm transition-all duration-200
             ${isUser 
-              ? 'bg-blue-500 text-white' 
+              ? 'bg-primary text-white rounded-br-md' 
               : isSystem 
-                ? 'bg-slate-100 text-slate-600 text-sm italic'
-                : 'bg-white border border-slate-200 text-slate-900'
+                ? 'bg-surface text-text-muted text-xs italic sm:text-sm'
+                : 'bg-background border border-border text-text rounded-bl-md'
             }
-            sm:max-w-[75%] md:max-w-[65%]
+            sm:max-w-[80%] sm:px-4 sm:py-3 md:max-w-[70%] lg:max-w-[60%]
           `}
         >
           {/* Message Content */}
-          <div className="whitespace-pre-wrap break-words text-sm leading-relaxed sm:text-base">
+          <div className="text-body-medium whitespace-pre-wrap break-words leading-relaxed sm:text-body-large">
             {message.content}
           </div>
 
           {/* Message Footer dengan Timestamp dan Status */}
           <div
             className={`
-              mt-2 flex items-center justify-between text-xs
-              ${isUser ? 'text-blue-100' : isSystem ? 'text-slate-500' : 'text-slate-500'}
+              text-label-small mt-1.5 flex items-center justify-between sm:mt-2
+              ${isUser ? 'text-primary-light' : isSystem ? 'text-text-muted' : 'text-text-muted'}
             `}
           >
             <span className="font-medium">
@@ -72,23 +72,23 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
               <div className="ml-2 flex items-center">
                 {message.status === 'sending' && (
                   <div className="flex items-center">
-                    <div className="mr-1 h-3 w-3 animate-spin rounded-full border border-blue-200 border-t-transparent" />
-                    <span>Mengirim...</span>
+                    <div className="mr-1 h-3 w-3 animate-spin rounded-full border border-primary-light border-t-transparent" />
+                    <span className="hidden sm:inline">Mengirim...</span>
                   </div>
                 )}
                 {message.status === 'sent' && (
                   <div className="flex items-center">
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
                 )}
                 {message.status === 'error' && (
-                  <div className="flex items-center text-red-200">
-                    <svg className="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex items-center text-error/80">
+                    <svg className="mr-1 h-3 w-3 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span>Gagal</span>
+                    <span className="hidden sm:inline">Gagal</span>
                   </div>
                 )}
               </div>
@@ -103,8 +103,8 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
    * Render date separator untuk mengelompokkan pesan berdasarkan tanggal
    */
   const renderDateSeparator = (date: Date, key: string) => (
-    <div key={key} className="flex items-center justify-center py-4">
-      <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+    <div key={key} className="flex items-center justify-center py-3 sm:py-4">
+      <div className="text-label-medium rounded-full bg-surface px-2 py-1 font-medium text-text-muted sm:px-3">
         {formatTimestamp(date, false)}
       </div>
     </div>
@@ -138,16 +138,16 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
   return (
     <div 
       ref={containerRef}
-      className="flex-1 overflow-y-auto bg-slate-50 px-4 py-6"
+      className="chat-scroll flex-1 overflow-y-auto bg-surface px-2 py-4 sm:px-4 sm:py-6"
     >
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto w-full">
         {/* Empty State */}
         {messages.length === 0 && !isLoading && (
-          <div className="flex h-full items-center justify-center">
+          <div className="flex h-full items-center justify-center px-4">
             <div className="text-center">
-              <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-slate-200 flex items-center justify-center">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-surface sm:h-16 sm:w-16">
                 <svg 
-                  className="h-8 w-8 text-slate-400" 
+                  className="h-6 w-6 text-text-muted sm:h-8 sm:w-8" 
                   fill="none" 
                   stroke="currentColor" 
                   viewBox="0 0 24 24"
@@ -160,10 +160,10 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-slate-900 mb-2">
+              <h3 className="text-headline-medium mb-2 text-text sm:text-headline-large">
                 Mulai Percakapan
               </h3>
-              <p className="text-slate-600 max-w-sm">
+              <p className="text-body-medium max-w-xs text-text-muted sm:max-w-sm sm:text-body-large">
                 Kirim pesan pertama Anda untuk memulai percakapan dengan asisten AI.
               </p>
             </div>
@@ -177,7 +177,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
             {renderDateSeparator(new Date(group.date), `date-${groupIndex}`)}
             
             {/* Messages in this date group */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {group.messages.map((message, messageIndex) => 
                 renderMessage(message, messages.indexOf(message))
               )}
@@ -187,15 +187,15 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
 
         {/* Loading Indicator */}
         {isLoading && (
-          <div className="flex justify-start">
-            <div className="max-w-[85%] rounded-lg bg-white border border-slate-200 px-4 py-3 shadow-sm sm:max-w-[75%] md:max-w-[65%]">
+          <div className="flex justify-start px-1">
+            <div className="max-w-[90%] rounded-2xl rounded-bl-md border border-border bg-background px-3 py-2 shadow-sm sm:max-w-[80%] sm:px-4 sm:py-3 md:max-w-[70%] lg:max-w-[60%]">
               <div className="flex items-center space-x-2">
                 <div className="flex space-x-1">
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.3s]"></div>
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.15s]"></div>
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400"></div>
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-text-muted [animation-delay:-0.3s]"></div>
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-text-muted [animation-delay:-0.15s]"></div>
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-text-muted"></div>
                 </div>
-                <span className="text-sm text-slate-500">Asisten sedang mengetik...</span>
+                <span className="text-body-medium text-text-muted">Asisten sedang mengetik...</span>
               </div>
             </div>
           </div>
