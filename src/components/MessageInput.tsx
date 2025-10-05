@@ -9,7 +9,10 @@ import { useToastContext } from '@/contexts/ToastContext';
  * Komponen MessageInput untuk form input pesan chat
  * Menyediakan form input dengan validasi real-time, keyboard shortcuts, dan responsive design
  */
-export default function MessageInput({ onSendMessage, isLoading }: MessageInputProps) {
+export default function MessageInput({
+  onSendMessage,
+  isLoading,
+}: MessageInputProps) {
   const [message, setMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
@@ -51,7 +54,7 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
    */
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    
+
     // Cek jika mendekati batas karakter
     if (value.length >= 4800 && message.length < 4800) {
       toast.warning(
@@ -60,7 +63,7 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
         { duration: 3000 }
       );
     }
-    
+
     setMessage(value);
   };
 
@@ -69,20 +72,16 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (isLoading) return;
 
     const validation = validateMessage(message);
     if (!validation.isValid) {
       const errorMessage = validation.error || 'Pesan tidak valid';
       setError(errorMessage);
-      
+
       // Tampilkan toast warning untuk validation error
-      toast.warning(
-        'Pesan Tidak Valid',
-        errorMessage,
-        { duration: 4000 }
-      );
+      toast.warning('Pesan Tidak Valid', errorMessage, { duration: 4000 });
       return;
     }
 
@@ -91,7 +90,7 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
       await onSendMessage(sanitizedMessage);
       setMessage('');
       setError(null);
-      
+
       // Focus kembali ke textarea setelah mengirim
       if (textareaRef.current) {
         textareaRef.current.focus();
@@ -99,13 +98,9 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
     } catch (err) {
       const errorMessage = 'Gagal mengirim pesan. Silakan coba lagi.';
       setError(errorMessage);
-      
+
       // Tampilkan toast error untuk send error
-      toast.error(
-        'Gagal Mengirim',
-        errorMessage,
-        { duration: 6000 }
-      );
+      toast.error('Gagal Mengirim', errorMessage, { duration: 6000 });
     }
   };
 
@@ -118,7 +113,7 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
       e.preventDefault();
       handleSubmit(e as any);
     }
-    
+
     // Shift + Enter untuk baris baru (default behavior)
     // Escape untuk clear input
     if (e.key === 'Escape') {
@@ -144,9 +139,10 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
             className={`
               text-body-large input-field w-full resize-none rounded-2xl border px-4 py-3 pr-14
               transition-colors duration-200 focus:outline-none focus:ring-2
-              ${error 
-                ? 'border-error focus:border-error focus:ring-error/20' 
-                : 'border-border focus:border-primary focus:ring-primary/20'
+              ${
+                error
+                  ? 'border-error focus:border-error focus:ring-error/20'
+                  : 'border-border focus:border-primary focus:ring-primary/20'
               }
               ${isLoading ? 'bg-surface text-text-muted' : 'bg-background text-text'}
               placeholder:text-text-muted
@@ -166,9 +162,10 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
             className={`
               absolute bottom-2 right-2 flex h-10 w-10 items-center justify-center
               rounded-full transition-all duration-200 touch-manipulation focus-ring
-              ${isSubmitDisabled
-                ? 'btn-primary:disabled'
-                : 'btn-primary hover:bg-primary-hover focus:bg-primary-hover active:scale-95'
+              ${
+                isSubmitDisabled
+                  ? 'btn-primary:disabled'
+                  : 'btn-primary hover:bg-primary-hover focus:bg-primary-hover active:scale-95'
               }
               sm:bottom-3 sm:right-3 sm:h-12 sm:w-12
             `}
@@ -221,7 +218,9 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
         {/* Character Counter and Help Text */}
         <div className="text-label-small mt-2 flex flex-col space-y-1 text-text-muted sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <span className="hidden sm:inline">Enter untuk kirim • Shift+Enter untuk baris baru</span>
+            <span className="hidden sm:inline">
+              Enter untuk kirim • Shift+Enter untuk baris baru
+            </span>
             <span className="sm:hidden">Tekan kirim untuk mengirim pesan</span>
             {isValidating && (
               <span className="flex items-center">
@@ -230,7 +229,9 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
               </span>
             )}
           </div>
-          <span className={`${message.length > 4500 ? 'text-warning' : ''} text-right`}>
+          <span
+            className={`${message.length > 4500 ? 'text-warning' : ''} text-right`}
+          >
             {message.length}/5000
           </span>
         </div>

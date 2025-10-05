@@ -18,7 +18,8 @@ interface N8nWebhookResponse {
 }
 
 // URL n8n webhook dari environment variable atau fallback ke URL yang diberikan
-const N8N_WEBHOOK_URL = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 
+const N8N_WEBHOOK_URL =
+  process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
   'https://vickymosafan2.app.n8n.cloud/webhook/d49a228d-703d-4a93-8e7a-ed173500fc6e/chat';
 
 // Timeout untuk request ke n8n (30 detik)
@@ -31,7 +32,10 @@ function validateChatRequest(body: any): { isValid: boolean; error?: string } {
   }
 
   if (!body.message || typeof body.message !== 'string') {
-    return { isValid: false, error: 'Pesan harus berupa string dan tidak boleh kosong' };
+    return {
+      isValid: false,
+      error: 'Pesan harus berupa string dan tidak boleh kosong',
+    };
   }
 
   if (body.message.trim().length === 0) {
@@ -39,14 +43,21 @@ function validateChatRequest(body: any): { isValid: boolean; error?: string } {
   }
 
   if (body.message.length > 1000) {
-    return { isValid: false, error: 'Pesan terlalu panjang (maksimal 1000 karakter)' };
+    return {
+      isValid: false,
+      error: 'Pesan terlalu panjang (maksimal 1000 karakter)',
+    };
   }
 
   return { isValid: true };
 }
 
 // Fungsi untuk membuat request dengan timeout
-async function fetchWithTimeout(url: string, options: RequestInit, timeout: number): Promise<Response> {
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  timeout: number
+): Promise<Response> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -71,10 +82,10 @@ export async function POST(request: NextRequest) {
       body = await request.json();
     } catch (error) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'Format JSON tidak valid',
-          code: 'INVALID_JSON'
+          code: 'INVALID_JSON',
         },
         { status: 400 }
       );
@@ -84,10 +95,10 @@ export async function POST(request: NextRequest) {
     const validation = validateChatRequest(body);
     if (!validation.isValid) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: validation.error,
-          code: 'VALIDATION_ERROR'
+          code: 'VALIDATION_ERROR',
         },
         { status: 400 }
       );
@@ -100,8 +111,8 @@ export async function POST(request: NextRequest) {
       sessionId: body.sessionId || `session_${Date.now()}`,
       metadata: {
         userAgent: request.headers.get('user-agent') || 'unknown',
-        platform: 'web'
-      }
+        platform: 'web',
+      },
     };
 
     // Kirim request ke n8n webhook
@@ -113,7 +124,7 @@ export async function POST(request: NextRequest) {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
+            Accept: 'application/json',
           },
           body: JSON.stringify(webhookPayload),
         },
@@ -121,14 +132,14 @@ export async function POST(request: NextRequest) {
       );
     } catch (error: any) {
       console.error('Error calling n8n webhook:', error);
-      
+
       // Handle timeout error
       if (error.name === 'AbortError') {
         return NextResponse.json(
-          { 
-            success: false, 
+          {
+            success: false,
             error: 'Permintaan timeout. Silakan coba lagi.',
-            code: 'TIMEOUT_ERROR'
+            code: 'TIMEOUT_ERROR',
           },
           { status: 408 }
         );
@@ -136,10 +147,10 @@ export async function POST(request: NextRequest) {
 
       // Handle network error
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'Koneksi internet bermasalah. Silakan coba lagi.',
-          code: 'NETWORK_ERROR'
+          code: 'NETWORK_ERROR',
         },
         { status: 503 }
       );
@@ -147,8 +158,10 @@ export async function POST(request: NextRequest) {
 
     // Handle HTTP error responses
     if (!webhookResponse.ok) {
-      console.error(`n8n webhook returned ${webhookResponse.status}: ${webhookResponse.statusText}`);
-      
+      console.error(
+        `n8n webhook returned ${webhookResponse.status}: ${webhookResponse.statusText}`
+      );
+
       let errorMessage = 'Terjadi kesalahan server. Silakan coba lagi nanti.';
       let errorCode = 'SERVER_ERROR';
 
@@ -158,10 +171,10 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: errorMessage,
-          code: errorCode
+          code: errorCode,
         },
         { status: webhookResponse.status }
       );
@@ -174,10 +187,10 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error('Error parsing n8n response:', error);
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'Response server tidak valid.',
-          code: 'INVALID_RESPONSE'
+          code: 'INVALID_RESPONSE',
         },
         { status: 502 }
       );
@@ -188,20 +201,20 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Pesan berhasil dikirim',
       data: {
-        response: n8nData.data?.response || n8nData.message || 'Response diterima',
+        response:
+          n8nData.data?.response || n8nData.message || 'Response diterima',
         timestamp: n8nData.data?.timestamp || new Date().toISOString(),
-        sessionId: body.sessionId
-      }
+        sessionId: body.sessionId,
+      },
     });
-
   } catch (error: any) {
     console.error('Unexpected error in chat API:', error);
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Terjadi kesalahan internal server.',
-        code: 'INTERNAL_ERROR'
+        code: 'INTERNAL_ERROR',
       },
       { status: 500 }
     );
@@ -211,10 +224,10 @@ export async function POST(request: NextRequest) {
 // Handle method not allowed
 export async function GET() {
   return NextResponse.json(
-    { 
-      success: false, 
+    {
+      success: false,
       error: 'Method GET tidak diizinkan. Gunakan POST.',
-      code: 'METHOD_NOT_ALLOWED'
+      code: 'METHOD_NOT_ALLOWED',
     },
     { status: 405 }
   );

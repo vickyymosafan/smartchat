@@ -15,7 +15,10 @@ interface ErrorBoundaryProps {
  * Error Boundary component untuk menangkap error di level komponen
  * Menampilkan fallback UI yang user-friendly saat terjadi error
  */
-export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export default class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = {
@@ -39,7 +42,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
    */
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error Boundary caught an error:', error, errorInfo);
-    
+
     // TODO: Kirim error ke service monitoring (Sentry, LogRocket, dll)
     // if (process.env.NODE_ENV === 'production') {
     //   sendErrorToMonitoring(error, errorInfo);
@@ -98,7 +101,8 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
 
             {/* Error Description */}
             <p className="mb-6 text-center text-slate-600">
-              Maaf, terjadi kesalahan yang tidak terduga. Silakan coba lagi atau muat ulang halaman.
+              Maaf, terjadi kesalahan yang tidak terduga. Silakan coba lagi atau
+              muat ulang halaman.
             </p>
 
             {/* Error Details (hanya di development) */}

@@ -1,0 +1,69 @@
+# humanstxt.org/
+# Aplikasi Chat Dinamis - Tim Pengembang
+
+/* TEAM */
+Developer: Aplikasi Chat Dinamis Team
+Contact: team [at] your-domain.com
+Twitter: @your_twitter_handle
+From: Indonesia
+
+/* THANKS */
+Next.js Team: https://nextjs.org/
+Tailwind CSS Team: https://tailwindcss.com/
+Vercel Team: https://vercel.com/
+n8n Team: https://n8n.io/
+React Team: https://reactjs.org/
+TypeScript Team: https://www.typescriptlang.org/
+
+/* SITE */
+Last update: 2025/01/05
+Language: Indonesian / English
+Doctype: HTML5
+IDE: Visual Studio Code, Kiro
+Technologies: Next.js 15, React 19, TypeScript, Tailwind CSS, PWA
+Hosting: Vercel
+Standards: HTML5, CSS3, ES2022, PWA, Accessibility (WCAG 2.1)
+Components: Chat Interface, PWA Support, n8n Integration
+Software: Node.js, npm, Git
+
+/* FEATURES */
+- Progressive Web App (PWA)
+- Offline Support
+- Responsive Design
+- Real-time Chat
+- n8n Webhook Integration
+- TypeScript Type Safety
+- Tailwind CSS Styling
+- Performance Optimized
+- SEO Optimized
+- Accessibility Compliant
+
+/* PERFORMANCE */
+- Lazy Loading Components
+- Code Splitting
+- Bundle Optimization
+- Image Optimization
+- Service Worker Caching
+- Resource Preloading
+- Core Web Vitals Optimized
+
+/* ACCESSIBILITY */
+- WCAG 2.1 AA Compliant
+- Keyboard Navigation
+- Screen Reader Support
+- High Contrast Support
+- Focus Management
+- Semantic HTML
+- ARIA Labels
+
+                            .-""""""-.
+                          .'          '.
+                         /   O      O   \
+                        :           `    :
+                        |                |
+                        :    \______/    :
+                         \                /
+                          '.            .'
+                            '-.____..-'
+
+                     MADE WITH ❤️ IN INDONESIA

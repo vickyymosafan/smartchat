@@ -19,12 +19,13 @@ interface PWAInstallPromptProps {
   className?: string;
 }
 
-export default function PWAInstallPrompt({ 
-  onInstall, 
-  onDismiss, 
-  className = '' 
+export default function PWAInstallPrompt({
+  onInstall,
+  onDismiss,
+  className = '',
 }: PWAInstallPromptProps) {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
@@ -40,7 +41,8 @@ export default function PWAInstallPrompt({
     setIsIOS(iOS);
 
     // Cek apakah user sudah pernah dismiss prompt
-    const wasDismissed = localStorage.getItem('pwa-install-dismissed') === 'true';
+    const wasDismissed =
+      localStorage.getItem('pwa-install-dismissed') === 'true';
     setDismissed(wasDismissed);
 
     // Listen untuk beforeinstallprompt event (Android/Chrome)
@@ -48,7 +50,7 @@ export default function PWAInstallPrompt({
       e.preventDefault();
       const promptEvent = e as BeforeInstallPromptEvent;
       setDeferredPrompt(promptEvent);
-      
+
       // Show prompt jika belum pernah di-dismiss dan belum standalone
       if (!wasDismissed && !isPWA()) {
         setShowPrompt(true);
@@ -60,14 +62,14 @@ export default function PWAInstallPrompt({
       console.log('PWA berhasil diinstall');
       setShowPrompt(false);
       setDeferredPrompt(null);
-      
+
       // Tampilkan toast success
       toast.success(
         'Aplikasi Berhasil Diinstall!',
         'Sekarang Anda dapat mengakses aplikasi dari home screen.',
         { duration: 6000 }
       );
-      
+
       onInstall?.();
     };
 
@@ -82,13 +84,19 @@ export default function PWAInstallPrompt({
 
       return () => {
         clearTimeout(timer);
-        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.removeEventListener(
+          'beforeinstallprompt',
+          handleBeforeInstallPrompt
+        );
         window.removeEventListener('appinstalled', handleAppInstalled);
       };
     }
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, [onInstall]);
@@ -103,7 +111,7 @@ export default function PWAInstallPrompt({
       try {
         await deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        
+
         if (outcome === 'accepted') {
           console.log('User menerima install prompt');
           toast.info(
@@ -116,7 +124,7 @@ export default function PWAInstallPrompt({
           console.log('User menolak install prompt');
           handleDismiss();
         }
-        
+
         setDeferredPrompt(null);
         setShowPrompt(false);
       } catch (error) {
@@ -146,26 +154,30 @@ export default function PWAInstallPrompt({
   }
 
   return (
-    <div className={`fixed bottom-4 left-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-40 max-w-sm mx-auto ${className}`}>
+    <div
+      className={`fixed bottom-4 left-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-40 max-w-sm mx-auto ${className}`}
+    >
       <div className="flex items-start space-x-3">
         <div className="flex-shrink-0">
           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
             <span className="text-xl">📱</span>
           </div>
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-medium text-gray-900 mb-1">
             Install Aplikasi Chat
           </h3>
-          
+
           {isIOS ? (
             <div className="text-xs text-gray-600 space-y-2">
               <p>Untuk install di iPhone/iPad:</p>
               <ol className="list-decimal list-inside space-y-1 text-xs">
-                <li>Tap tombol Share <span className="inline-block">📤</span></li>
-                <li>Pilih "Add to Home Screen"</li>
-                <li>Tap "Add" untuk konfirmasi</li>
+                <li>
+                  Tap tombol Share <span className="inline-block">📤</span>
+                </li>
+                <li>Pilih &quot;Add to Home Screen&quot;</li>
+                <li>Tap &quot;Add&quot; untuk konfirmasi</li>
               </ol>
             </div>
           ) : (
@@ -185,7 +197,7 @@ export default function PWAInstallPrompt({
             Install
           </button>
         )}
-        
+
         <button
           onClick={handleDismiss}
           className="flex-1 bg-gray-100 text-gray-700 text-xs font-medium py-2 px-3 rounded-md hover:bg-gray-200 transition-colors"
@@ -219,7 +231,10 @@ export function usePWAInstall() {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
@@ -234,13 +249,14 @@ interface PWAInstallButtonProps {
   variant?: 'primary' | 'secondary' | 'outline';
 }
 
-export function PWAInstallButton({ 
-  children, 
-  className = '', 
-  variant = 'primary' 
+export function PWAInstallButton({
+  children,
+  className = '',
+  variant = 'primary',
 }: PWAInstallButtonProps) {
   const { canInstall, isInstalled } = usePWAInstall();
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -249,7 +265,11 @@ export function PWAInstallButton({
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () =>
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
   }, []);
 
   const handleClick = async () => {
@@ -258,11 +278,11 @@ export function PWAInstallButton({
     try {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      
+
       if (outcome === 'accepted') {
         console.log('PWA install diterima');
       }
-      
+
       setDeferredPrompt(null);
     } catch (error) {
       console.error('Error install PWA:', error);
@@ -273,12 +293,14 @@ export function PWAInstallButton({
     return null;
   }
 
-  const baseClasses = 'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
-  
+  const baseClasses =
+    'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
+
   const variantClasses = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
     secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',
-    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-blue-500'
+    outline:
+      'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-blue-500',
   };
 
   return (

@@ -32,11 +32,13 @@ Aplikasi Chat Dinamis telah dikonfigurasi sebagai Progressive Web App (PWA) deng
 ### Install sebagai PWA
 
 #### Android/Chrome:
+
 1. Buka aplikasi di browser Chrome
 2. Tunggu prompt install muncul (atau klik tombol install)
 3. Tap "Install" untuk menambahkan ke home screen
 
 #### iOS Safari:
+
 1. Buka aplikasi di Safari
 2. Tap tombol Share (📤)
 3. Pilih "Add to Home Screen"
@@ -60,6 +62,7 @@ NEXT_PUBLIC_ENABLE_PWA=true
 ### Testing PWA
 
 1. **Build Production**:
+
    ```bash
    npm run build
    npm start
@@ -132,7 +135,7 @@ const STATIC_ASSETS = [
 ```tsx
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 
-<PWAInstallPrompt 
+<PWAInstallPrompt
   onInstall={() => {
     // Custom logic setelah install
     analytics.track('pwa_installed');
@@ -142,7 +145,7 @@ import PWAInstallPrompt from '@/components/PWAInstallPrompt';
     analytics.track('pwa_install_dismissed');
   }}
   className="custom-styling"
-/>
+/>;
 ```
 
 ## Troubleshooting

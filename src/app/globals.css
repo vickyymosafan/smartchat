@@ -42,18 +42,18 @@
   --color-primary-dark: var(--primary-dark);
   --color-primary-light: var(--primary-light);
   --color-primary-hover: var(--primary-hover);
-  
+
   --color-background: var(--background);
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
   --color-border: var(--border);
   --color-border-hover: var(--border-hover);
-  
+
   --color-text: var(--text);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
   --color-text-light: var(--text-light);
-  
+
   --color-success: var(--success);
   --color-success-light: var(--success-light);
   --color-error: var(--error);
@@ -105,8 +105,10 @@
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
   /* Spacing Scale */
   --space-px: 1px;
@@ -422,7 +424,11 @@ html {
 }
 
 @keyframes bounceSubtle {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
   40% {
@@ -441,12 +447,12 @@ html {
     transform: none;
     box-shadow: var(--shadow-sm);
   }
-  
+
   /* Increase touch targets on mobile */
-  button, 
-  [role="button"],
-  input[type="button"],
-  input[type="submit"] {
+  button,
+  [role='button'],
+  input[type='button'],
+  input[type='submit'] {
     min-height: 44px;
     min-width: 44px;
   }

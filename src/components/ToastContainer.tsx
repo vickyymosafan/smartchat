@@ -12,7 +12,13 @@ interface ToastContainerProps {
   /** Callback untuk remove toast */
   onRemoveToast: (id: string) => void;
   /** Posisi container */
-  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center';
+  position?:
+    | 'top-right'
+    | 'top-left'
+    | 'bottom-right'
+    | 'bottom-left'
+    | 'top-center'
+    | 'bottom-center';
 }
 
 /**
@@ -63,12 +69,9 @@ export function ToastContainer({
       aria-label="Notifikasi"
     >
       <div className="space-y-3">
-        {toasts.map((toast) => (
+        {toasts.map(toast => (
           <div key={toast.id} className="pointer-events-auto">
-            <Toast
-              {...toast}
-              onRemove={onRemoveToast}
-            />
+            <Toast {...toast} onRemove={onRemoveToast} />
           </div>
         ))}
       </div>

@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { 
-  registerServiceWorker, 
-  addNetworkStatusListener, 
+import {
+  registerServiceWorker,
+  addNetworkStatusListener,
   getNetworkStatus,
-  type ServiceWorkerConfig 
+  type ServiceWorkerConfig,
 } from '@/lib/serviceWorker';
 
 interface PWAProviderProps {
@@ -14,7 +14,8 @@ interface PWAProviderProps {
 
 export default function PWAProvider({ children }: PWAProviderProps) {
   const [isOnline, setIsOnline] = useState(true);
-  const [swRegistration, setSwRegistration] = useState<ServiceWorkerRegistration | null>(null);
+  const [swRegistration, setSwRegistration] =
+    useState<ServiceWorkerRegistration | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
 
   useEffect(() => {
@@ -26,18 +27,18 @@ export default function PWAProvider({ children }: PWAProviderProps) {
 
     // Konfigurasi service worker
     const swConfig: ServiceWorkerConfig = {
-      onSuccess: (registration) => {
+      onSuccess: registration => {
         console.log('PWA: Service Worker berhasil didaftarkan');
         setSwRegistration(registration);
       },
-      onUpdate: (registration) => {
+      onUpdate: registration => {
         console.log('PWA: Update tersedia');
         setSwRegistration(registration);
         setUpdateAvailable(true);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('PWA: Error saat mendaftarkan Service Worker:', error);
-      }
+      },
     };
 
     // Registrasi service worker
@@ -53,22 +54,37 @@ export default function PWAProvider({ children }: PWAProviderProps) {
       console.log('PWA: Cache diperbarui:', event.detail);
     };
 
-    window.addEventListener('sw-sync-complete', handleSyncComplete as EventListener);
-    window.addEventListener('sw-cache-updated', handleCacheUpdated as EventListener);
+    window.addEventListener(
+      'sw-sync-complete',
+      handleSyncComplete as EventListener
+    );
+    window.addEventListener(
+      'sw-cache-updated',
+      handleCacheUpdated as EventListener
+    );
 
     // Cleanup
     return () => {
       removeNetworkListener();
-      window.removeEventListener('sw-sync-complete', handleSyncComplete as EventListener);
-      window.removeEventListener('sw-cache-updated', handleCacheUpdated as EventListener);
+      window.removeEventListener(
+        'sw-sync-complete',
+        handleSyncComplete as EventListener
+      );
+      window.removeEventListener(
+        'sw-cache-updated',
+        handleCacheUpdated as EventListener
+      );
     };
   }, []);
 
   // Provide PWA context ke children components
   useEffect(() => {
     // Set CSS custom properties untuk PWA status
-    document.documentElement.style.setProperty('--pwa-online', isOnline ? '1' : '0');
-    
+    document.documentElement.style.setProperty(
+      '--pwa-online',
+      isOnline ? '1' : '0'
+    );
+
     // Add class ke body untuk styling conditional
     if (isOnline) {
       document.body.classList.remove('pwa-offline');
@@ -82,7 +98,7 @@ export default function PWAProvider({ children }: PWAProviderProps) {
   return (
     <>
       {children}
-      
+
       {/* Offline indicator */}
       {!isOnline && (
         <div className="fixed top-0 left-0 right-0 bg-amber-500 text-white text-center py-2 px-4 text-sm font-medium z-50">
@@ -96,7 +112,9 @@ export default function PWAProvider({ children }: PWAProviderProps) {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Update Tersedia</p>
-              <p className="text-sm opacity-90">Versi baru aplikasi sudah siap</p>
+              <p className="text-sm opacity-90">
+                Versi baru aplikasi sudah siap
+              </p>
             </div>
             <button
               onClick={() => {

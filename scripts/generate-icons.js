@@ -6,7 +6,8 @@ const fs = require('fs');
 const path = require('path');
 
 // Placeholder base64 untuk icon sederhana (1x1 pixel transparan)
-const placeholderIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+const placeholderIcon =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
 
 // Ukuran icon yang diperlukan untuk PWA
 const iconSizes = [72, 96, 128, 144, 152, 192, 384, 512];
@@ -21,17 +22,25 @@ if (!fs.existsSync(iconsDir)) {
 iconSizes.forEach(size => {
   const filename = `icon-${size}x${size}.png`;
   const filepath = path.join(iconsDir, filename);
-  
+
   // Untuk development, kita buat file kosong
   // Dalam production, gunakan tool proper untuk convert SVG ke PNG
-  fs.writeFileSync(filepath, Buffer.from(placeholderIcon.split(',')[1], 'base64'));
+  fs.writeFileSync(
+    filepath,
+    Buffer.from(placeholderIcon.split(',')[1], 'base64')
+  );
   console.log(`Generated ${filename}`);
 });
 
 // Generate apple-touch-icon
 const appleIconPath = path.join(iconsDir, 'apple-touch-icon.png');
-fs.writeFileSync(appleIconPath, Buffer.from(placeholderIcon.split(',')[1], 'base64'));
+fs.writeFileSync(
+  appleIconPath,
+  Buffer.from(placeholderIcon.split(',')[1], 'base64')
+);
 console.log('Generated apple-touch-icon.png');
 
 console.log('✅ Placeholder icons generated successfully!');
-console.log('📝 Note: Replace with actual icons using a tool like PWA Asset Generator');
+console.log(
+  '📝 Note: Replace with actual icons using a tool like PWA Asset Generator'
+);

@@ -1,0 +1,27 @@
+# Security Policy untuk Aplikasi Chat Dinamis
+# https://securitytxt.org/
+
+Contact: mailto:security@your-domain.com
+Contact: https://github.com/your-repo/security/advisories/new
+Expires: 2025-12-31T23:59:59.000Z
+Encryption: https://your-domain.com/pgp-key.txt
+Acknowledgments: https://your-domain.com/security/acknowledgments
+Policy: https://your-domain.com/security/policy
+Preferred-Languages: id, en
+
+# Vulnerability Disclosure
+# Jika Anda menemukan kerentanan keamanan, silakan laporkan melalui:
+# 1. Email ke security@your-domain.com
+# 2. GitHub Security Advisories
+# 3. Responsible disclosure diharapkan
+
+# Scope
+# - Aplikasi web utama
+# - API endpoints
+# - PWA functionality
+# - Client-side security issues
+
+# Out of Scope
+# - Third-party dependencies (kecuali implementasi kami)
+# - Social engineering attacks
+# - Physical security issues

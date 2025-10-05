@@ -1,5 +1,10 @@
 import type { NextConfig } from 'next';
 
+// Bundle analyzer untuk monitoring ukuran bundle (optional)
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 const nextConfig: NextConfig = {
   // Optimasi untuk production
   output: 'standalone',
@@ -54,12 +59,14 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 
-  // Webpack optimizations
+  // Webpack optimizations untuk code splitting dan tree shaking
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
       // Optimasi untuk production build
       config.optimization.splitChunks = {
         chunks: 'all',
+        minSize: 20000,
+        maxSize: 244000,
         cacheGroups: {
           default: {
             minChunks: 2,
@@ -72,11 +79,36 @@ const nextConfig: NextConfig = {
             priority: -10,
             chunks: 'all',
           },
+          // Pisahkan PWA components ke chunk terpisah
+          pwa: {
+            test: /[\\/]src[\\/]components[\\/](PWA|ServiceWorker)/,
+            name: 'pwa',
+            priority: 10,
+            chunks: 'all',
+          },
+          // Pisahkan context providers
+          contexts: {
+            test: /[\\/]src[\\/]contexts[\\/]/,
+            name: 'contexts',
+            priority: 5,
+            chunks: 'all',
+          },
         },
       };
+
+      // Tree shaking optimizations
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = false;
     }
+
+    // Alias untuk import yang lebih efisien
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, 'src'),
+    };
+
     return config;
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

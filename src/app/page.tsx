@@ -1,5 +1,5 @@
-import ChatInterface from '@/components/ChatInterface';
+import { LazyChatInterface } from '@/lib/lazyComponents';
 
 export default function Home() {
-  return <ChatInterface />;
+  return <LazyChatInterface />;
 }

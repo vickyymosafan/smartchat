@@ -7,7 +7,9 @@ export interface ServiceWorkerConfig {
 }
 
 // Registrasi service worker
-export async function registerServiceWorker(config?: ServiceWorkerConfig): Promise<ServiceWorkerRegistration | null> {
+export async function registerServiceWorker(
+  config?: ServiceWorkerConfig
+): Promise<ServiceWorkerRegistration | null> {
   // Cek apakah browser mendukung service worker
   if (!('serviceWorker' in navigator)) {
     console.warn('Service Worker tidak didukung di browser ini');
@@ -15,14 +17,17 @@ export async function registerServiceWorker(config?: ServiceWorkerConfig): Promi
   }
 
   // Hanya registrasi di production atau saat PWA diaktifkan
-  if (process.env.NODE_ENV !== 'production' && !process.env.NEXT_PUBLIC_ENABLE_PWA) {
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    !process.env.NEXT_PUBLIC_ENABLE_PWA
+  ) {
     console.log('Service Worker dinonaktifkan di development mode');
     return null;
   }
 
   try {
     console.log('Mendaftarkan Service Worker...');
-    
+
     const registration = await navigator.serviceWorker.register('/sw.js', {
       scope: '/',
     });
@@ -50,7 +55,10 @@ export async function registerServiceWorker(config?: ServiceWorkerConfig): Promi
     });
 
     // Listen untuk pesan dari service worker
-    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+    navigator.serviceWorker.addEventListener(
+      'message',
+      handleServiceWorkerMessage
+    );
 
     return registration;
   } catch (error) {
@@ -103,7 +111,7 @@ export function skipWaitingAndActivate(): void {
     return;
   }
 
-  navigator.serviceWorker.ready.then((registration) => {
+  navigator.serviceWorker.ready.then(registration => {
     if (registration.waiting) {
       registration.waiting.postMessage({ type: 'SKIP_WAITING' });
     }
@@ -118,23 +126,27 @@ export function skipWaitingAndActivate(): void {
 // Handle pesan dari service worker
 function handleServiceWorkerMessage(event: MessageEvent): void {
   const { data } = event;
-  
+
   switch (data.type) {
     case 'SYNC_COMPLETE':
       console.log('Background sync selesai:', data.data);
       // Dispatch custom event untuk komponen React
-      window.dispatchEvent(new CustomEvent('sw-sync-complete', { 
-        detail: data.data 
-      }));
+      window.dispatchEvent(
+        new CustomEvent('sw-sync-complete', {
+          detail: data.data,
+        })
+      );
       break;
-      
+
     case 'CACHE_UPDATED':
       console.log('Cache diperbarui:', data.data);
-      window.dispatchEvent(new CustomEvent('sw-cache-updated', { 
-        detail: data.data 
-      }));
+      window.dispatchEvent(
+        new CustomEvent('sw-cache-updated', {
+          detail: data.data,
+        })
+      );
       break;
-      
+
     default:
       console.log('Pesan dari Service Worker:', data);
   }
@@ -146,7 +158,9 @@ export function getNetworkStatus(): boolean {
 }
 
 // Listen perubahan status network
-export function addNetworkStatusListener(callback: (isOnline: boolean) => void): () => void {
+export function addNetworkStatusListener(
+  callback: (isOnline: boolean) => void
+): () => void {
   const handleOnline = () => callback(true);
   const handleOffline = () => callback(false);
 
@@ -161,8 +175,13 @@ export function addNetworkStatusListener(callback: (isOnline: boolean) => void):
 }
 
 // Request background sync untuk pesan offline
-export async function requestBackgroundSync(tag: string = 'background-sync-messages'): Promise<void> {
-  if (!('serviceWorker' in navigator) || !('sync' in window.ServiceWorkerRegistration.prototype)) {
+export async function requestBackgroundSync(
+  tag: string = 'background-sync-messages'
+): Promise<void> {
+  if (
+    !('serviceWorker' in navigator) ||
+    !('sync' in window.ServiceWorkerRegistration.prototype)
+  ) {
     console.warn('Background Sync tidak didukung');
     return;
   }
@@ -182,9 +201,11 @@ export async function requestBackgroundSync(tag: string = 'background-sync-messa
 
 // Cek apakah app berjalan sebagai PWA
 export function isPWA(): boolean {
-  return window.matchMedia('(display-mode: standalone)').matches ||
-         (window.navigator as any).standalone === true ||
-         document.referrer.includes('android-app://');
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as any).standalone === true ||
+    document.referrer.includes('android-app://')
+  );
 }
 
 // Cek apakah device mendukung PWA
@@ -210,15 +231,17 @@ export async function getServiceWorkerRegistration(): Promise<ServiceWorkerRegis
 // Utility untuk menyimpan pesan offline
 export function saveOfflineMessage(message: any): void {
   try {
-    const offlineMessages = JSON.parse(localStorage.getItem('offline-messages') || '[]');
+    const offlineMessages = JSON.parse(
+      localStorage.getItem('offline-messages') || '[]'
+    );
     offlineMessages.push({
       ...message,
       id: Date.now().toString(),
       timestamp: new Date().toISOString(),
-      offline: true
+      offline: true,
     });
     localStorage.setItem('offline-messages', JSON.stringify(offlineMessages));
-    
+
     // Request background sync
     requestBackgroundSync();
   } catch (error) {
@@ -240,7 +263,9 @@ export function getOfflineMessages(): any[] {
 export function removeOfflineMessage(messageId: string): void {
   try {
     const offlineMessages = getOfflineMessages();
-    const filteredMessages = offlineMessages.filter(msg => msg.id !== messageId);
+    const filteredMessages = offlineMessages.filter(
+      msg => msg.id !== messageId
+    );
     localStorage.setItem('offline-messages', JSON.stringify(filteredMessages));
   } catch (error) {
     console.error('Gagal menghapus pesan offline:', error);

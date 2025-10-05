@@ -1,10 +1,28 @@
+# Robots.txt untuk Aplikasi Chat Dinamis
+# https://www.robotstxt.org/robotstxt.html
+
 User-agent: *
 Allow: /
 
-# PWA files
-Allow: /manifest.json
-Allow: /sw.js
-Allow: /icons/
+# Sitemap location
+Sitemap: https://your-app-domain.com/sitemap.xml
 
-# Sitemap
-Sitemap: https://your-domain.com/sitemap.xml
+# Disallow admin atau private paths jika ada
+# Disallow: /admin/
+# Disallow: /api/
+
+# Allow specific bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Crawl-delay untuk menghindari overload server
+Crawl-delay: 1
+
+# Host directive (optional, untuk domain utama)
+# Host: https://your-app-domain.com

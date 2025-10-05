@@ -135,8 +135,9 @@ export function Toast({
    * Get styling berdasarkan tipe toast
    */
   const getStyles = () => {
-    const baseStyles = 'flex items-start p-4 rounded-lg shadow-lg border transition-all duration-300 ease-in-out';
-    
+    const baseStyles =
+      'flex items-start p-4 rounded-lg shadow-lg border transition-all duration-300 ease-in-out';
+
     switch (type) {
       case 'success':
         return `${baseStyles} bg-green-50 border-green-200 text-green-800`;
@@ -177,16 +178,12 @@ export function Toast({
       aria-live="polite"
     >
       {/* Icon */}
-      <div className={`flex-shrink-0 ${getIconColor()}`}>
-        {getIcon()}
-      </div>
+      <div className={`flex-shrink-0 ${getIconColor()}`}>{getIcon()}</div>
 
       {/* Content */}
       <div className="ml-3 flex-1">
         <h4 className="text-sm font-medium">{title}</h4>
-        {message && (
-          <p className="mt-1 text-sm opacity-90">{message}</p>
-        )}
+        {message && <p className="mt-1 text-sm opacity-90">{message}</p>}
       </div>
 
       {/* Close Button */}

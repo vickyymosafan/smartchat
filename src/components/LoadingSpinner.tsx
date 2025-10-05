@@ -74,7 +74,7 @@ export default function LoadingSpinner({
         `}
         aria-hidden="true"
       />
-      
+
       {/* Teks loading - responsif dan opsional */}
       {showText && (
         <p

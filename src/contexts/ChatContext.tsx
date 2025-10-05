@@ -1,6 +1,12 @@
 'use client';
 
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  ReactNode,
+} from 'react';
 import { ChatState, Message } from '@/types/chat';
 
 /**
@@ -21,7 +27,10 @@ interface ChatContextType {
  */
 type ChatAction =
   | { type: 'ADD_MESSAGE'; payload: Message }
-  | { type: 'UPDATE_MESSAGE_STATUS'; payload: { messageId: string; status: Message['status'] } }
+  | {
+      type: 'UPDATE_MESSAGE_STATUS';
+      payload: { messageId: string; status: Message['status'] };
+    }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_ONLINE_STATUS'; payload: boolean }
@@ -114,7 +123,10 @@ interface ChatProviderProps {
  * Provider untuk ChatContext
  * Mengelola state global chat dan local storage persistence
  */
-export function ChatProvider({ children, initialMessages = [] }: ChatProviderProps) {
+export function ChatProvider({
+  children,
+  initialMessages = [],
+}: ChatProviderProps) {
   const [state, dispatch] = useReducer(chatReducer, {
     ...initialState,
     messages: initialMessages,
@@ -134,10 +146,12 @@ export function ChatProvider({ children, initialMessages = [] }: ChatProviderPro
     try {
       const savedMessages = localStorage.getItem('chat_messages');
       if (savedMessages) {
-        const parsedMessages: Message[] = JSON.parse(savedMessages).map((msg: any) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp),
-        }));
+        const parsedMessages: Message[] = JSON.parse(savedMessages).map(
+          (msg: any) => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp),
+          })
+        );
         dispatch({ type: 'LOAD_MESSAGES', payload: parsedMessages });
       }
     } catch (error) {
@@ -160,8 +174,10 @@ export function ChatProvider({ children, initialMessages = [] }: ChatProviderPro
    * Monitor online/offline status
    */
   useEffect(() => {
-    const handleOnline = () => dispatch({ type: 'SET_ONLINE_STATUS', payload: true });
-    const handleOffline = () => dispatch({ type: 'SET_ONLINE_STATUS', payload: false });
+    const handleOnline = () =>
+      dispatch({ type: 'SET_ONLINE_STATUS', payload: true });
+    const handleOffline = () =>
+      dispatch({ type: 'SET_ONLINE_STATUS', payload: false });
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -190,7 +206,10 @@ export function ChatProvider({ children, initialMessages = [] }: ChatProviderPro
   /**
    * Helper function untuk update status pesan
    */
-  const updateMessageStatus = (messageId: string, status: Message['status']) => {
+  const updateMessageStatus = (
+    messageId: string,
+    status: Message['status']
+  ) => {
     dispatch({ type: 'UPDATE_MESSAGE_STATUS', payload: { messageId, status } });
   };
 
@@ -231,9 +250,7 @@ export function ChatProvider({ children, initialMessages = [] }: ChatProviderPro
   };
 
   return (
-    <ChatContext.Provider value={contextValue}>
-      {children}
-    </ChatContext.Provider>
+    <ChatContext.Provider value={contextValue}>{children}</ChatContext.Provider>
   );
 }
 
@@ -260,7 +277,13 @@ export function useChatState(): ChatState {
  * Hook untuk menggunakan chat actions saja
  */
 export function useChatActions() {
-  const { addMessage, updateMessageStatus, setLoading, setError, clearMessages } = useChatContext();
+  const {
+    addMessage,
+    updateMessageStatus,
+    setLoading,
+    setError,
+    clearMessages,
+  } = useChatContext();
   return {
     addMessage,
     updateMessageStatus,

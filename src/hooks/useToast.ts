@@ -30,7 +30,12 @@ interface UseToastReturn {
   /** Tambah toast info */
   info: (title: string, message?: string, options?: ToastOptions) => string;
   /** Tambah toast dengan tipe custom */
-  addToast: (type: ToastType, title: string, message?: string, options?: ToastOptions) => string;
+  addToast: (
+    type: ToastType,
+    title: string,
+    message?: string,
+    options?: ToastOptions
+  ) => string;
   /** Remove toast berdasarkan ID */
   removeToast: (id: string) => void;
   /** Clear semua toast */
@@ -54,32 +59,31 @@ export function useToast(): UseToastReturn {
   /**
    * Tambah toast baru
    */
-  const addToast = useCallback((
-    type: ToastType,
-    title: string,
-    message?: string,
-    options: ToastOptions = {}
-  ): string => {
-    const id = generateId();
-    const {
-      duration = 5000,
-      dismissible = true,
-      onClose,
-    } = options;
+  const addToast = useCallback(
+    (
+      type: ToastType,
+      title: string,
+      message?: string,
+      options: ToastOptions = {}
+    ): string => {
+      const id = generateId();
+      const { duration = 5000, dismissible = true, onClose } = options;
 
-    const newToast: ToastData = {
-      id,
-      type,
-      title,
-      message,
-      duration,
-      dismissible,
-      onClose,
-    };
+      const newToast: ToastData = {
+        id,
+        type,
+        title,
+        message,
+        duration,
+        dismissible,
+        onClose,
+      };
 
-    setToasts(prev => [...prev, newToast]);
-    return id;
-  }, [generateId]);
+      setToasts(prev => [...prev, newToast]);
+      return id;
+    },
+    [generateId]
+  );
 
   /**
    * Remove toast berdasarkan ID
@@ -98,46 +102,42 @@ export function useToast(): UseToastReturn {
   /**
    * Helper function untuk success toast
    */
-  const success = useCallback((
-    title: string,
-    message?: string,
-    options?: ToastOptions
-  ): string => {
-    return addToast('success', title, message, options);
-  }, [addToast]);
+  const success = useCallback(
+    (title: string, message?: string, options?: ToastOptions): string => {
+      return addToast('success', title, message, options);
+    },
+    [addToast]
+  );
 
   /**
    * Helper function untuk error toast
    */
-  const error = useCallback((
-    title: string,
-    message?: string,
-    options?: ToastOptions
-  ): string => {
-    return addToast('error', title, message, options);
-  }, [addToast]);
+  const error = useCallback(
+    (title: string, message?: string, options?: ToastOptions): string => {
+      return addToast('error', title, message, options);
+    },
+    [addToast]
+  );
 
   /**
    * Helper function untuk warning toast
    */
-  const warning = useCallback((
-    title: string,
-    message?: string,
-    options?: ToastOptions
-  ): string => {
-    return addToast('warning', title, message, options);
-  }, [addToast]);
+  const warning = useCallback(
+    (title: string, message?: string, options?: ToastOptions): string => {
+      return addToast('warning', title, message, options);
+    },
+    [addToast]
+  );
 
   /**
    * Helper function untuk info toast
    */
-  const info = useCallback((
-    title: string,
-    message?: string,
-    options?: ToastOptions
-  ): string => {
-    return addToast('info', title, message, options);
-  }, [addToast]);
+  const info = useCallback(
+    (title: string, message?: string, options?: ToastOptions): string => {
+      return addToast('info', title, message, options);
+    },
+    [addToast]
+  );
 
   return {
     toasts,

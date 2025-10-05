@@ -20,7 +20,10 @@ export function generateMessageId(): string {
  * @param includeTime - Apakah menyertakan waktu (default: true)
  * @returns String tanggal dalam format Indonesia
  */
-export function formatTimestamp(date: Date, includeTime: boolean = true): string {
+export function formatTimestamp(
+  date: Date,
+  includeTime: boolean = true
+): string {
   const now = new Date();
   const diffInMs = now.getTime() - date.getTime();
   const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
@@ -159,7 +162,10 @@ export function getPlatform(): string {
   if (typeof window === 'undefined') return 'server';
 
   const userAgent = window.navigator.userAgent.toLowerCase();
-  const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+  const isMobile =
+    /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+      userAgent
+    );
   const isTablet = /ipad|android(?!.*mobile)/i.test(userAgent);
 
   if (isMobile && !isTablet) return 'mobile';
@@ -200,7 +206,10 @@ export function delay(ms: number): Promise<void> {
  * @param baseDelay - Base delay dalam milidetik (default: 1000)
  * @returns Jumlah milidetik untuk delay
  */
-export function getExponentialBackoffDelay(attempt: number, baseDelay: number = 1000): number {
+export function getExponentialBackoffDelay(
+  attempt: number,
+  baseDelay: number = 1000
+): number {
   return Math.min(baseDelay * Math.pow(2, attempt), 30000); // Max 30 detik
 }
 

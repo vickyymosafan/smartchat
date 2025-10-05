@@ -37,7 +37,7 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
   maxRetries: 3,
   baseDelay: 1000, // 1 detik
   maxDelay: 10000, // 10 detik
-  backoffMultiplier: 2
+  backoffMultiplier: 2,
 };
 
 // Timeout untuk request (30 detik)
@@ -63,7 +63,9 @@ class ChatService {
    * Hitung delay untuk retry dengan exponential backoff
    */
   private calculateRetryDelay(attempt: number): number {
-    const delay = this.retryConfig.baseDelay * Math.pow(this.retryConfig.backoffMultiplier, attempt);
+    const delay =
+      this.retryConfig.baseDelay *
+      Math.pow(this.retryConfig.backoffMultiplier, attempt);
     return Math.min(delay, this.retryConfig.maxDelay);
   }
 
@@ -72,28 +74,36 @@ class ChatService {
    */
   private mapErrorToIndonesian(code: string, originalMessage?: string): string {
     const errorMap: Record<string, string> = {
-      'NETWORK_ERROR': 'Koneksi internet bermasalah. Silakan coba lagi.',
-      'TIMEOUT_ERROR': 'Permintaan timeout. Silakan coba lagi.',
-      'VALIDATION_ERROR': 'Pesan tidak valid. Silakan periksa input Anda.',
-      'SERVER_ERROR': 'Terjadi kesalahan server. Silakan coba lagi nanti.',
-      'CLIENT_ERROR': 'Permintaan tidak valid. Silakan periksa input Anda.',
-      'INVALID_JSON': 'Format data tidak valid.',
-      'INVALID_RESPONSE': 'Response server tidak valid.',
-      'METHOD_NOT_ALLOWED': 'Method tidak diizinkan.',
-      'INTERNAL_ERROR': 'Terjadi kesalahan internal server.',
-      'RATE_LIMIT_ERROR': 'Terlalu banyak permintaan. Silakan tunggu sebentar.',
-      'UNAUTHORIZED': 'Akses tidak diizinkan.',
-      'FORBIDDEN': 'Akses ditolak.',
-      'NOT_FOUND': 'Endpoint tidak ditemukan.'
+      NETWORK_ERROR: 'Koneksi internet bermasalah. Silakan coba lagi.',
+      TIMEOUT_ERROR: 'Permintaan timeout. Silakan coba lagi.',
+      VALIDATION_ERROR: 'Pesan tidak valid. Silakan periksa input Anda.',
+      SERVER_ERROR: 'Terjadi kesalahan server. Silakan coba lagi nanti.',
+      CLIENT_ERROR: 'Permintaan tidak valid. Silakan periksa input Anda.',
+      INVALID_JSON: 'Format data tidak valid.',
+      INVALID_RESPONSE: 'Response server tidak valid.',
+      METHOD_NOT_ALLOWED: 'Method tidak diizinkan.',
+      INTERNAL_ERROR: 'Terjadi kesalahan internal server.',
+      RATE_LIMIT_ERROR: 'Terlalu banyak permintaan. Silakan tunggu sebentar.',
+      UNAUTHORIZED: 'Akses tidak diizinkan.',
+      FORBIDDEN: 'Akses ditolak.',
+      NOT_FOUND: 'Endpoint tidak ditemukan.',
     };
 
-    return errorMap[code] || originalMessage || 'Terjadi kesalahan yang tidak diketahui.';
+    return (
+      errorMap[code] ||
+      originalMessage ||
+      'Terjadi kesalahan yang tidak diketahui.'
+    );
   }
 
   /**
    * Fungsi untuk membuat request dengan timeout
    */
-  private async fetchWithTimeout(url: string, options: RequestInit, timeout: number): Promise<Response> {
+  private async fetchWithTimeout(
+    url: string,
+    options: RequestInit,
+    timeout: number
+  ): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -106,16 +116,16 @@ class ChatService {
       return response;
     } catch (error: any) {
       clearTimeout(timeoutId);
-      
+
       if (error.name === 'AbortError') {
         throw new Error('TIMEOUT_ERROR');
       }
-      
+
       // Network error atau connection error
       if (error instanceof TypeError || error.message.includes('fetch')) {
         throw new Error('NETWORK_ERROR');
       }
-      
+
       throw error;
     }
   }
@@ -125,7 +135,7 @@ class ChatService {
    */
   private async makeApiCall(request: ChatRequest): Promise<ChatResponse> {
     const url = `${this.baseUrl}/api/chat`;
-    
+
     try {
       const response = await this.fetchWithTimeout(
         url,
@@ -133,7 +143,7 @@ class ChatService {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
+            Accept: 'application/json',
           },
           body: JSON.stringify(request),
         },
@@ -158,7 +168,6 @@ class ChatService {
       }
 
       return data;
-
     } catch (error: any) {
       // Re-throw error dengan informasi tambahan
       const errorCode = error.message || 'UNKNOWN_ERROR';
@@ -173,10 +182,13 @@ class ChatService {
   /**
    * Fungsi utama untuk mengirim pesan dengan retry logic
    */
-  async sendMessage(message: string, sessionId?: string): Promise<ChatResponse> {
+  async sendMessage(
+    message: string,
+    sessionId?: string
+  ): Promise<ChatResponse> {
     const request: ChatRequest = {
       message: message.trim(),
-      sessionId
+      sessionId,
     };
 
     let lastError: any;
@@ -188,7 +200,7 @@ class ChatService {
         return response;
       } catch (error: any) {
         lastError = error;
-        
+
         // Jangan retry untuk error client (4xx) kecuali 408 (timeout) dan 429 (rate limit)
         const status = error.status;
         if (status >= 400 && status < 500 && status !== 408 && status !== 429) {
@@ -202,23 +214,26 @@ class ChatService {
 
         // Hitung delay untuk retry berikutnya
         const delay = this.calculateRetryDelay(attempt);
-        console.log(`Chat API attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
-        
+        console.log(
+          `Chat API attempt ${attempt + 1} failed, retrying in ${delay}ms...`
+        );
+
         await this.delay(delay);
       }
     }
 
     // Jika semua retry gagal, lempar error dengan pesan bahasa Indonesia
-    const errorCode = lastError?.message || lastError?.response?.code || 'UNKNOWN_ERROR';
+    const errorCode =
+      lastError?.message || lastError?.response?.code || 'UNKNOWN_ERROR';
     const errorMessage = this.mapErrorToIndonesian(
-      errorCode, 
+      errorCode,
       lastError?.response?.error || lastError?.message
     );
 
     const serviceError: ChatServiceError = {
       message: errorMessage,
       code: errorCode,
-      originalError: lastError
+      originalError: lastError,
     };
 
     throw serviceError;
@@ -234,12 +249,12 @@ class ChatService {
         {
           method: 'GET',
           headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
           },
         },
         5000 // 5 detik timeout untuk health check
       );
-      
+
       // Expect 405 Method Not Allowed, yang berarti endpoint ada
       return response.status === 405;
     } catch (error) {

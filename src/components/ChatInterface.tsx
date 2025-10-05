@@ -6,13 +6,14 @@ import { useToastContext } from '@/contexts/ToastContext';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import ErrorBoundary from './ErrorBoundary';
-import PWAInstallPrompt from './PWAInstallPrompt';
+import { LazyPWAInstallPrompt } from '@/lib/lazyComponents';
 
 /**
  * Komponen internal ChatInterface yang menggunakan context
  */
 function ChatInterfaceContent() {
-  const { state, addMessage, updateMessageStatus, setLoading, setError } = useChatContext();
+  const { state, addMessage, updateMessageStatus, setLoading, setError } =
+    useChatContext();
   const toast = useToastContext();
 
   /**
@@ -42,17 +43,20 @@ function ChatInterfaceContent() {
 
       // Tambahkan response dari assistant
       addMessage({
-        content: 'Terima kasih atas pesan Anda. Fitur ini akan segera diimplementasikan dengan integrasi n8n webhook.',
+        content:
+          'Terima kasih atas pesan Anda. Fitur ini akan segera diimplementasikan dengan integrasi n8n webhook.',
         type: 'assistant',
         status: 'sent',
       });
 
       // Tampilkan toast success
-      toast.success('Pesan Terkirim', 'Pesan Anda berhasil dikirim dan diproses.');
-
+      toast.success(
+        'Pesan Terkirim',
+        'Pesan Anda berhasil dikirim dan diproses.'
+      );
     } catch (error) {
       console.error('Error sending message:', error);
-      
+
       // Update status pesan user menjadi 'error'
       const userMessage = state.messages[state.messages.length - 1];
       if (userMessage) {
@@ -61,7 +65,7 @@ function ChatInterfaceContent() {
 
       // Tampilkan toast error
       toast.error(
-        'Gagal Mengirim Pesan', 
+        'Gagal Mengirim Pesan',
         'Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.',
         { duration: 7000 }
       );
@@ -81,8 +85,18 @@ function ChatInterfaceContent() {
     return (
       <div className="border-b border-warning/20 bg-warning/10 px-3 py-2 sm:px-4 sm:py-3">
         <div className="mx-auto flex max-w-none items-center justify-center text-warning sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
-          <svg className="mr-2 h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="mr-2 h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           <span className="text-label-medium font-medium sm:text-label-large">
             Anda sedang offline. Pesan akan dikirim saat koneksi kembali.
@@ -102,18 +116,40 @@ function ChatInterfaceContent() {
       <div className="border-b border-error/20 bg-error/10 px-3 py-2 sm:px-4 sm:py-3">
         <div className="mx-auto flex max-w-none items-center justify-between text-error sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
           <div className="flex min-w-0 flex-1 items-center">
-            <svg className="mr-2 h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="mr-2 h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
-            <span className="text-label-medium truncate font-medium sm:text-label-large">{state.error}</span>
+            <span className="text-label-medium truncate font-medium sm:text-label-large">
+              {state.error}
+            </span>
           </div>
           <button
             onClick={() => setError(null)}
             className="ml-3 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-error/70 transition-colors hover:bg-error/10 hover:text-error focus:outline-none focus:ring-2 focus:ring-error/20 sm:h-6 sm:w-6"
             aria-label="Tutup pesan error"
           >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -135,10 +171,12 @@ function ChatInterfaceContent() {
                 Asisten AI yang siap membantu Anda
               </p>
             </div>
-            
+
             {/* Connection Status Indicator - Optimized for touch */}
             <div className="flex items-center space-x-2 rounded-full bg-surface px-2 py-1 sm:px-3 sm:py-1.5">
-              <div className={`h-2 w-2 rounded-full ${state.isOnline ? 'status-online' : 'status-offline'}`} />
+              <div
+                className={`h-2 w-2 rounded-full ${state.isOnline ? 'status-online' : 'status-offline'}`}
+              />
               <span className="text-label-medium font-medium text-text-muted sm:text-label-large">
                 {state.isOnline ? 'Online' : 'Offline'}
               </span>
@@ -157,13 +195,10 @@ function ChatInterfaceContent() {
       <main className="flex flex-1 flex-col overflow-hidden">
         <div className="mx-auto flex h-full w-full max-w-none flex-col sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
           {/* Message List */}
-          <MessageList 
-            messages={state.messages} 
-            isLoading={state.isLoading} 
-          />
+          <MessageList messages={state.messages} isLoading={state.isLoading} />
 
           {/* Message Input */}
-          <MessageInput 
+          <MessageInput
             onSendMessage={handleSendMessage}
             isLoading={state.isLoading || !state.isOnline}
           />
@@ -171,7 +206,7 @@ function ChatInterfaceContent() {
       </main>
 
       {/* PWA Install Prompt */}
-      <PWAInstallPrompt 
+      <LazyPWAInstallPrompt
         onInstall={() => console.log('PWA berhasil diinstall')}
         onDismiss={() => console.log('PWA install prompt ditutup')}
       />
@@ -183,7 +218,9 @@ function ChatInterfaceContent() {
  * Komponen utama ChatInterface dengan Error Boundary dan Context Provider
  * Mengintegrasikan semua sub-komponen dengan layout responsif
  */
-export default function ChatInterface({ initialMessages = [] }: ChatInterfaceProps) {
+export default function ChatInterface({
+  initialMessages = [],
+}: ChatInterfaceProps) {
   return (
     <ErrorBoundary>
       <ChatProvider initialMessages={initialMessages}>

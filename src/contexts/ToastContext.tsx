@@ -27,7 +27,12 @@ interface ToastContextType {
   /** Tambah toast info */
   info: (title: string, message?: string, options?: ToastOptions) => string;
   /** Tambah toast dengan tipe custom */
-  addToast: (type: ToastType, title: string, message?: string, options?: ToastOptions) => string;
+  addToast: (
+    type: ToastType,
+    title: string,
+    message?: string,
+    options?: ToastOptions
+  ) => string;
   /** Remove toast berdasarkan ID */
   removeToast: (id: string) => void;
   /** Clear semua toast */
@@ -45,14 +50,23 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 interface ToastProviderProps {
   children: ReactNode;
   /** Posisi toast container */
-  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center';
+  position?:
+    | 'top-right'
+    | 'top-left'
+    | 'bottom-right'
+    | 'bottom-left'
+    | 'top-center'
+    | 'bottom-center';
 }
 
 /**
  * Toast Provider component
  * Menyediakan toast functionality ke seluruh aplikasi
  */
-export function ToastProvider({ children, position = 'top-right' }: ToastProviderProps) {
+export function ToastProvider({
+  children,
+  position = 'top-right',
+}: ToastProviderProps) {
   const {
     toasts,
     success,
@@ -92,11 +106,11 @@ export function ToastProvider({ children, position = 'top-right' }: ToastProvide
  */
 export function useToastContext(): ToastContextType {
   const context = useContext(ToastContext);
-  
+
   if (context === undefined) {
     throw new Error('useToastContext harus digunakan di dalam ToastProvider');
   }
-  
+
   return context;
 }
 
@@ -105,7 +119,13 @@ export function useToastContext(): ToastContextType {
  */
 export function withToastProvider<P extends object>(
   Component: React.ComponentType<P>,
-  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center'
+  position?:
+    | 'top-right'
+    | 'top-left'
+    | 'bottom-right'
+    | 'bottom-left'
+    | 'top-center'
+    | 'bottom-center'
 ) {
   const WrappedComponent = (props: P) => (
     <ToastProvider position={position}>
