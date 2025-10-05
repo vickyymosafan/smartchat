@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { isPWA, isPWASupported } from '@/lib/serviceWorker';
+import { useToastContext } from '@/contexts/ToastContext';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -28,6 +29,7 @@ export default function PWAInstallPrompt({
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const toast = useToastContext();
 
   useEffect(() => {
     // Cek apakah sudah berjalan sebagai PWA
@@ -58,6 +60,14 @@ export default function PWAInstallPrompt({
       console.log('PWA berhasil diinstall');
       setShowPrompt(false);
       setDeferredPrompt(null);
+      
+      // Tampilkan toast success
+      toast.success(
+        'Aplikasi Berhasil Diinstall!',
+        'Sekarang Anda dapat mengakses aplikasi dari home screen.',
+        { duration: 6000 }
+      );
+      
       onInstall?.();
     };
 
@@ -96,6 +106,11 @@ export default function PWAInstallPrompt({
         
         if (outcome === 'accepted') {
           console.log('User menerima install prompt');
+          toast.info(
+            'Menginstall Aplikasi...',
+            'Aplikasi sedang diinstall ke perangkat Anda.',
+            { duration: 4000 }
+          );
           onInstall?.();
         } else {
           console.log('User menolak install prompt');
@@ -106,6 +121,11 @@ export default function PWAInstallPrompt({
         setShowPrompt(false);
       } catch (error) {
         console.error('Error saat install PWA:', error);
+        toast.error(
+          'Gagal Menginstall',
+          'Terjadi kesalahan saat menginstall aplikasi. Silakan coba lagi.',
+          { duration: 5000 }
+        );
       }
     } else if (isIOS) {
       // iOS - show instructions

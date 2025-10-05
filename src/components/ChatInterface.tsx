@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
 import { ChatInterfaceProps } from '@/types/chat';
 import { ChatProvider, useChatContext } from '@/contexts/ChatContext';
+import { useToastContext } from '@/contexts/ToastContext';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
-import LoadingSpinner from './LoadingSpinner';
 import ErrorBoundary from './ErrorBoundary';
 import PWAInstallPrompt from './PWAInstallPrompt';
 
@@ -14,6 +13,7 @@ import PWAInstallPrompt from './PWAInstallPrompt';
  */
 function ChatInterfaceContent() {
   const { state, addMessage, updateMessageStatus, setLoading, setError } = useChatContext();
+  const toast = useToastContext();
 
   /**
    * Handle pengiriman pesan ke API
@@ -47,6 +47,9 @@ function ChatInterfaceContent() {
         status: 'sent',
       });
 
+      // Tampilkan toast success
+      toast.success('Pesan Terkirim', 'Pesan Anda berhasil dikirim dan diproses.');
+
     } catch (error) {
       console.error('Error sending message:', error);
       
@@ -55,6 +58,13 @@ function ChatInterfaceContent() {
       if (userMessage) {
         updateMessageStatus(userMessage.id, 'error');
       }
+
+      // Tampilkan toast error
+      toast.error(
+        'Gagal Mengirim Pesan', 
+        'Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.',
+        { duration: 7000 }
+      );
 
       setError('Gagal mengirim pesan. Silakan coba lagi.');
     } finally {

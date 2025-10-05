@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import PWAProvider from '@/components/PWAProvider';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import ToastProvider from '@/contexts/ToastContext';
 
 export const metadata: Metadata = {
   title: 'Aplikasi Chat Dinamis',
@@ -96,9 +98,13 @@ export default function RootLayout({
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
       <body className="antialiased text-body-large bg-background text-text">
-        <PWAProvider>
-          {children}
-        </PWAProvider>
+        <ErrorBoundary>
+          <ToastProvider position="top-right">
+            <PWAProvider>
+              {children}
+            </PWAProvider>
+          </ToastProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

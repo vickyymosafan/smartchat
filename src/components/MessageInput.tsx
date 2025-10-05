@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageInputProps } from '@/types/chat';
 import { validateMessage, sanitizeMessage } from '@/lib/utils';
+import { useToastContext } from '@/contexts/ToastContext';
 
 /**
  * Komponen MessageInput untuk form input pesan chat
@@ -13,6 +14,7 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
   const [error, setError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const toast = useToastContext();
 
   /**
    * Validasi pesan secara real-time
@@ -49,6 +51,16 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
    */
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
+    
+    // Cek jika mendekati batas karakter
+    if (value.length >= 4800 && message.length < 4800) {
+      toast.warning(
+        'Mendekati Batas Karakter',
+        `Anda telah menggunakan ${value.length} dari 5000 karakter.`,
+        { duration: 3000 }
+      );
+    }
+    
     setMessage(value);
   };
 
@@ -62,7 +74,15 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
 
     const validation = validateMessage(message);
     if (!validation.isValid) {
-      setError(validation.error || 'Pesan tidak valid');
+      const errorMessage = validation.error || 'Pesan tidak valid';
+      setError(errorMessage);
+      
+      // Tampilkan toast warning untuk validation error
+      toast.warning(
+        'Pesan Tidak Valid',
+        errorMessage,
+        { duration: 4000 }
+      );
       return;
     }
 
@@ -77,7 +97,15 @@ export default function MessageInput({ onSendMessage, isLoading }: MessageInputP
         textareaRef.current.focus();
       }
     } catch (err) {
-      setError('Gagal mengirim pesan. Silakan coba lagi.');
+      const errorMessage = 'Gagal mengirim pesan. Silakan coba lagi.';
+      setError(errorMessage);
+      
+      // Tampilkan toast error untuk send error
+      toast.error(
+        'Gagal Mengirim',
+        errorMessage,
+        { duration: 6000 }
+      );
     }
   };
 
