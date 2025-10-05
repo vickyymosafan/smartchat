@@ -1,26 +1,78 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Colors */
+  --primary: #3b82f6; /* Blue-500 */
+  --primary-dark: #1d4ed8; /* Blue-700 */
+  --primary-light: #93c5fd; /* Blue-300 */
+
+  /* Neutral Colors */
+  --background: #ffffff; /* White */
+  --surface: #f8fafc; /* Slate-50 */
+  --border: #e2e8f0; /* Slate-200 */
+  --text: #0f172a; /* Slate-900 */
+  --text-muted: #64748b; /* Slate-500 */
+
+  /* Status Colors */
+  --success: #10b981; /* Emerald-500 */
+  --error: #ef4444; /* Red-500 */
+  --warning: #f59e0b; /* Amber-500 */
 }
 
 @theme inline {
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-light: var(--primary-light);
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-warning: var(--warning);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Typography Scale */
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.6;
+}
+
+/* Smooth scrolling untuk chat */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar untuk chat area */
+.chat-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
