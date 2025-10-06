@@ -42,6 +42,16 @@ export const LazyChatInterface = dynamic(
 );
 
 /**
+ * Lazy load v0.app Style Chat Interface
+ */
+export const LazyChatInterfaceV0 = dynamic(
+  () => import('@/components/ChatInterfaceV0'),
+  {
+    ssr: false,
+  }
+);
+
+/**
  * Preload component untuk meningkatkan perceived performance
  * Gunakan ini untuk preload components yang kemungkinan akan digunakan
  */

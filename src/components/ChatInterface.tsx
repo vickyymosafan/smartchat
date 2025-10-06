@@ -3,6 +3,7 @@
 import { ChatInterfaceProps } from '@/types/chat';
 import { ChatProvider, useChatContext } from '@/contexts/ChatContext';
 import { useToastContext } from '@/contexts/ToastContext';
+import { useOrientationChange } from '@/hooks/useOrientationChange';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import ErrorBoundary from './ErrorBoundary';
@@ -15,6 +16,9 @@ function ChatInterfaceContent() {
   const { state, addMessage, updateMessageStatus, setLoading, setError } =
     useChatContext();
   const toast = useToastContext();
+  
+  // Handle orientation changes smoothly
+  useOrientationChange();
 
   /**
    * Handle pengiriman pesan ke API dengan integrasi n8n RAG System
@@ -96,16 +100,34 @@ function ChatInterfaceContent() {
   };
 
   /**
-   * Show offline indicator - Responsive design
+   * Show offline indicator - Mobile-optimized responsive design
    */
   const OfflineIndicator = () => {
     if (state.isOnline) return null;
 
     return (
-      <div className="border-b border-warning/20 bg-warning/10 px-3 py-2 sm:px-4 sm:py-3">
-        <div className="mx-auto flex max-w-none items-center justify-center text-warning sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
+      <div 
+        className="border-b animate-fade-in" 
+        role="alert"
+        aria-live="assertive"
+        style={{
+          backgroundColor: 'var(--gray-100)',
+          borderColor: 'var(--gray-200)',
+          padding: '0.75rem 1rem',
+          minHeight: '44px'
+        }}
+      >
+        <div className="mx-auto flex max-w-none items-center justify-center sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl" style={{
+          color: 'var(--gray-700)',
+          gap: '0.5rem'
+        }}>
           <svg
-            className="mr-2 h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5"
+            className="flex-shrink-0"
+            aria-hidden="true"
+            style={{
+              height: '1.125rem',
+              width: '1.125rem'
+            }}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -117,7 +139,10 @@ function ChatInterfaceContent() {
               d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span className="text-label-medium font-medium sm:text-label-large">
+          <span className="text-label-medium font-medium sm:text-label-large" style={{
+            fontSize: '0.8125rem',
+            lineHeight: '1.4'
+          }}>
             Anda sedang offline. Pesan akan dikirim saat koneksi kembali.
           </span>
         </div>
@@ -126,17 +151,37 @@ function ChatInterfaceContent() {
   };
 
   /**
-   * Error display component - Responsive design with touch-optimized close button
+   * Error display component - Mobile-optimized with 44x44px touch targets
    */
   const ErrorDisplay = () => {
     if (!state.error) return null;
 
     return (
-      <div className="border-b border-error/20 bg-error/10 px-3 py-2 sm:px-4 sm:py-3">
-        <div className="mx-auto flex max-w-none items-center justify-between text-error sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
-          <div className="flex min-w-0 flex-1 items-center">
+      <div 
+        className="border-b animate-fade-in" 
+        role="alert"
+        aria-live="assertive"
+        style={{
+          backgroundColor: 'var(--gray-150)',
+          borderColor: 'var(--gray-250)',
+          padding: '0.75rem 1rem',
+          minHeight: '44px'
+        }}
+      >
+        <div className="mx-auto flex max-w-none items-center justify-between sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl" style={{
+          color: 'var(--gray-800)',
+          gap: '0.75rem'
+        }}>
+          <div className="flex min-w-0 flex-1 items-center" style={{
+            gap: '0.5rem'
+          }}>
             <svg
-              className="mr-2 h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5"
+              className="flex-shrink-0"
+              aria-hidden="true"
+              style={{
+                height: '1.125rem',
+                width: '1.125rem'
+              }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -148,17 +193,36 @@ function ChatInterfaceContent() {
                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span className="text-label-medium truncate font-medium sm:text-label-large">
+            <span className="text-label-medium truncate font-medium sm:text-label-large" style={{
+              fontSize: '0.8125rem',
+              lineHeight: '1.4'
+            }}>
               {state.error}
             </span>
           </div>
           <button
             onClick={() => setError(null)}
-            className="ml-3 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-error/70 transition-colors hover:bg-error/10 hover:text-error focus:outline-none focus:ring-2 focus:ring-error/20 sm:h-6 sm:w-6"
+            className="flex flex-shrink-0 items-center justify-center rounded-full transition-colors focus:outline-none touch-manipulation"
+            style={{
+              height: '44px',
+              width: '44px',
+              minHeight: '44px',
+              minWidth: '44px',
+              color: 'var(--gray-600)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--gray-200)';
+              e.currentTarget.style.color = 'var(--gray-800)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = 'var(--gray-600)';
+            }}
             aria-label="Tutup pesan error"
           >
             <svg
-              className="h-4 w-4"
+              className="h-5 w-5"
+              aria-hidden="true"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -178,25 +242,86 @@ function ChatInterfaceContent() {
 
   return (
     <div className="flex h-screen flex-col bg-surface">
-      {/* Header - Mobile-first responsive design */}
-      <header className="sticky top-0 z-10 border-b border-border bg-background shadow-sm">
-        <div className="mx-auto w-full max-w-none px-3 py-3 sm:max-w-2xl sm:px-4 sm:py-4 lg:max-w-4xl lg:px-6 xl:max-w-6xl">
-          <div className="flex items-center justify-between">
+      {/* Skip to main content link for keyboard users */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
+      
+      {/* Header - Mobile-first responsive design with optimized spacing */}
+      <header className="sticky top-0 z-10 border-b shadow-sm" role="banner" style={{ 
+        backgroundColor: 'var(--gray-50)', 
+        borderColor: 'var(--gray-200)' 
+      }}>
+        <div className="mx-auto w-full max-w-none sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl" style={{
+          padding: '1rem 1rem'
+        }}>
+          <div className="flex items-center justify-between" style={{
+            gap: '1rem'
+          }}>
             <div className="min-w-0 flex-1">
-              <h1 className="text-headline-medium truncate text-text sm:text-headline-large lg:text-display-small">
+              <h1 className="truncate" style={{
+                color: 'var(--gray-950)',
+                fontSize: '1.125rem',
+                lineHeight: '1.5'
+              }}>
+                <style>{`
+                  @media (min-width: 640px) {
+                    h1 { font-size: 1.25rem !important; }
+                  }
+                  @media (min-width: 1024px) {
+                    h1 { font-size: 1.5rem !important; }
+                  }
+                `}</style>
                 Chat Dinamis
               </h1>
-              <p className="text-body-small hidden text-text-muted sm:block sm:text-body-medium">
+              <p className="hidden sm:block" style={{
+                color: 'var(--gray-600)',
+                marginTop: '0.25rem',
+                fontSize: '0.875rem',
+                lineHeight: '1.4'
+              }}>
                 Asisten AI yang siap membantu Anda
               </p>
             </div>
 
-            {/* Connection Status Indicator - Optimized for touch */}
-            <div className="flex items-center space-x-2 rounded-full bg-surface px-2 py-1 sm:px-3 sm:py-1.5">
+            {/* Connection Status Indicator - Responsive for all screen sizes */}
+            <div 
+              className="flex items-center rounded-full" 
+              role="status"
+              aria-live="polite"
+              aria-label={state.isOnline ? 'Status koneksi: Online' : 'Status koneksi: Offline'}
+              style={{
+                backgroundColor: 'var(--gray-100)',
+                gap: '0.5rem',
+                padding: '0.5rem 0.75rem',
+                minHeight: '36px',
+                flexShrink: 0
+              }}
+            >
+              <style>{`
+                @media (min-width: 640px) {
+                  .status-container { padding: 0.625rem 1rem !important; }
+                }
+              `}</style>
               <div
-                className={`h-2 w-2 rounded-full ${state.isOnline ? 'status-online' : 'status-offline'}`}
+                className={`rounded-full ${state.isOnline ? 'status-online' : 'status-offline'}`}
+                aria-hidden="true"
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  flexShrink: 0
+                }}
               />
-              <span className="text-label-medium font-medium text-text-muted sm:text-label-large">
+              <span className="font-medium" style={{
+                color: 'var(--gray-600)',
+                fontSize: '0.75rem',
+                whiteSpace: 'nowrap'
+              }}>
+                <style>{`
+                  @media (min-width: 640px) {
+                    .status-text { font-size: 0.875rem !important; }
+                  }
+                `}</style>
                 {state.isOnline ? 'Online' : 'Offline'}
               </span>
             </div>
@@ -210,9 +335,25 @@ function ChatInterfaceContent() {
       {/* Error Display */}
       <ErrorDisplay />
 
-      {/* Main Chat Area - Responsive container */}
-      <main className="flex flex-1 flex-col overflow-hidden">
-        <div className="mx-auto flex h-full w-full max-w-none flex-col sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
+      {/* Main Chat Area - Responsive container with desktop optimization */}
+      <main id="main-content" className="flex flex-1 flex-col overflow-hidden" role="main">
+        <div className="mx-auto flex h-full w-full max-w-none flex-col sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl" style={{
+          width: '100%'
+        }}>
+          <style>{`
+            @media (min-width: 1024px) {
+              main > div {
+                padding-left: 1rem;
+                padding-right: 1rem;
+              }
+            }
+            @media (min-width: 1280px) {
+              main > div {
+                padding-left: 2rem;
+                padding-right: 2rem;
+              }
+            }
+          `}</style>
           {/* Message List */}
           <MessageList messages={state.messages} isLoading={state.isLoading} />
 

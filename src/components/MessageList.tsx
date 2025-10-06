@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MessageListProps, Message } from '@/types/chat';
 import { formatTimestamp, formatTimeOnly } from '@/lib/utils';
 
@@ -11,18 +11,69 @@ import { formatTimestamp, formatTimeOnly } from '@/lib/utils';
 export default function MessageList({ messages, isLoading }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [animatedMessages, setAnimatedMessages] = useState<Set<string>>(new Set());
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   /**
-   * Auto-scroll ke pesan terbaru saat ada pesan baru
+   * Auto-scroll ke pesan terbaru saat ada pesan baru dengan smooth behavior
    */
   useEffect(() => {
+    if (messagesEndRef.current && containerRef.current) {
+      // Use requestAnimationFrame for optimized scroll performance
+      requestAnimationFrame(() => {
+        messagesEndRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'end',
+        });
+      });
+    }
+  }, [messages]);
+
+  /**
+   * Track new messages for entrance animation
+   */
+  useEffect(() => {
+    const newMessageIds = messages
+      .filter(msg => !animatedMessages.has(msg.id))
+      .map(msg => msg.id);
+    
+    if (newMessageIds.length > 0) {
+      setAnimatedMessages(prev => {
+        const updated = new Set(prev);
+        newMessageIds.forEach(id => updated.add(id));
+        return updated;
+      });
+    }
+  }, [messages, animatedMessages]);
+
+  /**
+   * Handle scroll to detect if user scrolled up
+   */
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setShowScrollButton(!isNearBottom);
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  /**
+   * Scroll to bottom function with smooth animation
+   */
+  const scrollToBottom = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'end',
       });
     }
-  }, [messages]);
+  };
 
   /**
    * Render individual message bubble
@@ -30,60 +81,128 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
   const renderMessage = (message: Message, index: number) => {
     const isUser = message.type === 'user';
     const isSystem = message.type === 'system';
-    const isLastMessage = index === messages.length - 1;
+    const shouldAnimate = !animatedMessages.has(message.id);
+    
+    // Calculate stagger delay based on position in recent messages
+    const recentMessageIndex = messages.slice(-5).findIndex(m => m.id === message.id);
+    const staggerDelay = recentMessageIndex >= 0 ? recentMessageIndex * 50 : 0;
 
     return (
       <div
         key={message.id}
-        className={`flex w-full px-1 ${isUser ? 'justify-end' : 'justify-start'} ${
+        className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} ${
           isSystem ? 'justify-center' : ''
-        }`}
+        } ${shouldAnimate ? 'animate-slide-up' : ''}`}
+        style={shouldAnimate ? { animationDelay: `${staggerDelay}ms` } : undefined}
+        role="article"
+        aria-label={`${isUser ? 'Pesan Anda' : 'Pesan dari asisten'} pada ${formatTimeOnly(message.timestamp)}`}
       >
         <div
           className={`
-            max-w-[90%] rounded-2xl px-3 py-2 shadow-sm transition-all duration-200
+            transition-all duration-200 message-bubble
             ${
               isUser
-                ? 'bg-primary text-white rounded-br-md'
+                ? 'bg-[var(--gray-900)] text-[var(--gray-50)] rounded-2xl rounded-br-md shadow-sm'
                 : isSystem
-                  ? 'bg-surface text-text-muted text-xs italic sm:text-sm'
-                  : 'bg-background border border-border text-text rounded-bl-md'
+                  ? 'bg-surface text-text-muted text-xs italic sm:text-sm rounded-2xl'
+                  : 'bg-[var(--gray-100)] border border-[var(--gray-200)] text-[var(--gray-950)] rounded-2xl rounded-bl-md shadow-xs'
             }
-            sm:max-w-[80%] sm:px-4 sm:py-3 md:max-w-[70%] lg:max-w-[60%]
           `}
+          style={{
+            maxWidth: '85%',
+            padding: '0.625rem 0.875rem'
+          }}
         >
+          <style>{`
+            @media (min-width: 640px) {
+              .message-bubble {
+                max-width: 75% !important;
+                padding: 0.75rem 1rem !important;
+              }
+            }
+            @media (min-width: 1024px) {
+              .message-bubble {
+                max-width: 65% !important;
+                padding: 0.875rem 1.125rem !important;
+              }
+            }
+          `}</style>
           {/* Message Content */}
-          <div className="text-body-medium whitespace-pre-wrap break-words leading-relaxed sm:text-body-large">
+          <div className="whitespace-pre-wrap break-words message-content" style={{
+            fontSize: '0.9375rem',
+            lineHeight: '1.5'
+          }}>
+            <style>{`
+              @media (min-width: 640px) {
+                .message-content {
+                  font-size: 0.9375rem !important;
+                  line-height: 1.6 !important;
+                }
+              }
+              @media (min-width: 1024px) {
+                .message-content {
+                  font-size: 1rem !important;
+                  line-height: 1.625 !important;
+                }
+              }
+            `}</style>
             {message.content}
           </div>
 
           {/* Message Footer dengan Timestamp dan Status */}
           <div
             className={`
-              text-label-small mt-1.5 flex items-center justify-between sm:mt-2
+              flex items-center justify-between
               ${isUser ? 'text-primary-light' : isSystem ? 'text-text-muted' : 'text-text-muted'}
             `}
+            style={{
+              marginTop: '0.5rem',
+              fontSize: '0.6875rem',
+              lineHeight: '1.3'
+            }}
           >
             <span className="font-medium">
               {formatTimeOnly(message.timestamp)}
             </span>
 
-            {/* Status Indicator untuk pesan user */}
+            {/* Status Indicator untuk pesan user dengan animasi */}
             {isUser && (
-              <div className="ml-2 flex items-center">
+              <div className="flex items-center" style={{
+                marginLeft: '0.5rem',
+                gap: '0.25rem'
+              }}>
                 {message.status === 'sending' && (
-                  <div className="flex items-center">
-                    <div className="mr-1 h-3 w-3 animate-spin rounded-full border border-primary-light border-t-transparent" />
-                    <span className="hidden sm:inline">Mengirim...</span>
+                  <div className="flex items-center" style={{
+                    gap: '0.25rem'
+                  }}>
+                    <div 
+                      className="rounded-full border-2 border-t-transparent animate-spin" 
+                      style={{
+                        borderColor: 'var(--gray-300)',
+                        borderTopColor: 'transparent',
+                        height: '12px',
+                        width: '12px'
+                      }}
+                    />
+                    <span className="hidden sm:inline" style={{
+                      fontSize: '0.6875rem'
+                    }}>Mengirim...</span>
                   </div>
                 )}
                 {message.status === 'sent' && (
-                  <div className="flex items-center">
+                  <div className="flex items-center" role="status" aria-label="Pesan terkirim">
                     <svg
-                      className="h-3 w-3 sm:h-4 sm:w-4"
+                      className="animate-checkmark"
+                      aria-hidden="true"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      style={{
+                        strokeDasharray: 20,
+                        strokeDashoffset: 0,
+                        height: '14px',
+                        width: '14px'
+                      }}
                     >
                       <path
                         strokeLinecap="round"
@@ -95,12 +214,20 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                   </div>
                 )}
                 {message.status === 'error' && (
-                  <div className="flex items-center text-error/80">
+                  <div className="flex items-center" role="alert" aria-label="Gagal mengirim pesan" style={{ 
+                    color: 'var(--gray-400)',
+                    gap: '0.25rem'
+                  }}>
                     <svg
-                      className="mr-1 h-3 w-3 sm:h-4 sm:w-4"
+                      className="animate-error-shake"
+                      aria-hidden="true"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      style={{
+                        height: '14px',
+                        width: '14px'
+                      }}
                     >
                       <path
                         strokeLinecap="round"
@@ -109,7 +236,9 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                         d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    <span className="hidden sm:inline">Gagal</span>
+                    <span className="hidden sm:inline" style={{
+                      fontSize: '0.6875rem'
+                    }}>Gagal</span>
                   </div>
                 )}
               </div>
@@ -124,8 +253,14 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
    * Render date separator untuk mengelompokkan pesan berdasarkan tanggal
    */
   const renderDateSeparator = (date: Date, key: string) => (
-    <div key={key} className="flex items-center justify-center py-3 sm:py-4">
-      <div className="text-label-medium rounded-full bg-surface px-2 py-1 font-medium text-text-muted sm:px-3">
+    <div key={key} className="flex items-center justify-center" style={{
+      padding: '0.75rem 0'
+    }}>
+      <div className="rounded-full bg-[var(--gray-100)] font-medium text-[var(--gray-600)]" style={{
+        padding: '0.375rem 0.75rem',
+        fontSize: '0.75rem',
+        lineHeight: '1.3'
+      }}>
         {formatTimestamp(date, false)}
       </div>
     </div>
@@ -159,16 +294,44 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
   return (
     <div
       ref={containerRef}
-      className="chat-scroll flex-1 overflow-y-auto bg-surface px-2 py-4 sm:px-4 sm:py-6"
+      className="chat-scroll flex-1 overflow-y-auto bg-surface relative"
+      role="log"
+      aria-live="polite"
+      aria-label="Daftar pesan chat"
+      aria-atomic="false"
+      style={{ 
+        scrollBehavior: 'smooth',
+        padding: '1rem'
+      }}
     >
+      <style>{`
+        @media (min-width: 640px) {
+          .chat-scroll { padding: 1.5rem !important; }
+        }
+        @media (min-width: 1024px) {
+          .chat-scroll { padding: 2rem !important; }
+        }
+      `}</style>
       <div className="mx-auto w-full">
-        {/* Empty State */}
+        {/* Empty State - Mobile optimized */}
         {messages.length === 0 && !isLoading && (
-          <div className="flex h-full items-center justify-center px-4">
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-surface sm:h-16 sm:w-16">
+          <div className="flex h-full items-center justify-center animate-fade-in" style={{
+            padding: '1rem'
+          }}>
+            <div className="text-center" style={{
+              maxWidth: '320px'
+            }}>
+              <div className="mx-auto flex items-center justify-center rounded-full bg-[var(--gray-100)]" style={{
+                marginBottom: '1.5rem',
+                height: '64px',
+                width: '64px'
+              }}>
                 <svg
-                  className="h-6 w-6 text-text-muted sm:h-8 sm:w-8"
+                  style={{
+                    height: '32px',
+                    width: '32px',
+                    color: 'var(--gray-600)'
+                  }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -181,10 +344,19 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                   />
                 </svg>
               </div>
-              <h3 className="text-headline-medium mb-2 text-text sm:text-headline-large">
+              <h3 className="text-headline-medium sm:text-headline-large" style={{
+                marginBottom: '0.75rem',
+                color: 'var(--gray-950)',
+                fontSize: '1.125rem',
+                lineHeight: '1.5'
+              }}>
                 Mulai Percakapan
               </h3>
-              <p className="text-body-medium max-w-xs text-text-muted sm:max-w-sm sm:text-body-large">
+              <p className="text-body-medium sm:text-body-large" style={{
+                color: 'var(--gray-600)',
+                fontSize: '0.875rem',
+                lineHeight: '1.5'
+              }}>
                 Kirim pesan pertama Anda untuk memulai percakapan dengan asisten
                 AI.
               </p>
@@ -199,25 +371,61 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
             {renderDateSeparator(new Date(group.date), `date-${groupIndex}`)}
 
             {/* Messages in this date group */}
-            <div className="space-y-3 sm:space-y-4">
-              {group.messages.map((message, messageIndex) =>
+            <div className="message-group" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem'
+            }}>
+              <style>{`
+                @media (min-width: 640px) {
+                  .message-group { gap: 1rem !important; }
+                }
+                @media (min-width: 1024px) {
+                  .message-group { gap: 1.25rem !important; }
+                }
+              `}</style>
+              {group.messages.map((message) =>
                 renderMessage(message, messages.indexOf(message))
               )}
             </div>
           </div>
         ))}
 
-        {/* Loading Indicator */}
+        {/* Loading Indicator - Mobile optimized */}
         {isLoading && (
-          <div className="flex justify-start px-1">
-            <div className="max-w-[90%] rounded-2xl rounded-bl-md border border-border bg-background px-3 py-2 shadow-sm sm:max-w-[80%] sm:px-4 sm:py-3 md:max-w-[70%] lg:max-w-[60%]">
-              <div className="flex items-center space-x-2">
-                <div className="flex space-x-1">
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-text-muted [animation-delay:-0.3s]"></div>
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-text-muted [animation-delay:-0.15s]"></div>
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-text-muted"></div>
+          <div 
+            className="flex justify-start animate-slide-up"
+            role="status"
+            aria-live="polite"
+            aria-label="Asisten sedang mengetik"
+          >
+            <div className="rounded-2xl rounded-bl-md border border-[var(--gray-200)] bg-[var(--gray-100)] shadow-xs" style={{
+              maxWidth: '85%',
+              padding: '0.625rem 0.875rem'
+            }}>
+              <div className="flex items-center" style={{
+                gap: '0.5rem'
+              }}>
+                <div className="flex" aria-hidden="true" style={{
+                  gap: '0.25rem'
+                }}>
+                  <div className="rounded-full bg-[var(--gray-600)] animate-bounce-dots [animation-delay:-0.32s]" style={{
+                    height: '8px',
+                    width: '8px'
+                  }}></div>
+                  <div className="rounded-full bg-[var(--gray-600)] animate-bounce-dots [animation-delay:-0.16s]" style={{
+                    height: '8px',
+                    width: '8px'
+                  }}></div>
+                  <div className="rounded-full bg-[var(--gray-600)] animate-bounce-dots" style={{
+                    height: '8px',
+                    width: '8px'
+                  }}></div>
                 </div>
-                <span className="text-body-medium text-text-muted">
+                <span className="text-[var(--gray-600)]" style={{
+                  fontSize: '0.875rem',
+                  lineHeight: '1.4'
+                }}>
                   Asisten sedang mengetik...
                 </span>
               </div>
@@ -228,6 +436,57 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
         {/* Scroll anchor */}
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Scroll to bottom button - Touch optimized 48x48px */}
+      {showScrollButton && (
+        <button
+          onClick={scrollToBottom}
+          className="fixed z-10 flex items-center justify-center rounded-full shadow-lg animate-slide-up touch-manipulation"
+          style={{
+            bottom: '6.5rem',
+            right: '1rem',
+            width: '48px',
+            height: '48px',
+            minWidth: '48px',
+            minHeight: '48px',
+            backgroundColor: 'var(--gray-900)',
+            color: 'var(--gray-50)',
+            transition: 'background-color 200ms cubic-bezier(0, 0, 0.2, 1), transform 200ms cubic-bezier(0, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0, 0, 0.2, 1)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--gray-800)';
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--gray-900)';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+          onMouseDown={(e) => {
+            e.currentTarget.style.transform = 'scale(0.95)';
+          }}
+          onMouseUp={(e) => {
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          aria-label="Scroll ke bawah"
+        >
+          <svg
+            style={{
+              height: '24px',
+              width: '24px'
+            }}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 14l-7 7m0 0l-7-7m7 7V3"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
