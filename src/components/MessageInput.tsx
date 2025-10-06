@@ -174,7 +174,8 @@ export default function MessageInput({
               borderRadius: 'var(--radius-lg)',
               backgroundColor: isLoading ? 'var(--gray-50)' : 'white',
               color: isLoading ? 'var(--gray-400)' : 'var(--gray-950)',
-              boxShadow: error ? 'none' : undefined,
+              boxShadow: 'none',
+              transform: 'scale(1)',
               transition: 'border-color 200ms cubic-bezier(0, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0, 0, 0.2, 1), transform 200ms cubic-bezier(0, 0, 0.2, 1), background-color 200ms cubic-bezier(0, 0, 0.2, 1)',
               padding: '0.875rem 3.5rem 0.875rem 1rem',
               fontSize: '0.9375rem',
@@ -184,24 +185,38 @@ export default function MessageInput({
             onMouseEnter={(e) => {
               const target = e.target as HTMLTextAreaElement;
               if (!isLoading && !error && document.activeElement !== target) {
-                target.style.borderColor = 'var(--gray-400)';
+                target.style.borderTopColor = 'var(--gray-400)';
+                target.style.borderRightColor = 'var(--gray-400)';
+                target.style.borderBottomColor = 'var(--gray-400)';
+                target.style.borderLeftColor = 'var(--gray-400)';
               }
             }}
             onMouseLeave={(e) => {
               const target = e.target as HTMLTextAreaElement;
               if (!isLoading && !error && document.activeElement !== target) {
-                target.style.borderColor = error ? 'var(--gray-800)' : 'var(--gray-300)';
+                const color = error ? 'var(--gray-800)' : 'var(--gray-300)';
+                target.style.borderTopColor = color;
+                target.style.borderRightColor = color;
+                target.style.borderBottomColor = color;
+                target.style.borderLeftColor = color;
               }
             }}
             onFocus={(e) => {
               if (!error) {
-                e.target.style.borderColor = 'var(--gray-800)';
+                e.target.style.borderTopColor = 'var(--gray-800)';
+                e.target.style.borderRightColor = 'var(--gray-800)';
+                e.target.style.borderBottomColor = 'var(--gray-800)';
+                e.target.style.borderLeftColor = 'var(--gray-800)';
                 e.target.style.boxShadow = '0 0 0 3px rgba(38, 38, 38, 0.1)';
                 e.target.style.transform = 'scale(1.005)';
               }
             }}
             onBlur={(e) => {
-              e.target.style.borderColor = error ? 'var(--gray-800)' : 'var(--gray-300)';
+              const color = error ? 'var(--gray-800)' : 'var(--gray-300)';
+              e.target.style.borderTopColor = color;
+              e.target.style.borderRightColor = color;
+              e.target.style.borderBottomColor = color;
+              e.target.style.borderLeftColor = color;
               e.target.style.boxShadow = 'none';
               e.target.style.transform = 'scale(1)';
             }}
@@ -257,8 +272,12 @@ export default function MessageInput({
               color: isSubmitDisabled ? 'var(--gray-400)' : 'var(--gray-50)',
               borderWidth: '1px',
               borderStyle: 'solid',
-              borderColor: isSubmitDisabled ? 'var(--gray-200)' : 'var(--gray-900)',
+              borderTopColor: isSubmitDisabled ? 'var(--gray-200)' : 'var(--gray-900)',
+              borderRightColor: isSubmitDisabled ? 'var(--gray-200)' : 'var(--gray-900)',
+              borderBottomColor: isSubmitDisabled ? 'var(--gray-200)' : 'var(--gray-900)',
+              borderLeftColor: isSubmitDisabled ? 'var(--gray-200)' : 'var(--gray-900)',
               boxShadow: isSubmitDisabled ? 'none' : 'var(--shadow-sm)',
+              transform: 'scale(1)',
               transition: 'background-color 200ms cubic-bezier(0, 0, 0.2, 1), border-color 200ms cubic-bezier(0, 0, 0.2, 1), transform 200ms cubic-bezier(0, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0, 0, 0.2, 1)',
             }}
             onMouseEnter={(e) => {
