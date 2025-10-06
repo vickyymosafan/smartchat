@@ -242,11 +242,6 @@ function ChatInterfaceContent() {
 
   return (
     <div className="flex h-screen flex-col bg-surface">
-      {/* Skip to main content link for keyboard users */}
-      <a href="#main-content" className="skip-to-content">
-        Skip to main content
-      </a>
-      
       {/* Header - Mobile-first responsive design with optimized spacing */}
       <header className="sticky top-0 z-10 border-b shadow-sm" role="banner" style={{ 
         backgroundColor: 'var(--gray-50)', 
