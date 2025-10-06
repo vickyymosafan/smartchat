@@ -10,14 +10,19 @@ interface ChatRequest {
 interface N8nWebhookResponse {
   success?: boolean;
   message?: string;
+  output?: string; // Response dari RAG Agent
+  response?: string; // Alternative response field
   data?: {
-    response: string;
-    timestamp: string;
+    response?: string;
+    timestamp?: string;
   };
   error?: string;
+  metadata?: any; // Additional metadata dari n8n
+  [key: string]: any; // Allow additional properties dari n8n
 }
 
-// URL n8n webhook dari environment variable atau fallback ke URL yang diberikan
+// URL n8n webhook untuk RAG System V2 - Upload Doc workflow
+// Menggunakan chat trigger yang sudah dikonfigurasi di n8n
 const N8N_WEBHOOK_URL =
   process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
   'https://vickymosafan2.app.n8n.cloud/webhook/d49a228d-703d-4a93-8e7a-ed173500fc6e/chat';
@@ -104,11 +109,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Siapkan data untuk dikirim ke n8n webhook
+    // Siapkan data untuk dikirim ke n8n webhook sesuai format yang diharapkan
     const webhookPayload = {
-      message: body.message.trim(),
-      timestamp: new Date().toISOString(),
+      action: 'sendMessage',
       sessionId: body.sessionId || `session_${Date.now()}`,
+      chatInput: body.message.trim(),
+      timestamp: new Date().toISOString(),
       metadata: {
         userAgent: request.headers.get('user-agent') || 'unknown',
         platform: 'web',
@@ -196,15 +202,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Return successful response
+    // Return successful response dengan data dari RAG Agent
     return NextResponse.json({
       success: true,
       message: 'Pesan berhasil dikirim',
       data: {
-        response:
-          n8nData.data?.response || n8nData.message || 'Response diterima',
+        response: n8nData.output || n8nData.response || n8nData.message || 'Response dari AI Assistant',
         timestamp: n8nData.data?.timestamp || new Date().toISOString(),
         sessionId: body.sessionId,
+        // Tambahan metadata dari n8n jika ada
+        metadata: n8nData.metadata || {},
       },
     });
   } catch (error: any) {

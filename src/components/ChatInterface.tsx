@@ -17,12 +17,15 @@ function ChatInterfaceContent() {
   const toast = useToastContext();
 
   /**
-   * Handle pengiriman pesan ke API
+   * Handle pengiriman pesan ke API dengan integrasi n8n RAG System
    */
   const handleSendMessage = async (message: string): Promise<void> => {
+    // Declare userMessageId outside try-catch so it's accessible in catch block
+    let userMessageId: string | undefined;
+
     try {
       // Tambahkan pesan user dengan status 'sending'
-      addMessage({
+      userMessageId = addMessage({
         content: message,
         type: 'user',
         status: 'sending',
@@ -31,20 +34,30 @@ function ChatInterfaceContent() {
       setLoading(true);
       setError(null);
 
-      // Simulasi API call - akan diganti dengan implementasi nyata di task selanjutnya
-      // TODO: Implementasi API call ke n8n webhook
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Kirim request ke API chat yang terintegrasi dengan n8n
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message,
+          sessionId: `session_${Date.now()}`, // Generate session ID
+        }),
+      });
 
-      // Update status pesan user menjadi 'sent'
-      const userMessage = state.messages[state.messages.length - 1];
-      if (userMessage) {
-        updateMessageStatus(userMessage.id, 'sent');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Gagal mengirim pesan');
       }
 
-      // Tambahkan response dari assistant
+      // Update status pesan user menjadi 'sent'
+      updateMessageStatus(userMessageId, 'sent');
+
+      // Tambahkan response dari RAG AI Assistant
       addMessage({
-        content:
-          'Terima kasih atas pesan Anda. Fitur ini akan segera diimplementasikan dengan integrasi n8n webhook.',
+        content: data.data?.response || 'Response dari AI Assistant',
         type: 'assistant',
         status: 'sent',
       });
@@ -52,25 +65,31 @@ function ChatInterfaceContent() {
       // Tampilkan toast success
       toast.success(
         'Pesan Terkirim',
-        'Pesan Anda berhasil dikirim dan diproses.'
+        'Pesan Anda berhasil dikirim dan diproses oleh AI Assistant.'
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
 
-      // Update status pesan user menjadi 'error'
-      const userMessage = state.messages[state.messages.length - 1];
-      if (userMessage) {
-        updateMessageStatus(userMessage.id, 'error');
+      // Update status pesan user menjadi 'error' jika pesan sudah dibuat
+      if (userMessageId) {
+        updateMessageStatus(userMessageId, 'error');
+      }
+
+      // Tentukan pesan error berdasarkan jenis error
+      let errorMessage = 'Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.';
+
+      if (error.message) {
+        errorMessage = error.message;
       }
 
       // Tampilkan toast error
       toast.error(
         'Gagal Mengirim Pesan',
-        'Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.',
+        errorMessage,
         { duration: 7000 }
       );
 
-      setError('Gagal mengirim pesan. Silakan coba lagi.');
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

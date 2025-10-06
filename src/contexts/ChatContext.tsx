@@ -15,7 +15,7 @@ import { ChatState, Message } from '@/types/chat';
 interface ChatContextType {
   state: ChatState;
   dispatch: React.Dispatch<ChatAction>;
-  addMessage: (message: Omit<Message, 'id' | 'timestamp'>) => void;
+  addMessage: (message: Omit<Message, 'id' | 'timestamp'>) => string;
   updateMessageStatus: (messageId: string, status: Message['status']) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -193,14 +193,17 @@ export function ChatProvider({
 
   /**
    * Helper function untuk menambah pesan baru
+   * Returns the ID of the newly created message
    */
-  const addMessage = (message: Omit<Message, 'id' | 'timestamp'>) => {
+  const addMessage = (message: Omit<Message, 'id' | 'timestamp'>): string => {
+    const messageId = generateMessageId();
     const newMessage: Message = {
       ...message,
-      id: generateMessageId(),
+      id: messageId,
       timestamp: new Date(),
     };
     dispatch({ type: 'ADD_MESSAGE', payload: newMessage });
+    return messageId;
   };
 
   /**
