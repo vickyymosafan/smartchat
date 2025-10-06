@@ -209,7 +209,9 @@ function FormattedMessage({ content }: { content: string }) {
     <div className="formatted-message" style={{
       fontSize: '0.9375rem',
       lineHeight: '1.6',
-      color: '#1a1a1a'
+      color: '#1a1a1a',
+      textAlign: 'justify',
+      textJustify: 'inter-word'
     }}>
       <style>{`
         @media (min-width: 640px) {
@@ -227,6 +229,21 @@ function FormattedMessage({ content }: { content: string }) {
         }
         .formatted-message ol {
           list-style-type: decimal;
+        }
+        .formatted-message p {
+          text-align: justify;
+          text-justify: inter-word;
+        }
+        .formatted-message h1,
+        .formatted-message h2,
+        .formatted-message h3,
+        .formatted-message h4,
+        .formatted-message h5 {
+          text-align: left;
+        }
+        .formatted-message li {
+          text-align: justify;
+          text-justify: inter-word;
         }
       `}</style>
       {parseMarkdown(content)}
