@@ -262,7 +262,10 @@ function ChatInterfaceContent() {
               <h1 className="truncate" style={{
                 color: 'var(--gray-950)',
                 fontSize: '1.125rem',
-                lineHeight: '1.5'
+                lineHeight: '1.5',
+                fontWeight: '700',
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif",
+                letterSpacing: '0.02em'
               }}>
                 <style>{`
                   @media (min-width: 640px) {
@@ -272,7 +275,7 @@ function ChatInterfaceContent() {
                     h1 { font-size: 1.5rem !important; }
                   }
                 `}</style>
-                Chat Dinamis
+                SMARTCHAT
               </h1>
               <p className="hidden sm:block" style={{
                 color: 'var(--gray-600)',
