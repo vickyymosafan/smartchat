@@ -68,7 +68,7 @@ Buat file `.env.local` dengan variables berikut:
 
 ```env
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_N8N_WEBHOOK_URL=https://vickymosafan2.app.n8n.cloud/webhook/d49a228d-703d-4a93-8e7a-ed173500fc6e/chat
+NEXT_PUBLIC_N8N_WEBHOOK_URL=
 NEXT_PUBLIC_ENABLE_PWA=true
 NODE_ENV=development
 ```
