@@ -16,7 +16,7 @@ function ChatInterfaceContent() {
   const { state, addMessage, updateMessageStatus, setLoading, setError } =
     useChatContext();
   const toast = useToastContext();
-  
+
   // Handle orientation changes smoothly
   useOrientationChange();
 
@@ -80,18 +80,15 @@ function ChatInterfaceContent() {
       }
 
       // Tentukan pesan error berdasarkan jenis error
-      let errorMessage = 'Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.';
+      let errorMessage =
+        'Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.';
 
       if (error.message) {
         errorMessage = error.message;
       }
 
       // Tampilkan toast error
-      toast.error(
-        'Gagal Mengirim Pesan',
-        errorMessage,
-        { duration: 7000 }
-      );
+      toast.error('Gagal Mengirim Pesan', errorMessage, { duration: 7000 });
 
       setError(errorMessage);
     } finally {
@@ -106,27 +103,30 @@ function ChatInterfaceContent() {
     if (state.isOnline) return null;
 
     return (
-      <div 
-        className="border-b animate-fade-in" 
+      <div
+        className="border-b animate-fade-in"
         role="alert"
         aria-live="assertive"
         style={{
           backgroundColor: 'var(--gray-100)',
           borderColor: 'var(--gray-200)',
           padding: '0.75rem 1rem',
-          minHeight: '44px'
+          minHeight: '44px',
         }}
       >
-        <div className="mx-auto flex max-w-none items-center justify-center sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl" style={{
-          color: 'var(--gray-700)',
-          gap: '0.5rem'
-        }}>
+        <div
+          className="mx-auto flex max-w-none items-center justify-center sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl"
+          style={{
+            color: 'var(--gray-700)',
+            gap: '0.5rem',
+          }}
+        >
           <svg
             className="flex-shrink-0"
             aria-hidden="true"
             style={{
               height: '1.125rem',
-              width: '1.125rem'
+              width: '1.125rem',
             }}
             fill="none"
             stroke="currentColor"
@@ -139,10 +139,13 @@ function ChatInterfaceContent() {
               d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span className="text-label-medium font-medium sm:text-label-large" style={{
-            fontSize: '0.8125rem',
-            lineHeight: '1.4'
-          }}>
+          <span
+            className="text-label-medium font-medium sm:text-label-large"
+            style={{
+              fontSize: '0.8125rem',
+              lineHeight: '1.4',
+            }}
+          >
             Anda sedang offline. Pesan akan dikirim saat koneksi kembali.
           </span>
         </div>
@@ -157,30 +160,36 @@ function ChatInterfaceContent() {
     if (!state.error) return null;
 
     return (
-      <div 
-        className="border-b animate-fade-in" 
+      <div
+        className="border-b animate-fade-in"
         role="alert"
         aria-live="assertive"
         style={{
           backgroundColor: 'var(--gray-150)',
           borderColor: 'var(--gray-250)',
           padding: '0.75rem 1rem',
-          minHeight: '44px'
+          minHeight: '44px',
         }}
       >
-        <div className="mx-auto flex max-w-none items-center justify-between sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl" style={{
-          color: 'var(--gray-800)',
-          gap: '0.75rem'
-        }}>
-          <div className="flex min-w-0 flex-1 items-center" style={{
-            gap: '0.5rem'
-          }}>
+        <div
+          className="mx-auto flex max-w-none items-center justify-between sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl"
+          style={{
+            color: 'var(--gray-800)',
+            gap: '0.75rem',
+          }}
+        >
+          <div
+            className="flex min-w-0 flex-1 items-center"
+            style={{
+              gap: '0.5rem',
+            }}
+          >
             <svg
               className="flex-shrink-0"
               aria-hidden="true"
               style={{
                 height: '1.125rem',
-                width: '1.125rem'
+                width: '1.125rem',
               }}
               fill="none"
               stroke="currentColor"
@@ -193,10 +202,13 @@ function ChatInterfaceContent() {
                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span className="text-label-medium truncate font-medium sm:text-label-large" style={{
-              fontSize: '0.8125rem',
-              lineHeight: '1.4'
-            }}>
+            <span
+              className="text-label-medium truncate font-medium sm:text-label-large"
+              style={{
+                fontSize: '0.8125rem',
+                lineHeight: '1.4',
+              }}
+            >
               {state.error}
             </span>
           </div>
@@ -208,13 +220,13 @@ function ChatInterfaceContent() {
               width: '44px',
               minHeight: '44px',
               minWidth: '44px',
-              color: 'var(--gray-600)'
+              color: 'var(--gray-600)',
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={e => {
               e.currentTarget.style.backgroundColor = 'var(--gray-200)';
               e.currentTarget.style.color = 'var(--gray-800)';
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={e => {
               e.currentTarget.style.backgroundColor = 'transparent';
               e.currentTarget.style.color = 'var(--gray-600)';
             }}
@@ -243,25 +255,39 @@ function ChatInterfaceContent() {
   return (
     <div className="flex h-screen flex-col bg-surface">
       {/* Header - Mobile-first responsive design with optimized spacing */}
-      <header className="sticky top-0 z-10 border-b shadow-sm" role="banner" style={{ 
-        backgroundColor: 'var(--gray-50)', 
-        borderColor: 'var(--gray-200)' 
-      }}>
-        <div className="mx-auto w-full max-w-none sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl" style={{
-          padding: '1rem 1rem'
-        }}>
-          <div className="flex items-center justify-between" style={{
-            gap: '1rem'
-          }}>
+      <header
+        className="sticky top-0 z-10 border-b shadow-sm"
+        role="banner"
+        style={{
+          backgroundColor: 'var(--gray-50)',
+          borderColor: 'var(--gray-200)',
+        }}
+      >
+        <div
+          className="mx-auto w-full max-w-none sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl"
+          style={{
+            padding: '1rem 1rem',
+          }}
+        >
+          <div
+            className="flex items-center justify-between"
+            style={{
+              gap: '1rem',
+            }}
+          >
             <div className="min-w-0 flex-1">
-              <h1 className="truncate" style={{
-                color: 'var(--gray-950)',
-                fontSize: '1.125rem',
-                lineHeight: '1.5',
-                fontWeight: '700',
-                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif",
-                letterSpacing: '0.02em'
-              }}>
+              <h1
+                className="truncate"
+                style={{
+                  color: 'var(--gray-950)',
+                  fontSize: '1.125rem',
+                  lineHeight: '1.5',
+                  fontWeight: '700',
+                  fontFamily:
+                    "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif",
+                  letterSpacing: '0.02em',
+                }}
+              >
                 <style>{`
                   @media (min-width: 640px) {
                     h1 { font-size: 1.25rem !important; }
@@ -272,28 +298,35 @@ function ChatInterfaceContent() {
                 `}</style>
                 SMARTCHAT
               </h1>
-              <p className="hidden sm:block" style={{
-                color: 'var(--gray-600)',
-                marginTop: '0.25rem',
-                fontSize: '0.875rem',
-                lineHeight: '1.4'
-              }}>
+              <p
+                className="hidden sm:block"
+                style={{
+                  color: 'var(--gray-600)',
+                  marginTop: '0.25rem',
+                  fontSize: '0.875rem',
+                  lineHeight: '1.4',
+                }}
+              >
                 Asisten AI yang siap membantu Anda
               </p>
             </div>
 
             {/* Connection Status Indicator - Responsive for all screen sizes */}
-            <div 
-              className="flex items-center rounded-full" 
+            <div
+              className="flex items-center rounded-full"
               role="status"
               aria-live="polite"
-              aria-label={state.isOnline ? 'Status koneksi: Online' : 'Status koneksi: Offline'}
+              aria-label={
+                state.isOnline
+                  ? 'Status koneksi: Online'
+                  : 'Status koneksi: Offline'
+              }
               style={{
                 backgroundColor: 'var(--gray-100)',
                 gap: '0.5rem',
                 padding: '0.5rem 0.75rem',
                 minHeight: '36px',
-                flexShrink: 0
+                flexShrink: 0,
               }}
             >
               <style>{`
@@ -307,14 +340,17 @@ function ChatInterfaceContent() {
                 style={{
                   width: '8px',
                   height: '8px',
-                  flexShrink: 0
+                  flexShrink: 0,
                 }}
               />
-              <span className="font-medium" style={{
-                color: 'var(--gray-600)',
-                fontSize: '0.75rem',
-                whiteSpace: 'nowrap'
-              }}>
+              <span
+                className="font-medium"
+                style={{
+                  color: 'var(--gray-600)',
+                  fontSize: '0.75rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 <style>{`
                   @media (min-width: 640px) {
                     .status-text { font-size: 0.875rem !important; }
@@ -334,10 +370,17 @@ function ChatInterfaceContent() {
       <ErrorDisplay />
 
       {/* Main Chat Area - Responsive container with desktop optimization */}
-      <main id="main-content" className="flex flex-1 flex-col overflow-hidden" role="main">
-        <div className="mx-auto flex h-full w-full max-w-none flex-col sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl" style={{
-          width: '100%'
-        }}>
+      <main
+        id="main-content"
+        className="flex flex-1 flex-col overflow-hidden"
+        role="main"
+      >
+        <div
+          className="mx-auto flex h-full w-full max-w-none flex-col sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl"
+          style={{
+            width: '100%',
+          }}
+        >
           <style>{`
             @media (min-width: 1024px) {
               main > div {

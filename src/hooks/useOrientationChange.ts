@@ -10,7 +10,7 @@ export function useOrientationChange() {
     const handleOrientationChange = () => {
       // Force a reflow to ensure smooth transition
       document.body.style.height = `${window.innerHeight}px`;
-      
+
       // Reset after transition
       setTimeout(() => {
         document.body.style.height = '';
@@ -19,14 +19,14 @@ export function useOrientationChange() {
 
     // Listen for orientation change events
     window.addEventListener('orientationchange', handleOrientationChange);
-    
+
     // Also listen for resize events (covers more cases)
     let resizeTimeout: NodeJS.Timeout;
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(handleOrientationChange, 100);
     };
-    
+
     window.addEventListener('resize', handleResize);
 
     // Cleanup

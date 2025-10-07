@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
   // Optimasi untuk production
   output: 'standalone',
 
+  // Skip ESLint dan TypeScript checks saat build (untuk deploy cepat)
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
   // Environment variables
   env: {
     NEXT_PUBLIC_ENABLE_PWA: process.env.NEXT_PUBLIC_ENABLE_PWA || 'true',

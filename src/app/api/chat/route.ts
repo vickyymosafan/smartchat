@@ -207,7 +207,11 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Pesan berhasil dikirim',
       data: {
-        response: n8nData.output || n8nData.response || n8nData.message || 'Response dari AI Assistant',
+        response:
+          n8nData.output ||
+          n8nData.response ||
+          n8nData.message ||
+          'Response dari AI Assistant',
         timestamp: n8nData.data?.timestamp || new Date().toISOString(),
         sessionId: body.sessionId,
         // Tambahan metadata dari n8n jika ada

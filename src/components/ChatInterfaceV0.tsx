@@ -17,7 +17,7 @@ function ChatInterfaceContent() {
   const { state, addMessage, updateMessageStatus, setLoading, setError } =
     useChatContext();
   const toast = useToastContext();
-  
+
   useOrientationChange();
 
   const handleSendMessage = async (message: string): Promise<void> => {
@@ -69,17 +69,14 @@ function ChatInterfaceContent() {
         updateMessageStatus(userMessageId, 'error');
       }
 
-      let errorMessage = 'Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.';
+      let errorMessage =
+        'Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.';
 
       if (error.message) {
         errorMessage = error.message;
       }
 
-      toast.error(
-        'Gagal Mengirim Pesan',
-        errorMessage,
-        { duration: 7000 }
-      );
+      toast.error('Gagal Mengirim Pesan', errorMessage, { duration: 7000 });
 
       setError(errorMessage);
     } finally {
@@ -88,22 +85,35 @@ function ChatInterfaceContent() {
   };
 
   return (
-    <div className="flex h-screen flex-col" style={{
-      backgroundColor: 'var(--background)'
-    }}>
+    <div
+      className="flex h-screen flex-col"
+      style={{
+        backgroundColor: 'var(--background)',
+      }}
+    >
       {/* Skip to main content link */}
       <a href="#main-content" className="skip-to-content">
         Skip to main content
       </a>
-      
+
       {/* Main Chat Area - v0.app style: centered, max-width, generous spacing */}
-      <main id="main-content" className="flex flex-1 flex-col overflow-hidden" role="main">
-        <div className="mx-auto flex h-full w-full flex-col" style={{
-          maxWidth: '48rem', /* 768px - similar to v0.app */
-          padding: '0 var(--space-md)'
-        }}>
+      <main
+        id="main-content"
+        className="flex flex-1 flex-col overflow-hidden"
+        role="main"
+      >
+        <div
+          className="mx-auto flex h-full w-full flex-col"
+          style={{
+            maxWidth: '48rem' /* 768px - similar to v0.app */,
+            padding: '0 var(--space-md)',
+          }}
+        >
           {/* Message List */}
-          <MessageListV0 messages={state.messages} isLoading={state.isLoading} />
+          <MessageListV0
+            messages={state.messages}
+            isLoading={state.isLoading}
+          />
 
           {/* Message Input */}
           <MessageInputV0

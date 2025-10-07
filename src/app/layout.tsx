@@ -207,13 +207,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html 
-      lang="id" 
+    <html
+      lang="id"
       className={GeistSans.className}
-      style={{
-        ['--font-geist-sans' as string]: GeistSans.style.fontFamily,
-        ['--font-geist-mono' as string]: GeistMono.style.fontFamily,
-      } as React.CSSProperties}
+      style={
+        {
+          ['--font-geist-sans' as string]: GeistSans.style.fontFamily,
+          ['--font-geist-mono' as string]: GeistMono.style.fontFamily,
+        } as React.CSSProperties
+      }
     >
       <head>
         {/* Favicons dan Icons */}
@@ -290,7 +292,7 @@ export default function RootLayout({
           }
         />
       </head>
-      <body 
+      <body
         className="antialiased text-body-large bg-background text-text"
         suppressHydrationWarning
       >

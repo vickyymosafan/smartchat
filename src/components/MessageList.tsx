@@ -11,7 +11,10 @@ function FormattedMessage({ content }: { content: string }) {
   const parseMarkdown = (text: string) => {
     const lines = text.split('\n');
     const elements: React.ReactElement[] = [];
-    let currentList: { type: 'ul' | 'ol' | 'alpha'; items: Array<{ text: string; subItems?: string[] }> } | null = null;
+    let currentList: {
+      type: 'ul' | 'ol' | 'alpha';
+      items: Array<{ text: string; subItems?: string[] }>;
+    } | null = null;
     let currentCodeBlock: { language?: string; lines: string[] } | null = null;
     let currentBlockquote: string[] | null = null;
     let currentTable: { headers: string[]; rows: string[][] } | null = null;
@@ -31,7 +34,7 @@ function FormattedMessage({ content }: { content: string }) {
             style={{
               margin: '0.5rem 0',
               paddingLeft: '1.5rem',
-              listStylePosition: 'outside'
+              listStylePosition: 'outside',
             }}
           >
             {currentList.items.map((item, idx) => (
@@ -39,17 +42,21 @@ function FormattedMessage({ content }: { content: string }) {
                 key={idx}
                 style={{
                   marginBottom: '0.5rem',
-                  lineHeight: '1.6'
+                  lineHeight: '1.6',
                 }}
               >
-                <span dangerouslySetInnerHTML={{ __html: parseInlineFormatting(item.text) }} />
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: parseInlineFormatting(item.text),
+                  }}
+                />
                 {item.subItems && item.subItems.length > 0 && (
                   <ul
                     style={{
                       marginTop: '0.25rem',
                       paddingLeft: '1.5rem',
                       listStylePosition: 'outside',
-                      listStyleType: 'disc'
+                      listStyleType: 'disc',
                     }}
                   >
                     {item.subItems.map((subItem, subIdx) => (
@@ -57,9 +64,11 @@ function FormattedMessage({ content }: { content: string }) {
                         key={subIdx}
                         style={{
                           marginBottom: '0.25rem',
-                          lineHeight: '1.6'
+                          lineHeight: '1.6',
                         }}
-                        dangerouslySetInnerHTML={{ __html: parseInlineFormatting(subItem) }}
+                        dangerouslySetInnerHTML={{
+                          __html: parseInlineFormatting(subItem),
+                        }}
                       />
                     ))}
                   </ul>
@@ -84,9 +93,10 @@ function FormattedMessage({ content }: { content: string }) {
               borderRadius: '0.5rem',
               overflow: 'auto',
               margin: '0.75rem 0',
-              fontFamily: 'var(--font-geist-mono, ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace)',
+              fontFamily:
+                'var(--font-geist-mono, ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace)',
               fontSize: '0.875rem',
-              lineHeight: '1.5'
+              lineHeight: '1.5',
             }}
           >
             <code>{currentCodeBlock.lines.join('\n')}</code>
@@ -106,14 +116,19 @@ function FormattedMessage({ content }: { content: string }) {
               paddingLeft: '1rem',
               margin: '0.75rem 0',
               fontStyle: 'italic',
-              color: '#6b7280'
+              color: '#6b7280',
             }}
           >
             {currentBlockquote.map((line, idx) => (
               <p
                 key={idx}
-                style={{ marginBottom: idx < currentBlockquote!.length - 1 ? '0.5rem' : '0' }}
-                dangerouslySetInnerHTML={{ __html: parseInlineFormatting(line) }}
+                style={{
+                  marginBottom:
+                    idx < currentBlockquote!.length - 1 ? '0.5rem' : '0',
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: parseInlineFormatting(line),
+                }}
               />
             ))}
           </blockquote>
@@ -125,13 +140,16 @@ function FormattedMessage({ content }: { content: string }) {
     const flushTable = () => {
       if (currentTable && currentTable.headers.length > 0) {
         elements.push(
-          <div key={`table-wrapper-${tableKey}`} style={{ overflowX: 'auto', margin: '0.75rem 0' }}>
+          <div
+            key={`table-wrapper-${tableKey}`}
+            style={{ overflowX: 'auto', margin: '0.75rem 0' }}
+          >
             <table
               key={`table-${tableKey++}`}
               style={{
                 width: '100%',
                 borderCollapse: 'collapse',
-                fontSize: '0.875rem'
+                fontSize: '0.875rem',
               }}
             >
               <thead style={{ backgroundColor: '#f3f4f6' }}>
@@ -143,9 +161,11 @@ function FormattedMessage({ content }: { content: string }) {
                         border: '1px solid #d1d5db',
                         padding: '0.5rem 0.75rem',
                         textAlign: 'left',
-                        fontWeight: '600'
+                        fontWeight: '600',
                       }}
-                      dangerouslySetInnerHTML={{ __html: parseInlineFormatting(header.trim()) }}
+                      dangerouslySetInnerHTML={{
+                        __html: parseInlineFormatting(header.trim()),
+                      }}
                     />
                   ))}
                 </tr>
@@ -158,9 +178,11 @@ function FormattedMessage({ content }: { content: string }) {
                         key={cellIdx}
                         style={{
                           border: '1px solid #d1d5db',
-                          padding: '0.5rem 0.75rem'
+                          padding: '0.5rem 0.75rem',
                         }}
-                        dangerouslySetInnerHTML={{ __html: parseInlineFormatting(cell.trim()) }}
+                        dangerouslySetInnerHTML={{
+                          __html: parseInlineFormatting(cell.trim()),
+                        }}
                       />
                     ))}
                   </tr>
@@ -175,22 +197,46 @@ function FormattedMessage({ content }: { content: string }) {
 
     const parseInlineFormatting = (line: string): string => {
       // Images: ![alt](url) - Parse first before links
-      line = line.replace(/!\[([^\]]*)\]\(([^\)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.5rem 0;" />');
+      line = line.replace(
+        /!\[([^\]]*)\]\(([^\)]+)\)/g,
+        '<img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.5rem 0;" />'
+      );
 
       // Links: [text](url)
-      line = line.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2" style="color: #3b82f6; text-decoration: underline;" target="_blank" rel="noopener noreferrer">$1</a>');
+      line = line.replace(
+        /\[([^\]]+)\]\(([^\)]+)\)/g,
+        '<a href="$2" style="color: #3b82f6; text-decoration: underline;" target="_blank" rel="noopener noreferrer">$1</a>'
+      );
 
       // Code: `code`
-      line = line.replace(/`(.+?)`/g, '<code style="background-color: rgba(0,0,0,0.06); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-family: var(--font-geist-mono, ui-monospace, SFMono-Regular, \'SF Mono\', Menlo, Consolas, \'Liberation Mono\', monospace); font-size: 0.875em;">$1</code>');
+      line = line.replace(
+        /`(.+?)`/g,
+        "<code style=\"background-color: rgba(0,0,0,0.06); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-family: var(--font-geist-mono, ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace); font-size: 0.875em;\">$1</code>"
+      );
 
       // Bold: **text** or __text__
-      line = line.replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight: 600;">$1</strong>');
-      line = line.replace(/__(.+?)__/g, '<strong style="font-weight: 600;">$1</strong>');
+      line = line.replace(
+        /\*\*(.+?)\*\*/g,
+        '<strong style="font-weight: 600;">$1</strong>'
+      );
+      line = line.replace(
+        /__(.+?)__/g,
+        '<strong style="font-weight: 600;">$1</strong>'
+      );
 
       // Italic: *text* or _text_
-      line = line.replace(/([^\s])\*([^\s*].+?)\*/g, '$1<em style="font-style: italic;">$2</em>');
-      line = line.replace(/\s\*([^\s*].+?)\*/g, ' <em style="font-style: italic;">$1</em>');
-      line = line.replace(/_([^_]+?)_/g, '<em style="font-style: italic;">$1</em>');
+      line = line.replace(
+        /([^\s])\*([^\s*].+?)\*/g,
+        '$1<em style="font-style: italic;">$2</em>'
+      );
+      line = line.replace(
+        /\s\*([^\s*].+?)\*/g,
+        ' <em style="font-style: italic;">$1</em>'
+      );
+      line = line.replace(
+        /_([^_]+?)_/g,
+        '<em style="font-style: italic;">$1</em>'
+      );
 
       return line;
     };
@@ -267,7 +313,7 @@ function FormattedMessage({ content }: { content: string }) {
               marginBottom: '1rem',
               lineHeight: '2.5rem',
               color: '#0a0a0a',
-              letterSpacing: '-0.025em'
+              letterSpacing: '-0.025em',
             }}
           >
             {text}
@@ -288,7 +334,7 @@ function FormattedMessage({ content }: { content: string }) {
               marginBottom: '0.875rem',
               lineHeight: '2.25rem',
               color: '#171717',
-              letterSpacing: '-0.025em'
+              letterSpacing: '-0.025em',
             }}
           >
             {text}
@@ -309,7 +355,7 @@ function FormattedMessage({ content }: { content: string }) {
               marginBottom: '0.75rem',
               lineHeight: '2rem',
               color: '#262626',
-              letterSpacing: '-0.025em'
+              letterSpacing: '-0.025em',
             }}
           >
             {text}
@@ -330,7 +376,7 @@ function FormattedMessage({ content }: { content: string }) {
               marginBottom: '0.625rem',
               lineHeight: '1.75rem',
               color: '#404040',
-              letterSpacing: '0em'
+              letterSpacing: '0em',
             }}
           >
             {text}
@@ -351,7 +397,7 @@ function FormattedMessage({ content }: { content: string }) {
               marginBottom: '0.5rem',
               lineHeight: '1.75rem',
               color: '#525252',
-              letterSpacing: '0em'
+              letterSpacing: '0em',
             }}
           >
             {text}
@@ -372,7 +418,7 @@ function FormattedMessage({ content }: { content: string }) {
               marginBottom: '0.5rem',
               lineHeight: '1.5rem',
               color: '#525252',
-              letterSpacing: '0em'
+              letterSpacing: '0em',
             }}
           >
             {text}
@@ -405,7 +451,11 @@ function FormattedMessage({ content }: { content: string }) {
         const text = line.replace(/^\s*[•\-\*]\s+/, '');
 
         // If we have a numbered/alpha list with items, add as sub-item to last item
-        if (currentList && (currentList.type === 'ol' || currentList.type === 'alpha') && currentList.items.length > 0) {
+        if (
+          currentList &&
+          (currentList.type === 'ol' || currentList.type === 'alpha') &&
+          currentList.items.length > 0
+        ) {
           const lastItem = currentList.items[currentList.items.length - 1];
           if (!lastItem.subItems) {
             lastItem.subItems = [];
@@ -446,7 +496,7 @@ function FormattedMessage({ content }: { content: string }) {
             key={`p-${index}`}
             style={{
               marginBottom: '0.5rem',
-              lineHeight: '1.6'
+              lineHeight: '1.6',
             }}
             dangerouslySetInnerHTML={{ __html: parseInlineFormatting(line) }}
           />
@@ -462,16 +512,19 @@ function FormattedMessage({ content }: { content: string }) {
   };
 
   return (
-    <div className="formatted-message" style={{
-      fontSize: '1rem',
-      lineHeight: '1.5',
-      color: '#262626',
-      textAlign: 'justify',
-      textJustify: 'inter-word',
-      WebkitFontSmoothing: 'antialiased',
-      MozOsxFontSmoothing: 'grayscale',
-      textRendering: 'optimizeLegibility'
-    }}>
+    <div
+      className="formatted-message"
+      style={{
+        fontSize: '1rem',
+        lineHeight: '1.5',
+        color: '#262626',
+        textAlign: 'justify',
+        textJustify: 'inter-word',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale',
+        textRendering: 'optimizeLegibility',
+      }}
+    >
       <style>{`
         .formatted-message ul {
           list-style-type: disc;
@@ -510,7 +563,7 @@ function FormattedMessage({ content }: { content: string }) {
 function MessageBubble({
   message,
   shouldAnimate,
-  staggerDelay
+  staggerDelay,
 }: {
   message: Message;
   shouldAnimate: boolean;
@@ -520,7 +573,9 @@ function MessageBubble({
   const isSystem = message.type === 'system';
 
   // Realtime timestamp dengan hooks
-  const [currentTime, setCurrentTime] = useState(formatTimeOnly(message.timestamp));
+  const [currentTime, setCurrentTime] = useState(
+    formatTimeOnly(message.timestamp)
+  );
 
   useEffect(() => {
     const updateTime = () => {
@@ -536,15 +591,20 @@ function MessageBubble({
     return (
       <div
         className={`flex w-full justify-center ${shouldAnimate ? 'animate-slide-up' : ''}`}
-        style={shouldAnimate ? { animationDelay: `${staggerDelay}ms` } : undefined}
+        style={
+          shouldAnimate ? { animationDelay: `${staggerDelay}ms` } : undefined
+        }
         role="article"
       >
-        <div className="text-center italic" style={{
-          color: 'var(--gray-500)',
-          fontSize: '0.8125rem',
-          lineHeight: '1.4',
-          padding: '0.25rem 0.75rem'
-        }}>
+        <div
+          className="text-center italic"
+          style={{
+            color: 'var(--gray-500)',
+            fontSize: '0.8125rem',
+            lineHeight: '1.4',
+            padding: '0.25rem 0.75rem',
+          }}
+        >
           {message.content}
         </div>
       </div>
@@ -554,7 +614,9 @@ function MessageBubble({
   return (
     <div
       className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} ${shouldAnimate ? 'animate-slide-up' : ''}`}
-      style={shouldAnimate ? { animationDelay: `${staggerDelay}ms` } : undefined}
+      style={
+        shouldAnimate ? { animationDelay: `${staggerDelay}ms` } : undefined
+      }
       role="article"
       aria-label={`${isUser ? 'Pesan Anda' : 'Pesan dari asisten'} pada ${currentTime}`}
     >
@@ -565,7 +627,7 @@ function MessageBubble({
           display: 'flex',
           flexDirection: 'column',
           alignItems: isUser ? 'flex-end' : 'flex-start',
-          gap: '0.25rem'
+          gap: '0.25rem',
         }}
       >
         <style>{`
@@ -587,11 +649,15 @@ function MessageBubble({
           style={{
             backgroundColor: isUser ? '#181C14' : '#F7F7F7',
             color: isUser ? '#ffffff' : '#1a1a1a',
-            borderRadius: isUser ? '1.25rem 1.25rem 0.25rem 1.25rem' : '1.25rem 1.25rem 1.25rem 0.25rem',
+            borderRadius: isUser
+              ? '1.25rem 1.25rem 0.25rem 1.25rem'
+              : '1.25rem 1.25rem 1.25rem 0.25rem',
             padding: '0.75rem 1rem',
-            boxShadow: isUser ? '0 2px 4px rgba(24, 28, 20, 0.2)' : '0 1px 2px rgba(0, 0, 0, 0.06)',
+            boxShadow: isUser
+              ? '0 2px 4px rgba(24, 28, 20, 0.2)'
+              : '0 1px 2px rgba(0, 0, 0, 0.06)',
             wordBreak: 'break-word',
-            position: 'relative'
+            position: 'relative',
           }}
         >
           <style>{`
@@ -613,10 +679,13 @@ function MessageBubble({
 
           {/* Message Content */}
           {isUser ? (
-            <div className="whitespace-pre-wrap break-words message-content" style={{
-              fontSize: '0.9375rem',
-              lineHeight: '1.5'
-            }}>
+            <div
+              className="whitespace-pre-wrap break-words message-content"
+              style={{
+                fontSize: '0.9375rem',
+                lineHeight: '1.5',
+              }}
+            >
               <style>{`
                 @media (min-width: 640px) {
                   .message-content {
@@ -647,7 +716,7 @@ function MessageBubble({
             paddingLeft: isUser ? '0' : '0.5rem',
             paddingRight: isUser ? '0.5rem' : '0',
             marginTop: '0.125rem',
-            opacity: 0.7
+            opacity: 0.7,
           }}
         >
           <span>{currentTime}</span>
@@ -664,7 +733,7 @@ function MessageBubble({
                     borderColor: 'var(--gray-400)',
                     borderTopColor: 'transparent',
                     height: '10px',
-                    width: '10px'
+                    width: '10px',
                   }}
                 />
               )}
@@ -676,7 +745,7 @@ function MessageBubble({
                   style={{
                     height: '12px',
                     width: '12px',
-                    color: 'var(--gray-500)'
+                    color: 'var(--gray-500)',
                   }}
                 >
                   <path
@@ -695,7 +764,7 @@ function MessageBubble({
                   style={{
                     height: '12px',
                     width: '12px',
-                    color: 'var(--red-500)'
+                    color: 'var(--red-500)',
                   }}
                 >
                   <path
@@ -721,7 +790,9 @@ function MessageBubble({
 export default function MessageList({ messages, isLoading }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [animatedMessages, setAnimatedMessages] = useState<Set<string>>(new Set());
+  const [animatedMessages, setAnimatedMessages] = useState<Set<string>>(
+    new Set()
+  );
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   /**
@@ -789,14 +860,21 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
    * Render date separator untuk mengelompokkan pesan berdasarkan tanggal
    */
   const renderDateSeparator = (date: Date, key: string) => (
-    <div key={key} className="flex items-center justify-center" style={{
-      padding: '0.75rem 0'
-    }}>
-      <div className="rounded-full bg-[var(--gray-100)] font-medium text-[var(--gray-600)]" style={{
-        padding: '0.375rem 0.75rem',
-        fontSize: '0.75rem',
-        lineHeight: '1.3'
-      }}>
+    <div
+      key={key}
+      className="flex items-center justify-center"
+      style={{
+        padding: '0.75rem 0',
+      }}
+    >
+      <div
+        className="rounded-full bg-[var(--gray-100)] font-medium text-[var(--gray-600)]"
+        style={{
+          padding: '0.375rem 0.75rem',
+          fontSize: '0.75rem',
+          lineHeight: '1.3',
+        }}
+      >
         {formatTimestamp(date, false)}
       </div>
     </div>
@@ -837,7 +915,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
       aria-atomic="false"
       style={{
         scrollBehavior: 'smooth',
-        padding: '1rem'
+        padding: '1rem',
       }}
     >
       <style>{`
@@ -851,22 +929,31 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
       <div className="mx-auto w-full">
         {/* Empty State - Mobile optimized */}
         {messages.length === 0 && !isLoading && (
-          <div className="flex h-full items-center justify-center animate-fade-in" style={{
-            padding: '1rem'
-          }}>
-            <div className="text-center" style={{
-              maxWidth: '320px'
-            }}>
-              <div className="mx-auto flex items-center justify-center rounded-full bg-[var(--gray-100)]" style={{
-                marginBottom: '1.5rem',
-                height: '64px',
-                width: '64px'
-              }}>
+          <div
+            className="flex h-full items-center justify-center animate-fade-in"
+            style={{
+              padding: '1rem',
+            }}
+          >
+            <div
+              className="text-center"
+              style={{
+                maxWidth: '320px',
+              }}
+            >
+              <div
+                className="mx-auto flex items-center justify-center rounded-full bg-[var(--gray-100)]"
+                style={{
+                  marginBottom: '1.5rem',
+                  height: '64px',
+                  width: '64px',
+                }}
+              >
                 <svg
                   style={{
                     height: '32px',
                     width: '32px',
-                    color: 'var(--gray-600)'
+                    color: 'var(--gray-600)',
                   }}
                   fill="none"
                   stroke="currentColor"
@@ -880,19 +967,25 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                   />
                 </svg>
               </div>
-              <h3 className="text-headline-medium sm:text-headline-large" style={{
-                marginBottom: '0.75rem',
-                color: 'var(--gray-950)',
-                fontSize: '1.125rem',
-                lineHeight: '1.5'
-              }}>
+              <h3
+                className="text-headline-medium sm:text-headline-large"
+                style={{
+                  marginBottom: '0.75rem',
+                  color: 'var(--gray-950)',
+                  fontSize: '1.125rem',
+                  lineHeight: '1.5',
+                }}
+              >
                 Mulai Percakapan
               </h3>
-              <p className="text-body-medium sm:text-body-large" style={{
-                color: 'var(--gray-600)',
-                fontSize: '0.875rem',
-                lineHeight: '1.5'
-              }}>
+              <p
+                className="text-body-medium sm:text-body-large"
+                style={{
+                  color: 'var(--gray-600)',
+                  fontSize: '0.875rem',
+                  lineHeight: '1.5',
+                }}
+              >
                 Kirim pesan pertama Anda untuk memulai percakapan dengan asisten
                 AI.
               </p>
@@ -907,11 +1000,14 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
             {renderDateSeparator(new Date(group.date), `date-${groupIndex}`)}
 
             {/* Messages in this date group */}
-            <div className="message-group" style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem'
-            }}>
+            <div
+              className="message-group"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
               <style>{`
                 @media (min-width: 640px) {
                   .message-group { gap: 0.625rem !important; }
@@ -920,14 +1016,17 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                   .message-group { gap: 0.75rem !important; }
                 }
               `}</style>
-              {group.messages.map((message) => (
+              {group.messages.map(message => (
                 <MessageBubble
                   key={message.id}
                   message={message}
                   shouldAnimate={!animatedMessages.has(message.id)}
-                  staggerDelay={messages.slice(-5).findIndex(m => m.id === message.id) >= 0
-                    ? messages.slice(-5).findIndex(m => m.id === message.id) * 50
-                    : 0}
+                  staggerDelay={
+                    messages.slice(-5).findIndex(m => m.id === message.id) >= 0
+                      ? messages.slice(-5).findIndex(m => m.id === message.id) *
+                        50
+                      : 0
+                  }
                 />
               ))}
             </div>
@@ -942,12 +1041,15 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
             aria-live="polite"
             aria-label="Asisten sedang mengetik"
           >
-            <div className="bg-[var(--gray-100)] shadow-sm" style={{
-              maxWidth: '85%',
-              padding: '0.75rem 1rem',
-              borderRadius: '1.25rem 1.25rem 1.25rem 0.25rem',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
-            }}>
+            <div
+              className="bg-[var(--gray-100)] shadow-sm"
+              style={{
+                maxWidth: '85%',
+                padding: '0.75rem 1rem',
+                borderRadius: '1.25rem 1.25rem 1.25rem 0.25rem',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+              }}
+            >
               <style>{`
                 @media (min-width: 640px) {
                   .flex.justify-start > div {
@@ -956,24 +1058,40 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                   }
                 }
               `}</style>
-              <div className="flex items-center" style={{
-                gap: '0.375rem'
-              }}>
-                <div className="flex" aria-hidden="true" style={{
-                  gap: '0.25rem'
-                }}>
-                  <div className="rounded-full bg-[var(--gray-500)] animate-bounce-dots [animation-delay:-0.32s]" style={{
-                    height: '7px',
-                    width: '7px'
-                  }}></div>
-                  <div className="rounded-full bg-[var(--gray-500)] animate-bounce-dots [animation-delay:-0.16s]" style={{
-                    height: '7px',
-                    width: '7px'
-                  }}></div>
-                  <div className="rounded-full bg-[var(--gray-500)] animate-bounce-dots" style={{
-                    height: '7px',
-                    width: '7px'
-                  }}></div>
+              <div
+                className="flex items-center"
+                style={{
+                  gap: '0.375rem',
+                }}
+              >
+                <div
+                  className="flex"
+                  aria-hidden="true"
+                  style={{
+                    gap: '0.25rem',
+                  }}
+                >
+                  <div
+                    className="rounded-full bg-[var(--gray-500)] animate-bounce-dots [animation-delay:-0.32s]"
+                    style={{
+                      height: '7px',
+                      width: '7px',
+                    }}
+                  ></div>
+                  <div
+                    className="rounded-full bg-[var(--gray-500)] animate-bounce-dots [animation-delay:-0.16s]"
+                    style={{
+                      height: '7px',
+                      width: '7px',
+                    }}
+                  ></div>
+                  <div
+                    className="rounded-full bg-[var(--gray-500)] animate-bounce-dots"
+                    style={{
+                      height: '7px',
+                      width: '7px',
+                    }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -998,20 +1116,21 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
             minHeight: '48px',
             backgroundColor: 'var(--gray-900)',
             color: 'var(--gray-50)',
-            transition: 'background-color 200ms cubic-bezier(0, 0, 0.2, 1), transform 200ms cubic-bezier(0, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0, 0, 0.2, 1)',
+            transition:
+              'background-color 200ms cubic-bezier(0, 0, 0.2, 1), transform 200ms cubic-bezier(0, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0, 0, 0.2, 1)',
           }}
-          onMouseEnter={(e) => {
+          onMouseEnter={e => {
             e.currentTarget.style.backgroundColor = 'var(--gray-800)';
             e.currentTarget.style.transform = 'scale(1.05)';
           }}
-          onMouseLeave={(e) => {
+          onMouseLeave={e => {
             e.currentTarget.style.backgroundColor = 'var(--gray-900)';
             e.currentTarget.style.transform = 'scale(1)';
           }}
-          onMouseDown={(e) => {
+          onMouseDown={e => {
             e.currentTarget.style.transform = 'scale(0.95)';
           }}
-          onMouseUp={(e) => {
+          onMouseUp={e => {
             e.currentTarget.style.transform = 'scale(1.05)';
           }}
           aria-label="Scroll ke bawah"
@@ -1019,7 +1138,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
           <svg
             style={{
               height: '24px',
-              width: '24px'
+              width: '24px',
             }}
             fill="none"
             stroke="currentColor"

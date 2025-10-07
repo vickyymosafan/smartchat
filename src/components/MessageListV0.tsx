@@ -71,13 +71,19 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
             maxWidth: '85%',
             padding: 'var(--space-md) var(--space-lg)',
             borderRadius: 'var(--space-lg)',
-            backgroundColor: isUser ? 'var(--message-user-bg)' : 'var(--message-assistant-bg)',
-            color: isUser ? 'var(--message-user-text)' : 'var(--message-assistant-text)',
-            border: isUser ? 'none' : '1px solid var(--message-assistant-border)',
+            backgroundColor: isUser
+              ? 'var(--message-user-bg)'
+              : 'var(--message-assistant-bg)',
+            color: isUser
+              ? 'var(--message-user-text)'
+              : 'var(--message-assistant-text)',
+            border: isUser
+              ? 'none'
+              : '1px solid var(--message-assistant-border)',
             fontSize: '0.9375rem',
             lineHeight: '1.6',
             wordWrap: 'break-word',
-            overflowWrap: 'break-word'
+            overflowWrap: 'break-word',
           }}
         >
           {message.content}
@@ -93,37 +99,49 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
       role="log"
       aria-live="polite"
       aria-label="Daftar pesan chat"
-      style={{ 
+      style={{
         scrollBehavior: 'smooth',
-        padding: 'var(--space-2xl) 0'
+        padding: 'var(--space-2xl) 0',
       }}
     >
-      <div className="mx-auto w-full" style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'var(--space-lg)'
-      }}>
+      <div
+        className="mx-auto w-full"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-lg)',
+        }}
+      >
         {/* Empty State - v0.app style */}
         {messages.length === 0 && !isLoading && (
-          <div className="flex h-full items-center justify-center animate-fade-in" style={{
-            padding: 'var(--space-3xl) var(--space-md)',
-            minHeight: '60vh'
-          }}>
-            <div className="text-center" style={{
-              maxWidth: '400px'
-            }}>
-              <div className="mx-auto flex items-center justify-center" style={{
-                marginBottom: 'var(--space-xl)',
-                height: '48px',
-                width: '48px',
-                borderRadius: '50%',
-                backgroundColor: 'var(--surface-elevated)',
-                color: 'var(--text-tertiary)'
-              }}>
+          <div
+            className="flex h-full items-center justify-center animate-fade-in"
+            style={{
+              padding: 'var(--space-3xl) var(--space-md)',
+              minHeight: '60vh',
+            }}
+          >
+            <div
+              className="text-center"
+              style={{
+                maxWidth: '400px',
+              }}
+            >
+              <div
+                className="mx-auto flex items-center justify-center"
+                style={{
+                  marginBottom: 'var(--space-xl)',
+                  height: '48px',
+                  width: '48px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--surface-elevated)',
+                  color: 'var(--text-tertiary)',
+                }}
+              >
                 <svg
                   style={{
                     height: '24px',
-                    width: '24px'
+                    width: '24px',
                   }}
                   fill="none"
                   stroke="currentColor"
@@ -137,19 +155,25 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                   />
                 </svg>
               </div>
-              <p style={{
-                color: 'var(--text-secondary)',
-                fontSize: '0.9375rem',
-                lineHeight: '1.6'
-              }}>
-                Hi! I'm v0, Vercel's AI assistant. I can help you build web applications, create React components, work with Next.js, and much more.
+              <p
+                style={{
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.9375rem',
+                  lineHeight: '1.6',
+                }}
+              >
+                Hi! I&apos;m v0, Vercel&apos;s AI assistant. I can help you
+                build web applications, create React components, work with
+                Next.js, and much more.
               </p>
-              <p style={{
-                color: 'var(--text-secondary)',
-                fontSize: '0.9375rem',
-                lineHeight: '1.6',
-                marginTop: 'var(--space-md)'
-              }}>
+              <p
+                style={{
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.9375rem',
+                  lineHeight: '1.6',
+                  marginTop: 'var(--space-md)',
+                }}
+              >
                 What would you like to build today?
               </p>
             </div>
@@ -157,32 +181,34 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
         )}
 
         {/* Messages */}
-        {messages.map((message) => renderMessage(message))}
+        {messages.map(message => renderMessage(message))}
 
         {/* Loading Indicator - v0.app style with "Thinking" text */}
         {isLoading && (
-          <div 
+          <div
             className="flex justify-start animate-slide-up"
             role="status"
             aria-live="polite"
             aria-label="Asisten sedang berpikir"
           >
-            <div style={{
-              padding: 'var(--space-md) var(--space-lg)',
-              borderRadius: 'var(--space-lg)',
-              backgroundColor: 'var(--message-assistant-bg)',
-              border: '1px solid var(--message-assistant-border)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'var(--space-sm)',
-              color: 'var(--text-secondary)',
-              fontSize: '0.875rem'
-            }}>
+            <div
+              style={{
+                padding: 'var(--space-md) var(--space-lg)',
+                borderRadius: 'var(--space-lg)',
+                backgroundColor: 'var(--message-assistant-bg)',
+                border: '1px solid var(--message-assistant-border)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-sm)',
+                color: 'var(--text-secondary)',
+                fontSize: '0.875rem',
+              }}
+            >
               <svg
                 style={{
                   height: '16px',
                   width: '16px',
-                  flexShrink: 0
+                  flexShrink: 0,
                 }}
                 fill="none"
                 stroke="currentColor"
@@ -215,13 +241,13 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
             backgroundColor: 'var(--gray-900)',
             color: 'var(--gray-50)',
             transition: 'all 200ms cubic-bezier(0, 0, 0.2, 1)',
-            border: 'none'
+            border: 'none',
           }}
-          onMouseEnter={(e) => {
+          onMouseEnter={e => {
             e.currentTarget.style.backgroundColor = 'var(--gray-800)';
             e.currentTarget.style.transform = 'translateX(50%) scale(1.05)';
           }}
-          onMouseLeave={(e) => {
+          onMouseLeave={e => {
             e.currentTarget.style.backgroundColor = 'var(--gray-900)';
             e.currentTarget.style.transform = 'translateX(50%) scale(1)';
           }}
@@ -230,7 +256,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
           <svg
             style={{
               height: '20px',
-              width: '20px'
+              width: '20px',
             }}
             fill="none"
             stroke="currentColor"

@@ -204,12 +204,44 @@ npm run test:coverage
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+## � Dokumentasi Lengkap
+
+Untuk informasi lebih detail, lihat dokumentasi berikut:
+
+### Panduan Utama
+- **[Deployment Guide](./DEPLOYMENT.md)** - Panduan deployment ke Vercel
+- **[Final Checklist](./FINAL_CHECKLIST.md)** - Checklist sebelum dan sesudah deployment
+- **[Vercel Setup](./VERCEL_SETUP.md)** - Quick reference environment variables
+
+### Dokumentasi Teknis
+- **[API Documentation](./docs/API.md)** - Dokumentasi lengkap API endpoints dan integrasi n8n
+- **[Maintenance Guide](./docs/MAINTENANCE.md)** - Panduan maintenance dan best practices
+- **[Troubleshooting Guide](./docs/TROUBLESHOOTING.md)** - Solusi untuk masalah umum
+- **[Testing Report](./docs/TESTING_REPORT.md)** - Laporan hasil testing dan quality assurance
+
 ## 📧 Support
 
 Jika mengalami masalah atau ada pertanyaan:
-1. Check [DEPLOYMENT.md](./DEPLOYMENT.md) untuk troubleshooting
-2. Open an issue di repository
-3. Contact support
+1. Check [Troubleshooting Guide](./docs/TROUBLESHOOTING.md) untuk solusi masalah umum
+2. Review [API Documentation](./docs/API.md) untuk masalah API
+3. Check [Maintenance Guide](./docs/MAINTENANCE.md) untuk panduan maintenance
+4. Open an issue di repository
+5. Contact support
+
+## 🤝 Contributing
+
+Contributions are welcome! Jika ingin berkontribusi:
+
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+Pastikan untuk:
+- Follow code style (run `npm run lint`)
+- Update documentation jika diperlukan
+- Test thoroughly sebelum submit PR
 
 ---
 
