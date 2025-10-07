@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from 'next';
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 import './globals.css';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ToastProvider from '@/contexts/ToastContext';
@@ -205,7 +207,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id">
+    <html 
+      lang="id" 
+      className={GeistSans.className}
+      style={{
+        ['--font-geist-sans' as string]: GeistSans.style.fontFamily,
+        ['--font-geist-mono' as string]: GeistMono.style.fontFamily,
+      } as React.CSSProperties}
+    >
       <head>
         {/* Favicons dan Icons */}
         <link rel="icon" href="/favicon.ico" />
@@ -281,7 +290,10 @@ export default function RootLayout({
           }
         />
       </head>
-      <body className="antialiased text-body-large bg-background text-text">
+      <body 
+        className="antialiased text-body-large bg-background text-text"
+        suppressHydrationWarning
+      >
         <ErrorBoundary>
           <ToastProvider position="top-right">
             <LazyPWAProvider>

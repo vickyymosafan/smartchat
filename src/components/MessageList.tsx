@@ -11,15 +11,23 @@ function FormattedMessage({ content }: { content: string }) {
   const parseMarkdown = (text: string) => {
     const lines = text.split('\n');
     const elements: React.ReactElement[] = [];
-    let currentList: { type: 'ul' | 'ol'; items: string[] } | null = null;
+    let currentList: { type: 'ul' | 'ol' | 'alpha'; items: Array<{ text: string; subItems?: string[] }> } | null = null;
+    let currentCodeBlock: { language?: string; lines: string[] } | null = null;
+    let currentBlockquote: string[] | null = null;
+    let currentTable: { headers: string[]; rows: string[][] } | null = null;
     let listKey = 0;
+    let codeKey = 0;
+    let quoteKey = 0;
+    let tableKey = 0;
 
     const flushList = () => {
       if (currentList) {
-        const ListTag = currentList.type;
+        const ListTag = currentList.type === 'ul' ? 'ul' : 'ol';
+        const listType = currentList.type === 'alpha' ? 'A' : undefined;
         elements.push(
           <ListTag
             key={`list-${listKey++}`}
+            type={listType}
             style={{
               margin: '0.5rem 0',
               paddingLeft: '1.5rem',
@@ -30,11 +38,33 @@ function FormattedMessage({ content }: { content: string }) {
               <li
                 key={idx}
                 style={{
-                  marginBottom: '0.25rem',
+                  marginBottom: '0.5rem',
                   lineHeight: '1.6'
                 }}
-                dangerouslySetInnerHTML={{ __html: parseInlineFormatting(item) }}
-              />
+              >
+                <span dangerouslySetInnerHTML={{ __html: parseInlineFormatting(item.text) }} />
+                {item.subItems && item.subItems.length > 0 && (
+                  <ul
+                    style={{
+                      marginTop: '0.25rem',
+                      paddingLeft: '1.5rem',
+                      listStylePosition: 'outside',
+                      listStyleType: 'disc'
+                    }}
+                  >
+                    {item.subItems.map((subItem, subIdx) => (
+                      <li
+                        key={subIdx}
+                        style={{
+                          marginBottom: '0.25rem',
+                          lineHeight: '1.6'
+                        }}
+                        dangerouslySetInnerHTML={{ __html: parseInlineFormatting(subItem) }}
+                      />
+                    ))}
+                  </ul>
+                )}
+              </li>
             ))}
           </ListTag>
         );
@@ -42,23 +72,188 @@ function FormattedMessage({ content }: { content: string }) {
       }
     };
 
+    const flushCodeBlock = () => {
+      if (currentCodeBlock) {
+        elements.push(
+          <pre
+            key={`code-${codeKey++}`}
+            style={{
+              backgroundColor: '#1e1e1e',
+              color: '#d4d4d4',
+              padding: '1rem',
+              borderRadius: '0.5rem',
+              overflow: 'auto',
+              margin: '0.75rem 0',
+              fontFamily: 'var(--font-geist-mono, ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace)',
+              fontSize: '0.875rem',
+              lineHeight: '1.5'
+            }}
+          >
+            <code>{currentCodeBlock.lines.join('\n')}</code>
+          </pre>
+        );
+        currentCodeBlock = null;
+      }
+    };
+
+    const flushBlockquote = () => {
+      if (currentBlockquote) {
+        elements.push(
+          <blockquote
+            key={`quote-${quoteKey++}`}
+            style={{
+              borderLeft: '4px solid #3b82f6',
+              paddingLeft: '1rem',
+              margin: '0.75rem 0',
+              fontStyle: 'italic',
+              color: '#6b7280'
+            }}
+          >
+            {currentBlockquote.map((line, idx) => (
+              <p
+                key={idx}
+                style={{ marginBottom: idx < currentBlockquote!.length - 1 ? '0.5rem' : '0' }}
+                dangerouslySetInnerHTML={{ __html: parseInlineFormatting(line) }}
+              />
+            ))}
+          </blockquote>
+        );
+        currentBlockquote = null;
+      }
+    };
+
+    const flushTable = () => {
+      if (currentTable && currentTable.headers.length > 0) {
+        elements.push(
+          <div key={`table-wrapper-${tableKey}`} style={{ overflowX: 'auto', margin: '0.75rem 0' }}>
+            <table
+              key={`table-${tableKey++}`}
+              style={{
+                width: '100%',
+                borderCollapse: 'collapse',
+                fontSize: '0.875rem'
+              }}
+            >
+              <thead style={{ backgroundColor: '#f3f4f6' }}>
+                <tr>
+                  {currentTable.headers.map((header, idx) => (
+                    <th
+                      key={idx}
+                      style={{
+                        border: '1px solid #d1d5db',
+                        padding: '0.5rem 0.75rem',
+                        textAlign: 'left',
+                        fontWeight: '600'
+                      }}
+                      dangerouslySetInnerHTML={{ __html: parseInlineFormatting(header.trim()) }}
+                    />
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {currentTable.rows.map((row, rowIdx) => (
+                  <tr key={rowIdx}>
+                    {row.map((cell, cellIdx) => (
+                      <td
+                        key={cellIdx}
+                        style={{
+                          border: '1px solid #d1d5db',
+                          padding: '0.5rem 0.75rem'
+                        }}
+                        dangerouslySetInnerHTML={{ __html: parseInlineFormatting(cell.trim()) }}
+                      />
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+        currentTable = null;
+      }
+    };
+
     const parseInlineFormatting = (line: string): string => {
+      // Images: ![alt](url) - Parse first before links
+      line = line.replace(/!\[([^\]]*)\]\(([^\)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.5rem 0;" />');
+
+      // Links: [text](url)
+      line = line.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2" style="color: #3b82f6; text-decoration: underline;" target="_blank" rel="noopener noreferrer">$1</a>');
+
+      // Code: `code`
+      line = line.replace(/`(.+?)`/g, '<code style="background-color: rgba(0,0,0,0.06); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-family: var(--font-geist-mono, ui-monospace, SFMono-Regular, \'SF Mono\', Menlo, Consolas, \'Liberation Mono\', monospace); font-size: 0.875em;">$1</code>');
+
       // Bold: **text** or __text__
       line = line.replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight: 600;">$1</strong>');
       line = line.replace(/__(.+?)__/g, '<strong style="font-weight: 600;">$1</strong>');
-      
+
       // Italic: *text* or _text_
-      line = line.replace(/\*(.+?)\*/g, '<em style="font-style: italic;">$1</em>');
-      line = line.replace(/_(.+?)_/g, '<em style="font-style: italic;">$1</em>');
-      
-      // Code: `code`
-      line = line.replace(/`(.+?)`/g, '<code style="background-color: rgba(0,0,0,0.06); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-family: monospace; font-size: 0.875em;">$1</code>');
-      
+      line = line.replace(/([^\s])\*([^\s*].+?)\*/g, '$1<em style="font-style: italic;">$2</em>');
+      line = line.replace(/\s\*([^\s*].+?)\*/g, ' <em style="font-style: italic;">$1</em>');
+      line = line.replace(/_([^_]+?)_/g, '<em style="font-style: italic;">$1</em>');
+
       return line;
     };
 
     lines.forEach((line, index) => {
-      // Heading 1: # Text
+      // Code block toggle: ```language or ```
+      if (line.match(/^```(\w+)?$/)) {
+        if (currentCodeBlock) {
+          flushCodeBlock();
+        } else {
+          flushList();
+          flushBlockquote();
+          flushTable();
+          const language = line.match(/^```(\w+)?$/)?.[1];
+          currentCodeBlock = { language, lines: [] };
+        }
+        return;
+      }
+
+      // If inside code block, add line to code block
+      if (currentCodeBlock) {
+        currentCodeBlock.lines.push(line);
+        return;
+      }
+
+      // Table row: | cell | cell | cell |
+      if (line.match(/^\|(.+)\|$/)) {
+        const cells = line.split('|').slice(1, -1);
+
+        // Skip separator row (|---|---|)
+        if (cells.every(cell => cell.trim().match(/^-+$/))) {
+          return;
+        }
+
+        flushList();
+        flushBlockquote();
+
+        if (!currentTable) {
+          currentTable = { headers: cells, rows: [] };
+        } else {
+          currentTable.rows.push(cells);
+        }
+        return;
+      } else if (currentTable) {
+        flushTable();
+      }
+
+      // Blockquote: > Text
+      if (line.match(/^>\s+(.+)/)) {
+        const text = line.replace(/^>\s+/, '');
+        flushList();
+        flushTable();
+
+        if (!currentBlockquote) {
+          currentBlockquote = [];
+        }
+        currentBlockquote.push(text);
+        return;
+      } else if (currentBlockquote) {
+        flushBlockquote();
+      }
+
+      // Heading 1: # Text (text-4xl)
       if (line.match(/^#\s+(.+)/)) {
         flushList();
         const text = line.replace(/^#\s+/, '');
@@ -66,19 +261,20 @@ function FormattedMessage({ content }: { content: string }) {
           <h1
             key={`h1-${index}`}
             style={{
-              fontSize: '1.5rem',
+              fontSize: '2.25rem',
               fontWeight: '700',
-              marginTop: index > 0 ? '1rem' : '0',
-              marginBottom: '0.75rem',
-              lineHeight: '1.3',
-              color: '#1a1a1a'
+              marginTop: index > 0 ? '1.5rem' : '0',
+              marginBottom: '1rem',
+              lineHeight: '2.5rem',
+              color: '#0a0a0a',
+              letterSpacing: '-0.025em'
             }}
           >
             {text}
           </h1>
         );
       }
-      // Heading 2: ## Text
+      // Heading 2: ## Text (text-3xl)
       else if (line.match(/^##\s+(.+)/)) {
         flushList();
         const text = line.replace(/^##\s+/, '');
@@ -86,19 +282,20 @@ function FormattedMessage({ content }: { content: string }) {
           <h2
             key={`h2-${index}`}
             style={{
-              fontSize: '1.25rem',
+              fontSize: '1.875rem',
               fontWeight: '700',
-              marginTop: index > 0 ? '0.875rem' : '0',
-              marginBottom: '0.625rem',
-              lineHeight: '1.35',
-              color: '#1a1a1a'
+              marginTop: index > 0 ? '1.25rem' : '0',
+              marginBottom: '0.875rem',
+              lineHeight: '2.25rem',
+              color: '#171717',
+              letterSpacing: '-0.025em'
             }}
           >
             {text}
           </h2>
         );
       }
-      // Heading 3: ### Text
+      // Heading 3: ### Text (text-2xl)
       else if (line.match(/^###\s+(.+)/)) {
         flushList();
         const text = line.replace(/^###\s+/, '');
@@ -106,19 +303,20 @@ function FormattedMessage({ content }: { content: string }) {
           <h3
             key={`h3-${index}`}
             style={{
-              fontSize: '1.125rem',
+              fontSize: '1.5rem',
               fontWeight: '600',
-              marginTop: index > 0 ? '0.75rem' : '0',
-              marginBottom: '0.5rem',
-              lineHeight: '1.4',
-              color: '#1a1a1a'
+              marginTop: index > 0 ? '1rem' : '0',
+              marginBottom: '0.75rem',
+              lineHeight: '2rem',
+              color: '#262626',
+              letterSpacing: '-0.025em'
             }}
           >
             {text}
           </h3>
         );
       }
-      // Heading 4: #### Text
+      // Heading 4: #### Text (text-xl)
       else if (line.match(/^####\s+(.+)/)) {
         flushList();
         const text = line.replace(/^####\s+/, '');
@@ -126,19 +324,20 @@ function FormattedMessage({ content }: { content: string }) {
           <h4
             key={`h4-${index}`}
             style={{
-              fontSize: '1.0625rem',
+              fontSize: '1.25rem',
               fontWeight: '600',
-              marginTop: index > 0 ? '0.625rem' : '0',
-              marginBottom: '0.5rem',
-              lineHeight: '1.45',
-              color: '#1a1a1a'
+              marginTop: index > 0 ? '0.875rem' : '0',
+              marginBottom: '0.625rem',
+              lineHeight: '1.75rem',
+              color: '#404040',
+              letterSpacing: '0em'
             }}
           >
             {text}
           </h4>
         );
       }
-      // Heading 5: ##### Text
+      // Heading 5: ##### Text (text-lg)
       else if (line.match(/^#####\s+(.+)/)) {
         flushList();
         const text = line.replace(/^#####\s+/, '');
@@ -146,35 +345,89 @@ function FormattedMessage({ content }: { content: string }) {
           <h5
             key={`h5-${index}`}
             style={{
-              fontSize: '1rem',
+              fontSize: '1.125rem',
               fontWeight: '600',
-              marginTop: index > 0 ? '0.5rem' : '0',
-              marginBottom: '0.375rem',
-              lineHeight: '1.5',
-              color: '#1a1a1a'
+              marginTop: index > 0 ? '0.75rem' : '0',
+              marginBottom: '0.5rem',
+              lineHeight: '1.75rem',
+              color: '#525252',
+              letterSpacing: '0em'
             }}
           >
             {text}
           </h5>
         );
       }
-      // Bullet point: • Text or - Text or * Text
-      else if (line.match(/^[•\-\*]\s+(.+)/)) {
-        const text = line.replace(/^[•\-\*]\s+/, '');
-        if (!currentList || currentList.type !== 'ul') {
-          flushList();
-          currentList = { type: 'ul', items: [] };
-        }
-        currentList.items.push(text);
+      // Heading 6: ###### Text (text-base)
+      else if (line.match(/^######\s+(.+)/)) {
+        flushList();
+        const text = line.replace(/^######\s+/, '');
+        elements.push(
+          <h6
+            key={`h6-${index}`}
+            style={{
+              fontSize: '1rem',
+              fontWeight: '600',
+              marginTop: index > 0 ? '0.75rem' : '0',
+              marginBottom: '0.5rem',
+              lineHeight: '1.5rem',
+              color: '#525252',
+              letterSpacing: '0em'
+            }}
+          >
+            {text}
+          </h6>
+        );
       }
-      // Numbered list: 1. Text or 1) Text
-      else if (line.match(/^\d+[\.\)]\s+(.+)/)) {
-        const text = line.replace(/^\d+[\.\)]\s+/, '');
+      // Numbered list with colon (potential parent item): 1. Text:
+      else if (line.match(/^\s*\d+\.\s+(.+):$/)) {
+        const fullText = line.replace(/^\s*\d+\.\s+/, '').replace(/:$/, '');
+
+        // Check if this is part of a numbered list or standalone heading
+        // If we have a numbered list, add as item; otherwise create new list
         if (!currentList || currentList.type !== 'ol') {
           flushList();
           currentList = { type: 'ol', items: [] };
         }
-        currentList.items.push(text);
+        currentList.items.push({ text: fullText + ':', subItems: [] });
+      }
+      // Alphabet list: A. Text or A) Text (with optional leading whitespace)
+      else if (line.match(/^\s*[A-Z][\.\)]\s+(.+)/)) {
+        const text = line.replace(/^\s*[A-Z][\.\)]\s+/, '');
+        if (!currentList || currentList.type !== 'alpha') {
+          flushList();
+          currentList = { type: 'alpha', items: [] };
+        }
+        currentList.items.push({ text });
+      }
+      // Bullet point: • Text or - Text or * Text (with optional leading whitespace)
+      else if (line.match(/^\s*[•\-\*]\s+(.+)/)) {
+        const text = line.replace(/^\s*[•\-\*]\s+/, '');
+
+        // If we have a numbered/alpha list with items, add as sub-item to last item
+        if (currentList && (currentList.type === 'ol' || currentList.type === 'alpha') && currentList.items.length > 0) {
+          const lastItem = currentList.items[currentList.items.length - 1];
+          if (!lastItem.subItems) {
+            lastItem.subItems = [];
+          }
+          lastItem.subItems.push(text);
+        } else {
+          // Otherwise, create/continue bullet list
+          if (!currentList || currentList.type !== 'ul') {
+            flushList();
+            currentList = { type: 'ul', items: [] };
+          }
+          currentList.items.push({ text });
+        }
+      }
+      // Numbered list: 1. Text or 1) Text (without colon, with optional leading whitespace)
+      else if (line.match(/^\s*\d+[\.\)]\s+(.+)/) && !line.match(/:\s*$/)) {
+        const text = line.replace(/^\s*\d+[\.\)]\s+/, '');
+        if (!currentList || currentList.type !== 'ol') {
+          flushList();
+          currentList = { type: 'ol', items: [] };
+        }
+        currentList.items.push({ text });
       }
       // Empty line
       else if (line.trim() === '') {
@@ -202,28 +455,24 @@ function FormattedMessage({ content }: { content: string }) {
     });
 
     flushList();
+    flushCodeBlock();
+    flushBlockquote();
+    flushTable();
     return elements;
   };
 
   return (
     <div className="formatted-message" style={{
-      fontSize: '0.9375rem',
-      lineHeight: '1.6',
-      color: '#1a1a1a',
+      fontSize: '1rem',
+      lineHeight: '1.5',
+      color: '#262626',
       textAlign: 'justify',
-      textJustify: 'inter-word'
+      textJustify: 'inter-word',
+      WebkitFontSmoothing: 'antialiased',
+      MozOsxFontSmoothing: 'grayscale',
+      textRendering: 'optimizeLegibility'
     }}>
       <style>{`
-        @media (min-width: 640px) {
-          .formatted-message {
-            font-size: 0.9375rem !important;
-          }
-        }
-        @media (min-width: 1024px) {
-          .formatted-message {
-            font-size: 1rem !important;
-          }
-        }
         .formatted-message ul {
           list-style-type: disc;
         }
@@ -238,12 +487,16 @@ function FormattedMessage({ content }: { content: string }) {
         .formatted-message h2,
         .formatted-message h3,
         .formatted-message h4,
-        .formatted-message h5 {
+        .formatted-message h5,
+        .formatted-message h6 {
           text-align: left;
         }
         .formatted-message li {
           text-align: justify;
           text-justify: inter-word;
+        }
+        .formatted-message code {
+          font-family: var(--font-geist-mono, ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace);
         }
       `}</style>
       {parseMarkdown(content)}
@@ -254,26 +507,26 @@ function FormattedMessage({ content }: { content: string }) {
 /**
  * Komponen MessageBubble terpisah untuk handle realtime timestamp dengan hooks
  */
-function MessageBubble({ 
-  message, 
-  shouldAnimate, 
-  staggerDelay 
-}: { 
-  message: Message; 
-  shouldAnimate: boolean; 
+function MessageBubble({
+  message,
+  shouldAnimate,
+  staggerDelay
+}: {
+  message: Message;
+  shouldAnimate: boolean;
   staggerDelay: number;
 }) {
   const isUser = message.type === 'user';
   const isSystem = message.type === 'system';
-  
+
   // Realtime timestamp dengan hooks
   const [currentTime, setCurrentTime] = useState(formatTimeOnly(message.timestamp));
-  
+
   useEffect(() => {
     const updateTime = () => {
       setCurrentTime(formatTimeOnly(message.timestamp));
     };
-    
+
     // Update setiap menit
     const interval = setInterval(updateTime, 60000);
     return () => clearInterval(interval);
@@ -398,13 +651,13 @@ function MessageBubble({
           }}
         >
           <span>{currentTime}</span>
-          
+
           {/* Status Indicator untuk pesan user */}
           {isUser && message.status && (
             <>
               {message.status === 'sending' && (
-                <div 
-                  className="rounded-full animate-spin" 
+                <div
+                  className="rounded-full animate-spin"
                   style={{
                     borderWidth: '1.5px',
                     borderStyle: 'solid',
@@ -493,7 +746,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
     const newMessageIds = messages
       .filter(msg => !animatedMessages.has(msg.id))
       .map(msg => msg.id);
-    
+
     if (newMessageIds.length > 0) {
       setAnimatedMessages(prev => {
         const updated = new Set(prev);
@@ -582,7 +835,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
       aria-live="polite"
       aria-label="Daftar pesan chat"
       aria-atomic="false"
-      style={{ 
+      style={{
         scrollBehavior: 'smooth',
         padding: '1rem'
       }}
@@ -672,8 +925,8 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                   key={message.id}
                   message={message}
                   shouldAnimate={!animatedMessages.has(message.id)}
-                  staggerDelay={messages.slice(-5).findIndex(m => m.id === message.id) >= 0 
-                    ? messages.slice(-5).findIndex(m => m.id === message.id) * 50 
+                  staggerDelay={messages.slice(-5).findIndex(m => m.id === message.id) >= 0
+                    ? messages.slice(-5).findIndex(m => m.id === message.id) * 50
                     : 0}
                 />
               ))}
@@ -683,7 +936,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
 
         {/* Loading Indicator - Modern bubble style */}
         {isLoading && (
-          <div 
+          <div
             className="flex justify-start animate-slide-up"
             role="status"
             aria-live="polite"
