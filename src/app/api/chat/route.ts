@@ -25,7 +25,7 @@ interface N8nWebhookResponse {
 // Menggunakan chat trigger yang sudah dikonfigurasi di n8n
 const N8N_WEBHOOK_URL =
   process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
-  'https://vickymosafan2.app.n8n.cloud/webhook/d49a228d-703d-4a93-8e7a-ed173500fc6e/chat';
+  'https://vickymosafan3.app.n8n.cloud/webhook/904d9596-4432-43f9-9bc3-00cf93055d63/chat';
 
 // Timeout untuk request ke n8n (30 detik)
 const REQUEST_TIMEOUT = 30000;
