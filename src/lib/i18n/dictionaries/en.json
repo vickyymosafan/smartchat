@@ -1,0 +1,90 @@
+{
+  "common": {
+    "send": "Send",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "copy": "Copy",
+    "copied": "Copied",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "chat": {
+    "emptyState": {
+      "title": "Start a Conversation",
+      "description": "Send your first message to start a conversation with AI Assistant",
+      "keyboardHint": "Press {enter} to send, {shiftEnter} for new line"
+    },
+    "composer": {
+      "placeholder": "Type your message here...",
+      "send": "Send message",
+      "enterToSend": "Enter to send",
+      "shiftEnterNewLine": "Shift+Enter for new line",
+      "characterCount": "{current}/{max}",
+      "offlineMessage": "No internet connection",
+      "maxLengthError": "Message too long (max {max} characters)"
+    },
+    "message": {
+      "copy": "Copy",
+      "regenerate": "Regenerate",
+      "thumbsUp": "Like",
+      "thumbsDown": "Dislike",
+      "sending": "Sending...",
+      "sent": "Sent",
+      "failed": "Failed",
+      "retry": "Retry"
+    },
+    "typing": "Typing...",
+    "scrollToBottom": "Scroll to bottom",
+    "newMessages": "New messages"
+  },
+  "topBar": {
+    "title": "SMARTCHAT",
+    "settings": "Settings",
+    "toggleSidebar": "Toggle Sidebar",
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
+    }
+  },
+  "theme": {
+    "toggle": "Toggle Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "sidebar": {
+    "title": "Chat History",
+    "search": "Search conversations...",
+    "newChat": "New Chat",
+    "pinned": "Pinned",
+    "recent": "Recent",
+    "noChats": "No conversations yet"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "about": "About"
+  },
+  "errors": {
+    "networkError": "Connection lost. Message will be sent when online.",
+    "apiError": "Failed to send message. Please try again.",
+    "validationError": "Invalid message. Please check your input.",
+    "rateLimitError": "Too many requests. Wait {seconds} seconds.",
+    "unknownError": "An unknown error occurred."
+  },
+  "toast": {
+    "messageCopied": "Message copied successfully",
+    "messageSent": "Message sent",
+    "messageFailed": "Failed to send message",
+    "connectionRestored": "Connection restored",
+    "connectionLost": "Connection lost"
+  }
+}

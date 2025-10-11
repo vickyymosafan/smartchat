@@ -15,8 +15,7 @@ import { ChatState, Message } from '@/types/chat';
 interface ChatContextType {
   state: ChatState;
   dispatch: React.Dispatch<ChatAction>;
-  addMessage: (message: Omit<Message, 'id' | 'timestamp'>) => string;
-  updateMessageStatus: (messageId: string, status: Message['status']) => void;
+  addMessage: (message: Omit<Message, 'id'>) => string;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   clearMessages: () => void;
@@ -27,10 +26,6 @@ interface ChatContextType {
  */
 type ChatAction =
   | { type: 'ADD_MESSAGE'; payload: Message }
-  | {
-      type: 'UPDATE_MESSAGE_STATUS';
-      payload: { messageId: string; status: Message['status'] };
-    }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_ONLINE_STATUS'; payload: boolean }
@@ -57,16 +52,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...state,
         messages: [...state.messages, action.payload],
         error: null,
-      };
-
-    case 'UPDATE_MESSAGE_STATUS':
-      return {
-        ...state,
-        messages: state.messages.map(message =>
-          message.id === action.payload.messageId
-            ? { ...message, status: action.payload.status }
-            : message
-        ),
       };
 
     case 'SET_LOADING':
@@ -146,12 +131,7 @@ export function ChatProvider({
     try {
       const savedMessages = localStorage.getItem('chat_messages');
       if (savedMessages) {
-        const parsedMessages: Message[] = JSON.parse(savedMessages).map(
-          (msg: any) => ({
-            ...msg,
-            timestamp: new Date(msg.timestamp),
-          })
-        );
+        const parsedMessages: Message[] = JSON.parse(savedMessages);
         dispatch({ type: 'LOAD_MESSAGES', payload: parsedMessages });
       }
     } catch (error) {
@@ -195,25 +175,14 @@ export function ChatProvider({
    * Helper function untuk menambah pesan baru
    * Returns the ID of the newly created message
    */
-  const addMessage = (message: Omit<Message, 'id' | 'timestamp'>): string => {
+  const addMessage = (message: Omit<Message, 'id'>): string => {
     const messageId = generateMessageId();
     const newMessage: Message = {
       ...message,
       id: messageId,
-      timestamp: new Date(),
     };
     dispatch({ type: 'ADD_MESSAGE', payload: newMessage });
     return messageId;
-  };
-
-  /**
-   * Helper function untuk update status pesan
-   */
-  const updateMessageStatus = (
-    messageId: string,
-    status: Message['status']
-  ) => {
-    dispatch({ type: 'UPDATE_MESSAGE_STATUS', payload: { messageId, status } });
   };
 
   /**
@@ -246,7 +215,6 @@ export function ChatProvider({
     state,
     dispatch,
     addMessage,
-    updateMessageStatus,
     setLoading,
     setError,
     clearMessages,
@@ -280,16 +248,9 @@ export function useChatState(): ChatState {
  * Hook untuk menggunakan chat actions saja
  */
 export function useChatActions() {
-  const {
-    addMessage,
-    updateMessageStatus,
-    setLoading,
-    setError,
-    clearMessages,
-  } = useChatContext();
+  const { addMessage, setLoading, setError, clearMessages } = useChatContext();
   return {
     addMessage,
-    updateMessageStatus,
     setLoading,
     setError,
     clearMessages,

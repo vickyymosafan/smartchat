@@ -1,14 +1,29 @@
 import type { Metadata, Viewport } from 'next';
-import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
+import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import './globals.css';
+
+// Configure Plus Jakarta Sans as primary font
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
+});
+
+// Configure Inter as fallback font
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans-fallback',
+});
 import ErrorBoundary from '@/components/ErrorBoundary';
-import ToastProvider from '@/contexts/ToastContext';
 import { LazyPWAProvider } from '@/lib/lazyComponents';
 import ResourcePreloader, {
   PerformanceMonitor,
 } from '@/components/ResourcePreloader';
 import SEOHead, { SEOMonitor } from '@/components/SEOHead';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { TranslationProvider } from '@/components/providers/TranslationProvider';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: {
@@ -207,16 +222,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="id"
-      className={GeistSans.className}
-      style={
-        {
-          ['--font-geist-sans' as string]: GeistSans.style.fontFamily,
-          ['--font-geist-mono' as string]: GeistMono.style.fontFamily,
-        } as React.CSSProperties
-      }
-    >
+    <html lang="id" className={`${plusJakartaSans.variable} ${inter.variable}`}>
       <head>
         {/* Favicons dan Icons */}
         <link rel="icon" href="/favicon.ico" />
@@ -296,17 +302,20 @@ export default function RootLayout({
         className="antialiased text-body-large bg-background text-text"
         suppressHydrationWarning
       >
-        <ErrorBoundary>
-          <ToastProvider position="top-right">
-            <LazyPWAProvider>
-              {children}
-              <ResourcePreloader />
-              <PerformanceMonitor />
-              <SEOHead />
-              <SEOMonitor />
-            </LazyPWAProvider>
-          </ToastProvider>
-        </ErrorBoundary>
+        <ThemeProvider>
+          <TranslationProvider>
+            <ErrorBoundary>
+              <LazyPWAProvider>
+                {children}
+                <ResourcePreloader />
+                <PerformanceMonitor />
+                <SEOHead />
+                <SEOMonitor />
+                <Toaster />
+              </LazyPWAProvider>
+            </ErrorBoundary>
+          </TranslationProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

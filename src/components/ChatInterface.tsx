@@ -2,9 +2,9 @@
 
 import { ChatInterfaceProps } from '@/types/chat';
 import { ChatProvider, useChatContext } from '@/contexts/ChatContext';
-import { useToastContext } from '@/contexts/ToastContext';
+import { toast } from 'sonner';
 import { useOrientationChange } from '@/hooks/useOrientationChange';
-import MessageList from './MessageList';
+import { MessageList } from './chat/MessageList';
 import MessageInput from './MessageInput';
 import ErrorBoundary from './ErrorBoundary';
 import { LazyPWAInstallPrompt } from '@/lib/lazyComponents';
@@ -13,9 +13,7 @@ import { LazyPWAInstallPrompt } from '@/lib/lazyComponents';
  * Komponen internal ChatInterface yang menggunakan context
  */
 function ChatInterfaceContent() {
-  const { state, addMessage, updateMessageStatus, setLoading, setError } =
-    useChatContext();
-  const toast = useToastContext();
+  const { state, addMessage, setLoading, setError } = useChatContext();
 
   // Handle orientation changes smoothly
   useOrientationChange();
@@ -28,11 +26,11 @@ function ChatInterfaceContent() {
     let userMessageId: string | undefined;
 
     try {
-      // Tambahkan pesan user dengan status 'sending'
+      // Tambahkan pesan user
       userMessageId = addMessage({
+        role: 'user',
         content: message,
-        type: 'user',
-        status: 'sending',
+        createdAt: Date.now(),
       });
 
       setLoading(true);
@@ -56,28 +54,17 @@ function ChatInterfaceContent() {
         throw new Error(data.error || 'Gagal mengirim pesan');
       }
 
-      // Update status pesan user menjadi 'sent'
-      updateMessageStatus(userMessageId, 'sent');
-
       // Tambahkan response dari RAG AI Assistant
       addMessage({
+        role: 'assistant',
         content: data.data?.response || 'Response dari AI Assistant',
-        type: 'assistant',
-        status: 'sent',
+        createdAt: Date.now(),
       });
 
       // Tampilkan toast success
-      toast.success(
-        'Pesan Terkirim',
-        'Pesan Anda berhasil dikirim dan diproses oleh AI Assistant.'
-      );
+      toast.success('Pesan Anda berhasil dikirim dan diproses oleh AI Assistant.');
     } catch (error: any) {
       console.error('Error sending message:', error);
-
-      // Update status pesan user menjadi 'error' jika pesan sudah dibuat
-      if (userMessageId) {
-        updateMessageStatus(userMessageId, 'error');
-      }
 
       // Tentukan pesan error berdasarkan jenis error
       let errorMessage =
@@ -88,7 +75,7 @@ function ChatInterfaceContent() {
       }
 
       // Tampilkan toast error
-      toast.error('Gagal Mengirim Pesan', errorMessage, { duration: 7000 });
+      toast.error(errorMessage, { duration: 7000 });
 
       setError(errorMessage);
     } finally {
@@ -372,7 +359,7 @@ function ChatInterfaceContent() {
       {/* Main Chat Area - Responsive container with desktop optimization */}
       <main
         id="main-content"
-        className="flex flex-1 flex-col overflow-hidden"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden"
         role="main"
       >
         <div
@@ -397,14 +384,14 @@ function ChatInterfaceContent() {
           `}</style>
           {/* Message List */}
           <MessageList messages={state.messages} isLoading={state.isLoading} />
-
-          {/* Message Input */}
-          <MessageInput
-            onSendMessage={handleSendMessage}
-            isLoading={state.isLoading || !state.isOnline}
-          />
         </div>
       </main>
+
+      {/* Message Input - Docked at bottom outside main container */}
+      <MessageInput
+        onSendMessage={handleSendMessage}
+        isLoading={state.isLoading || !state.isOnline}
+      />
 
       {/* PWA Install Prompt */}
       <LazyPWAInstallPrompt

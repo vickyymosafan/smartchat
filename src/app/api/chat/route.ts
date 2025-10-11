@@ -81,7 +81,6 @@ async function fetchWithTimeout(
 
 export async function POST(request: NextRequest) {
   try {
-    // Parse request body
     let body: ChatRequest;
     try {
       body = await request.json();
@@ -96,7 +95,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validasi input
     const validation = validateChatRequest(body);
     if (!validation.isValid) {
       return NextResponse.json(
@@ -109,7 +107,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Siapkan data untuk dikirim ke n8n webhook sesuai format yang diharapkan
     const webhookPayload = {
       action: 'sendMessage',
       sessionId: body.sessionId || `session_${Date.now()}`,
@@ -121,7 +118,6 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    // Kirim request ke n8n webhook
     let webhookResponse: Response;
     try {
       webhookResponse = await fetchWithTimeout(
@@ -139,7 +135,6 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
       console.error('Error calling n8n webhook:', error);
 
-      // Handle timeout error
       if (error.name === 'AbortError') {
         return NextResponse.json(
           {
@@ -151,7 +146,6 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Handle network error
       return NextResponse.json(
         {
           success: false,
@@ -162,7 +156,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Handle HTTP error responses
     if (!webhookResponse.ok) {
       console.error(
         `n8n webhook returned ${webhookResponse.status}: ${webhookResponse.statusText}`
@@ -186,7 +179,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse response dari n8n
     let n8nData: N8nWebhookResponse;
     try {
       n8nData = await webhookResponse.json();
@@ -202,20 +194,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Return successful response dengan data dari RAG Agent
-    return NextResponse.json({
-      success: true,
-      message: 'Pesan berhasil dikirim',
-      data: {
-        response:
-          n8nData.output ||
-          n8nData.response ||
-          n8nData.message ||
-          'Response dari AI Assistant',
-        timestamp: n8nData.data?.timestamp || new Date().toISOString(),
-        sessionId: body.sessionId,
-        // Tambahan metadata dari n8n jika ada
-        metadata: n8nData.metadata || {},
+    const fullResponse =
+      n8nData.output ||
+      n8nData.response ||
+      n8nData.message ||
+      'Response dari AI Assistant';
+
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        const words = fullResponse.split(' ');
+
+        for (let i = 0; i < words.length; i++) {
+          const chunk = i === 0 ? words[i] : ' ' + words[i];
+          const data = JSON.stringify({ content: chunk, done: false }) + '\n';
+          controller.enqueue(encoder.encode(data));
+
+          await new Promise(resolve => setTimeout(resolve, 10));
+        }
+
+        const doneData = JSON.stringify({
+          content: '',
+          done: true,
+          metadata: {
+            timestamp: n8nData.data?.timestamp || new Date().toISOString(),
+            sessionId: body.sessionId,
+          }
+        }) + '\n';
+        controller.enqueue(encoder.encode(doneData));
+        controller.close();
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
       },
     });
   } catch (error: any) {

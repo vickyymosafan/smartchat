@@ -1,0 +1,90 @@
+{
+  "common": {
+    "send": "Kirim",
+    "cancel": "Batal",
+    "close": "Tutup",
+    "save": "Simpan",
+    "delete": "Hapus",
+    "edit": "Edit",
+    "copy": "Salin",
+    "copied": "Tersalin",
+    "loading": "Memuat...",
+    "error": "Terjadi kesalahan",
+    "retry": "Coba Lagi",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "chat": {
+    "emptyState": {
+      "title": "Mulai Percakapan",
+      "description": "Kirim pesan pertama Anda untuk memulai percakapan dengan AI Assistant",
+      "keyboardHint": "Tekan {enter} untuk kirim, {shiftEnter} untuk baris baru"
+    },
+    "composer": {
+      "placeholder": "Ketik pesan Anda di sini...",
+      "send": "Kirim pesan",
+      "enterToSend": "Enter kirim",
+      "shiftEnterNewLine": "Shift+Enter baris baru",
+      "characterCount": "{current}/{max}",
+      "offlineMessage": "Tidak ada koneksi internet",
+      "maxLengthError": "Pesan terlalu panjang (maksimal {max} karakter)"
+    },
+    "message": {
+      "copy": "Salin",
+      "regenerate": "Regenerasi",
+      "thumbsUp": "Suka",
+      "thumbsDown": "Tidak Suka",
+      "sending": "Mengirim...",
+      "sent": "Terkirim",
+      "failed": "Gagal",
+      "retry": "Coba Lagi"
+    },
+    "typing": "Sedang mengetik...",
+    "scrollToBottom": "Gulir ke bawah",
+    "newMessages": "Pesan baru"
+  },
+  "topBar": {
+    "title": "SMARTCHAT",
+    "settings": "Pengaturan",
+    "toggleSidebar": "Toggle Sidebar",
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
+    }
+  },
+  "theme": {
+    "toggle": "Ganti Tema",
+    "light": "Terang",
+    "dark": "Gelap",
+    "system": "Sistem"
+  },
+  "sidebar": {
+    "title": "Riwayat Chat",
+    "search": "Cari percakapan...",
+    "newChat": "Chat Baru",
+    "pinned": "Disematkan",
+    "recent": "Terbaru",
+    "noChats": "Belum ada percakapan"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "language": "Bahasa",
+    "theme": "Tema",
+    "notifications": "Notifikasi",
+    "about": "Tentang"
+  },
+  "errors": {
+    "networkError": "Koneksi terputus. Pesan akan dikirim saat online.",
+    "apiError": "Gagal mengirim pesan. Silakan coba lagi.",
+    "validationError": "Pesan tidak valid. Periksa kembali input Anda.",
+    "rateLimitError": "Terlalu banyak permintaan. Tunggu {seconds} detik.",
+    "unknownError": "Terjadi kesalahan yang tidak diketahui."
+  },
+  "toast": {
+    "messageCopied": "Pesan berhasil disalin",
+    "messageSent": "Pesan terkirim",
+    "messageFailed": "Gagal mengirim pesan",
+    "connectionRestored": "Koneksi dipulihkan",
+    "connectionLost": "Koneksi terputus"
+  }
+}

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageInputProps } from '@/types/chat';
 import { validateMessage, sanitizeMessage } from '@/lib/utils';
-import { useToastContext } from '@/contexts/ToastContext';
+import { toast } from 'sonner';
 
 /**
  * Komponen MessageInput untuk form input pesan chat
@@ -17,7 +17,6 @@ export default function MessageInput({
   const [error, setError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const toast = useToastContext();
 
   /**
    * Validasi pesan secara real-time
@@ -58,7 +57,6 @@ export default function MessageInput({
     // Cek jika mendekati batas karakter
     if (value.length >= 4800 && message.length < 4800) {
       toast.warning(
-        'Mendekati Batas Karakter',
         `Anda telah menggunakan ${value.length} dari 5000 karakter.`,
         { duration: 3000 }
       );
@@ -81,7 +79,7 @@ export default function MessageInput({
       setError(errorMessage);
 
       // Tampilkan toast warning untuk validation error
-      toast.warning('Pesan Tidak Valid', errorMessage, { duration: 4000 });
+      toast.warning(errorMessage, { duration: 4000 });
       return;
     }
 
@@ -100,7 +98,7 @@ export default function MessageInput({
       setError(errorMessage);
 
       // Tampilkan toast error untuk send error
-      toast.error('Gagal Mengirim', errorMessage, { duration: 6000 });
+      toast.error(errorMessage, { duration: 6000 });
     }
   };
 

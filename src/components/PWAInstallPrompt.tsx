@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { isPWA, isPWASupported } from '@/lib/serviceWorker';
-import { useToastContext } from '@/contexts/ToastContext';
+import { toast } from 'sonner';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -30,7 +30,6 @@ export default function PWAInstallPrompt({
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [dismissed, setDismissed] = useState(false);
-  const toast = useToastContext();
 
   useEffect(() => {
     // Cek apakah sudah berjalan sebagai PWA
@@ -65,7 +64,6 @@ export default function PWAInstallPrompt({
 
       // Tampilkan toast success
       toast.success(
-        'Aplikasi Berhasil Diinstall!',
         'Sekarang Anda dapat mengakses aplikasi dari home screen.',
         { duration: 6000 }
       );
@@ -115,7 +113,6 @@ export default function PWAInstallPrompt({
         if (outcome === 'accepted') {
           console.log('User menerima install prompt');
           toast.info(
-            'Menginstall Aplikasi...',
             'Aplikasi sedang diinstall ke perangkat Anda.',
             { duration: 4000 }
           );
@@ -130,7 +127,6 @@ export default function PWAInstallPrompt({
       } catch (error) {
         console.error('Error saat install PWA:', error);
         toast.error(
-          'Gagal Menginstall',
           'Terjadi kesalahan saat menginstall aplikasi. Silakan coba lagi.',
           { duration: 5000 }
         );

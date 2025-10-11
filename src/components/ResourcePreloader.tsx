@@ -32,10 +32,6 @@ export default function ResourcePreloader({
       () => import('@/components/PWAInstallPrompt'),
       () => import('@/components/PWAProvider'),
 
-      // Toast components
-      () => import('@/components/ToastContainer'),
-      () => import('@/components/Toast'),
-
       // Chat service untuk API calls
       () => import('@/lib/chatService'),
     ];
