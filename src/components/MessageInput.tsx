@@ -142,24 +142,7 @@ export default function MessageInput({
       `}</style>
       <form onSubmit={handleSubmit} className="mx-auto w-full">
         <div className="relative">
-          {/* Textarea Input - Responsive for all screen sizes */}
-          <style>{`
-            @media (min-width: 640px) {
-              .message-textarea {
-                padding: 1rem 4rem 1rem 1.25rem !important;
-                font-size: 0.9375rem !important;
-                min-height: 52px !important;
-              }
-            }
-            @media (min-width: 1024px) {
-              .message-textarea {
-                padding: 1.125rem 4.5rem 1.125rem 1.5rem !important;
-                font-size: 1rem !important;
-                line-height: 1.625 !important;
-                min-height: 56px !important;
-              }
-            }
-          `}</style>
+          {/* Textarea Input - Responsive with proper spacing for scrollbar + button */}
           <textarea
             ref={textareaRef}
             value={message}
@@ -167,22 +150,33 @@ export default function MessageInput({
             onKeyDown={handleKeyDown}
             placeholder="Ketik pesan Anda di sini..."
             disabled={isLoading}
-            className={`w-full resize-none focus:outline-none message-textarea placeholder:text-[var(--gray-400)] ${error ? 'animate-shake' : ''}`}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
+            data-gramm="false"
+            data-gramm_editor="false"
+            data-enable-grammarly="false"
+            data-1p-ignore
+            data-lpignore="true"
+            className={`
+              w-full resize-none focus:outline-none placeholder:text-gray-400
+              rounded-2xl border px-4 py-3.5 pr-16
+              sm:px-5 sm:py-4 sm:pr-[4.5rem]
+              lg:px-6 lg:py-4.5 lg:pr-20
+              min-h-[48px] max-h-[120px]
+              ${error ? 'animate-shake border-gray-800' : 'border-gray-300'}
+              ${isLoading ? 'bg-gray-50 text-gray-400' : 'bg-white text-gray-950'}
+            `}
             style={{
-              borderWidth: '1px',
-              borderStyle: 'solid',
-              borderColor: error ? 'var(--gray-800)' : 'var(--gray-300)',
-              borderRadius: 'var(--radius-lg)',
-              backgroundColor: isLoading ? 'var(--gray-50)' : 'white',
-              color: isLoading ? 'var(--gray-400)' : 'var(--gray-950)',
               boxShadow: 'none',
               transform: 'scale(1)',
               transition:
                 'border-color 200ms cubic-bezier(0, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0, 0, 0.2, 1), transform 200ms cubic-bezier(0, 0, 0.2, 1), background-color 200ms cubic-bezier(0, 0, 0.2, 1)',
-              padding: '0.875rem 3.5rem 0.875rem 1rem',
               fontSize: '0.9375rem',
               lineHeight: '1.5',
-              minHeight: '48px',
+              overflow: 'hidden',
+              overflowY: 'hidden',
             }}
             onMouseEnter={e => {
               const target = e.target as HTMLTextAreaElement;
@@ -229,44 +223,18 @@ export default function MessageInput({
             aria-describedby={error ? 'message-error' : undefined}
           />
 
-          {/* Tombol Kirim - Responsive touch target */}
-          <style>{`
-            @media (min-width: 640px) {
-              .send-button {
-                bottom: 0.625rem !important;
-                right: 0.625rem !important;
-                width: 52px !important;
-                height: 52px !important;
-                min-width: 52px !important;
-                min-height: 52px !important;
-              }
-            }
-            @media (min-width: 1024px) {
-              .send-button {
-                bottom: 0.75rem !important;
-                right: 0.75rem !important;
-                width: 56px !important;
-                height: 56px !important;
-                min-width: 56px !important;
-                min-height: 56px !important;
-              }
-            }
-          `}</style>
+          {/* Tombol Kirim - Responsive touch target with proper spacing from scrollbar */}
           <button
             type="submit"
             disabled={isSubmitDisabled}
             className={`
-              absolute flex items-center justify-center
-              rounded-full touch-manipulation send-button
+              absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center
+              rounded-full touch-manipulation
+              sm:bottom-2.5 sm:right-2.5 sm:h-12 sm:w-12
+              lg:bottom-3 lg:right-3 lg:h-14 lg:w-14
               ${isSubmitDisabled ? 'cursor-not-allowed' : ''}
             `}
             style={{
-              bottom: '0.5rem',
-              right: '0.5rem',
-              width: '48px',
-              height: '48px',
-              minWidth: '48px',
-              minHeight: '48px',
               backgroundColor: isSubmitDisabled
                 ? 'var(--gray-100)'
                 : 'var(--gray-900)',

@@ -679,3 +679,45 @@ html {
     @apply bg-background text-foreground;
   }
 }
+
+/* ============================================
+   CUSTOM SCROLLBAR FOR MESSAGE INPUT
+   ============================================ */
+
+
+
+
+
+
+/* ============================================
+   HIDE SCROLLBAR FOR MESSAGE INPUT TEXTAREA
+   ============================================ */
+
+/* Hide scrollbar for textarea but keep scroll functionality */
+textarea {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
+  overflow: -moz-scrollbars-none !important; /* Old Firefox */
+}
+
+textarea::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Opera */
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+textarea::-webkit-scrollbar-track {
+  display: none !important;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  display: none !important;
+}
+
+/* Ensure no scrollbar on all textarea elements */
+textarea[aria-label="Input pesan chat"]::-webkit-scrollbar,
+textarea[placeholder*="Ketik"]::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+}
