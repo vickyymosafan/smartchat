@@ -201,7 +201,7 @@ export function MessageList({
         aria-label="Chat message history"
         aria-live="polite"
         aria-atomic="false"
-        className="chat-scroll h-full overflow-y-auto px-4 py-4 pb-4 sm:px-6 sm:py-6 sm:pb-6 lg:px-8 lg:py-8 lg:pb-8"
+        className="chat-scroll h-full overflow-y-auto py-4 pb-4 sm:py-6 sm:pb-6 lg:py-8 lg:pb-8"
       >
         <div
           ref={contentRef}

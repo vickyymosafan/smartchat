@@ -124,23 +124,16 @@ export default function MessageInput({
 
   return (
     <div
-      className="bg-[var(--gray-50)] message-input-container"
+      className="w-full bg-[var(--gray-50)]"
       style={{
         borderTopWidth: '1px',
         borderTopStyle: 'solid',
         borderTopColor: 'var(--gray-200)',
-        padding: '1rem',
       }}
     >
-      <style>{`
-        @media (min-width: 640px) {
-          .message-input-container { padding: 1.5rem !important; }
-        }
-        @media (min-width: 1024px) {
-          .message-input-container { padding: 2rem !important; }
-        }
-      `}</style>
-      <form onSubmit={handleSubmit} className="mx-auto w-full">
+      {/* Container dengan padding adaptif yang sama dengan messages */}
+      <div className="w-full px-4 py-4 sm:px-8 sm:py-6 md:px-12 lg:px-16 lg:py-6 xl:px-20">
+        <form onSubmit={handleSubmit} className="w-full">
         <div className="relative">
           {/* Textarea Input - Responsive with proper spacing for scrollbar + button */}
           <textarea
@@ -430,7 +423,8 @@ export default function MessageInput({
             {message.length}/5000
           </span>
         </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

@@ -64,12 +64,14 @@ export function MessageBubble({
   const { role, content, createdAt, meta } = message;
   const hasError = meta?.error === true;
 
-  // System message variant - centered dengan rounded-full
+  // System message variant - centered dengan rounded-full dan padding konsisten
   if (role === 'system') {
     return (
-      <div className="flex justify-center px-4 py-2">
-        <div className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-          {content}
+      <div className="w-full py-2">
+        <div className="flex w-full justify-center px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20">
+          <div className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+            {content}
+          </div>
         </div>
       </div>
     );
@@ -82,33 +84,36 @@ export function MessageBubble({
     }
   };
 
-  // User message variant - right aligned dengan accent background
+  // User message variant - right aligned dengan accent background dan padding konsisten
   if (role === 'user') {
     return (
-      <div className="flex justify-end px-4 py-2">
-        <div className="max-w-[85%] sm:max-w-[75%] lg:max-w-[70%]">
-          <div
-            className={cn(
-              'rounded-2xl rounded-br-md bg-accent px-3 py-2 text-accent-foreground sm:px-4 sm:py-3',
-              'whitespace-pre-wrap break-words',
-              hasError &&
-              'border-2 border-destructive bg-destructive/10 text-foreground'
-            )}
-          >
-            <p className="text-sm sm:text-base">{content}</p>
-          </div>
-          <div className="mt-1 flex items-center justify-end gap-2 text-xs text-muted-foreground">
-            <span>{formatTimeOnly(createdAt)}</span>
-            <StatusIndicator hasError={hasError} />
-            {hasError && onRetry && (
-              <TooltipButton
-                icon={RotateCw}
-                label="Retry"
-                onClick={handleRetry}
-                ariaLabel="Retry sending message"
-                className="h-6 w-6 text-destructive hover:text-destructive/80"
-              />
-            )}
+      <div className="w-full py-2">
+        {/* Container dengan padding adaptif yang sama dengan assistant */}
+        <div className="flex w-full justify-end px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20">
+          <div className="max-w-[85%] sm:max-w-[75%] lg:max-w-[70%]">
+            <div
+              className={cn(
+                'rounded-2xl rounded-br-md bg-accent px-3 py-2 text-accent-foreground sm:px-4 sm:py-3',
+                'whitespace-pre-wrap break-words',
+                hasError &&
+                'border-2 border-destructive bg-destructive/10 text-foreground'
+              )}
+            >
+              <p className="text-sm sm:text-base">{content}</p>
+            </div>
+            <div className="mt-1 flex items-center justify-end gap-2 text-xs text-muted-foreground">
+              <span>{formatTimeOnly(createdAt)}</span>
+              <StatusIndicator hasError={hasError} />
+              {hasError && onRetry && (
+                <TooltipButton
+                  icon={RotateCw}
+                  label="Retry"
+                  onClick={handleRetry}
+                  ariaLabel="Retry sending message"
+                  className="h-6 w-6 text-destructive hover:text-destructive/80"
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -154,39 +159,43 @@ export function MessageBubble({
     }
   };
 
-  // Assistant message variant - left aligned tanpa bubble background
+  // Assistant message variant - full width dengan padding adaptif seperti ChatGPT
   if (role === 'assistant') {
     return (
-      <div className="flex justify-start px-4 py-2">
-        <div className="max-w-[85%] sm:max-w-[75%] lg:max-w-[70%]">
-          <div className="px-3 py-2 sm:px-4 sm:py-3">
-            <MarkdownRenderer content={content} />
-          </div>
-          <div className="mt-1 flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              {formatTimeOnly(createdAt)}
-            </span>
-            <div className="flex items-center gap-1">
-              {/* Copy Button */}
-              <TooltipButton
-                icon={copySuccess ? Check : Copy}
-                label={copySuccess ? 'Copied!' : 'Copy'}
-                onClick={handleCopy}
-                ariaLabel="Copy message"
-              />
-
-              {/* Regenerate Button */}
-              {onRegenerate && (
+      <div className="w-full py-2">
+        {/* Container dengan padding adaptif: 1rem mobile → 2rem desktop */}
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20">
+          {/* Content area tanpa max-width constraint */}
+          <div className="w-full">
+            <div className="py-2 sm:py-3">
+              <MarkdownRenderer content={content} />
+            </div>
+            <div className="mt-1 flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">
+                {formatTimeOnly(createdAt)}
+              </span>
+              <div className="flex items-center gap-1">
+                {/* Copy Button */}
                 <TooltipButton
-                  icon={RefreshCw}
-                  label="Regenerate"
-                  onClick={handleRegenerate}
-                  ariaLabel="Regenerate response"
+                  icon={copySuccess ? Check : Copy}
+                  label={copySuccess ? 'Copied!' : 'Copy'}
+                  onClick={handleCopy}
+                  ariaLabel="Copy message"
                 />
-              )}
 
-              {/* Reaction Buttons */}
-              {onReaction && <ReactionButtons onReaction={handleReaction} />}
+                {/* Regenerate Button */}
+                {onRegenerate && (
+                  <TooltipButton
+                    icon={RefreshCw}
+                    label="Regenerate"
+                    onClick={handleRegenerate}
+                    ariaLabel="Regenerate response"
+                  />
+                )}
+
+                {/* Reaction Buttons */}
+                {onReaction && <ReactionButtons onReaction={handleReaction} />}
+              </div>
             </div>
           </div>
         </div>

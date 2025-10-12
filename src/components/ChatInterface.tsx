@@ -356,35 +356,14 @@ function ChatInterfaceContent() {
       {/* Error Display */}
       <ErrorDisplay />
 
-      {/* Main Chat Area - Responsive container with desktop optimization */}
+      {/* Main Chat Area - Full width layout seperti ChatGPT */}
       <main
         id="main-content"
         className="flex min-h-0 flex-1 flex-col overflow-hidden"
         role="main"
       >
-        <div
-          className="mx-auto flex h-full w-full max-w-none flex-col sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl"
-          style={{
-            width: '100%',
-          }}
-        >
-          <style>{`
-            @media (min-width: 1024px) {
-              main > div {
-                padding-left: 1rem;
-                padding-right: 1rem;
-              }
-            }
-            @media (min-width: 1280px) {
-              main > div {
-                padding-left: 2rem;
-                padding-right: 2rem;
-              }
-            }
-          `}</style>
-          {/* Message List */}
-          <MessageList messages={state.messages} isLoading={state.isLoading} />
-        </div>
+        {/* Message List - Full width tanpa max-width constraint */}
+        <MessageList messages={state.messages} isLoading={state.isLoading} />
       </main>
 
       {/* Message Input - Docked at bottom outside main container */}
