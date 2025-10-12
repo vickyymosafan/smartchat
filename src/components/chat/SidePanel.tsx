@@ -286,6 +286,7 @@ export function SidePanel({
       {/* Mobile: Sheet slide-over (< 768px) */}
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="left" className="w-[85%] p-0 sm:max-w-sm md:hidden">
+          <SheetTitle className="sr-only">Percakapan</SheetTitle>
           <SidebarContent />
         </SheetContent>
       </Sheet>
