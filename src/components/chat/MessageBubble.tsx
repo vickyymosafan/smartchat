@@ -92,7 +92,7 @@ export function MessageBubble({
               'rounded-2xl rounded-br-md bg-accent px-3 py-2 text-accent-foreground sm:px-4 sm:py-3',
               'whitespace-pre-wrap break-words',
               hasError &&
-                'border-2 border-destructive bg-destructive/10 text-foreground'
+              'border-2 border-destructive bg-destructive/10 text-foreground'
             )}
           >
             <p className="text-sm sm:text-base">{content}</p>
@@ -154,16 +154,12 @@ export function MessageBubble({
     }
   };
 
-  // Assistant message variant - left aligned dengan muted background dan border
+  // Assistant message variant - left aligned tanpa bubble background
   if (role === 'assistant') {
     return (
       <div className="flex justify-start px-4 py-2">
         <div className="max-w-[85%] sm:max-w-[75%] lg:max-w-[70%]">
-          <div
-            className={cn(
-              'rounded-2xl rounded-bl-md border bg-muted px-3 py-2 sm:px-4 sm:py-3'
-            )}
-          >
+          <div className="px-3 py-2 sm:px-4 sm:py-3">
             <MarkdownRenderer content={content} />
           </div>
           <div className="mt-1 flex items-center justify-between">
