@@ -167,7 +167,7 @@ export function MessageBubble({
         <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20">
           {/* Content area tanpa max-width constraint */}
           <div className="w-full">
-            <div className="py-2 sm:py-3">
+            <div className="py-2 text-sm sm:py-3 sm:text-base">
               <MarkdownRenderer content={content} />
             </div>
             <div className="mt-1 flex items-center justify-between">
