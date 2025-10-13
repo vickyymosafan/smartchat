@@ -55,8 +55,8 @@ function StatusChip({ isOnline }: StatusChipProps) {
  */
 function BrandLogo() {
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+    <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-accent text-accent-foreground">
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -64,12 +64,12 @@ function BrandLogo() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="h-5 w-5"
+          className="h-4 w-4 sm:h-5 sm:w-5"
         >
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
       </div>
-      <span className="text-lg font-semibold tracking-tight">SMARTCHAT</span>
+      <span className="text-base sm:text-lg font-semibold tracking-tight">SMARTCHAT</span>
     </div>
   );
 }
@@ -115,9 +115,9 @@ export function TopBar({
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+      <div className="flex h-14 sm:h-16 items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4 lg:px-6">
         {/* Left section: Sidebar toggle (mobile) + Brand + Title */}
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           {showSidebarToggle && (
             <Button
               variant="ghost"
@@ -125,10 +125,10 @@ export function TopBar({
               onClick={onSidebarToggle}
               onMouseEnter={preloadSidePanel}
               onFocus={preloadSidePanel}
-              className="shrink-0 lg:hidden"
+              className="h-9 w-9 shrink-0 lg:hidden"
               aria-label="Toggle sidebar"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           )}
 
@@ -148,7 +148,7 @@ export function TopBar({
         </div>
 
         {/* Right section: Status + Actions */}
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <StatusChip isOnline={isOnline} />
 
           <Button
@@ -156,9 +156,9 @@ export function TopBar({
             size="icon"
             onClick={onSettingsClick}
             aria-label="Settings"
-            className="shrink-0"
+            className="h-9 w-9 shrink-0"
           >
-            <Settings className="h-5 w-5" />
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
 
           {/* ThemeToggle untuk switch light/dark/system theme */}

@@ -241,8 +241,8 @@ export function Composer({
   const characterCount = `${message.length}/${maxLength}`;
 
   return (
-    <div className="border-t bg-background p-4 sm:p-6">
-      <div className="container mx-auto">
+    <div className="border-t bg-background p-3 sm:p-4 lg:p-6">
+      <div className="mx-auto max-w-full sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
         <form onSubmit={handleSubmit} className="relative">
           {/* Autosize Textarea */}
           <textarea
@@ -255,9 +255,9 @@ export function Composer({
             disabled={isLoading}
             className={cn(
               'w-full resize-none rounded-2xl border bg-background',
-              'px-4 py-3 pr-14',
-              'min-h-[48px] max-h-[120px]',
-              'text-base leading-normal',
+              'px-3 sm:px-4 py-2.5 sm:py-3 pr-12 sm:pr-14',
+              'min-h-[44px] sm:min-h-[48px] max-h-[100px] sm:max-h-[120px]',
+              'text-sm sm:text-base leading-normal',
               'placeholder:text-muted-foreground',
               'focus:outline-none focus:ring-2 focus:ring-ring',
               'disabled:cursor-not-allowed disabled:opacity-50',
@@ -271,7 +271,7 @@ export function Composer({
           />
 
           {/* Send Button - Positioned absolute bottom-right */}
-          <div className="absolute bottom-2 right-2">
+          <div className="absolute bottom-1.5 sm:bottom-2 right-1.5 sm:right-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -279,7 +279,7 @@ export function Composer({
                   size="icon"
                   disabled={isSendDisabled}
                   className={cn(
-                    'h-10 w-10 rounded-full',
+                    'h-9 w-9 sm:h-10 sm:w-10 rounded-full',
                     'transition-transform duration-200',
                     'hover:scale-110',
                     'active:scale-95',
@@ -288,9 +288,9 @@ export function Composer({
                   aria-label="Kirim pesan"
                 >
                   {isLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
                   ) : (
-                    <Send className="h-5 w-5" />
+                    <Send className="h-4 w-4 sm:h-5 sm:w-5" />
                   )}
                 </Button>
               </TooltipTrigger>
@@ -329,26 +329,27 @@ export function Composer({
         {/* Keyboard Hints and Character Counter */}
         <div
           id="composer-hints"
-          className="mt-2 flex items-center justify-between text-xs text-muted-foreground"
+          className="mt-1.5 sm:mt-2 flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground"
         >
-          {/* Keyboard Hints */}
-          <div className="flex items-center gap-2">
-            <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono">
+          {/* Keyboard Hints - Hidden on mobile, shown on tablet+ */}
+          <div className="hidden sm:flex items-center gap-2">
+            <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px]">
               Enter
             </kbd>
-            <span>kirim</span>
+            <span className="text-xs">kirim</span>
             <span>•</span>
-            <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono">
+            <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px]">
               Shift+Enter
             </kbd>
-            <span className="hidden sm:inline">baris baru</span>
+            <span>baris baru</span>
           </div>
 
           {/* Character Counter */}
           <span
             className={cn(
-              'transition-colors duration-200',
-              isNearLimit && 'text-destructive font-medium'
+              'transition-colors duration-200 text-[10px] sm:text-xs',
+              !isNearLimit && 'sm:ml-auto',
+              isNearLimit && 'text-destructive font-medium ml-auto'
             )}
             aria-live="polite"
             aria-label={`${message.length} dari ${maxLength} karakter`}
