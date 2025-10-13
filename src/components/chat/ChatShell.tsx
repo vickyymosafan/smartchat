@@ -30,6 +30,9 @@ const CommandPalette = lazy(() =>
 const SidePanel = lazy(() =>
   import('./SidePanel').then(mod => ({ default: mod.SidePanel }))
 );
+const SettingsSheet = lazy(() =>
+  import('./SettingsSheet').then(mod => ({ default: mod.SettingsSheet }))
+);
 
 // Type import untuk ChatItem
 import type { ChatItem } from './SidePanel';
@@ -89,6 +92,9 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
 
   // State untuk command palette
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+
+  // State untuk settings sheet
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // State untuk sidebar (load from storage on mount)
   const [sidebarOpen, setSidebarOpen] = useState(() => {
@@ -329,8 +335,7 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
    * Handler untuk open settings action
    */
   const handleOpenSettings = () => {
-    // TODO: Implement settings dialog
-    console.log('Open settings dialog');
+    setSettingsOpen(true);
   };
 
   /**
@@ -445,6 +450,15 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
               onToggleTheme={handleToggleTheme}
             />
           )}
+        </Suspense>
+
+        {/* Settings Sheet - Lazy loaded */}
+        <Suspense fallback={null}>
+          <SettingsSheet
+            open={settingsOpen}
+            onOpenChange={setSettingsOpen}
+            onClearHistory={handleClearHistory}
+          />
         </Suspense>
       </div>
     </ChatContext.Provider>
