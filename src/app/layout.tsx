@@ -27,14 +27,16 @@ import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Aplikasi Chat Dinamis - Asisten AI Modern',
-    template: '%s | Aplikasi Chat Dinamis',
+    default: 'SmartChat - Intelligent Conversations',
+    template: '%s | SmartChat',
   },
   description:
-    'Aplikasi chat dinamis dengan teknologi AI modern, dukungan PWA untuk pengalaman offline, dan integrasi n8n untuk otomasi workflow. Dibangun dengan Next.js 15 dan Tailwind CSS.',
+    'SmartChat - Platform chat cerdas dengan AI untuk percakapan yang lebih produktif dan efisien. Dukungan PWA untuk pengalaman offline dan integrasi n8n untuk otomasi workflow.',
   keywords: [
+    'SmartChat',
     'chat AI',
-    'aplikasi chat',
+    'intelligent conversations',
+    'aplikasi chat cerdas',
     'PWA',
     'Progressive Web App',
     'Next.js',
@@ -49,10 +51,10 @@ export const metadata: Metadata = {
     'Indonesian chat app',
   ],
   authors: [
-    { name: 'Aplikasi Chat Dinamis Team', url: 'https://github.com/your-repo' },
+    { name: 'SmartChat Team', url: 'https://github.com/your-repo' },
   ],
-  creator: 'Aplikasi Chat Dinamis Team',
-  publisher: 'Aplikasi Chat Dinamis',
+  creator: 'SmartChat Team',
+  publisher: 'SmartChat',
   category: 'Technology',
   classification: 'Chat Application',
   formatDetection: {
@@ -66,7 +68,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Chat Dinamis',
+    title: 'SmartChat',
     startupImage: [
       {
         url: '/icons/apple-splash-2048-2732.png',
@@ -134,26 +136,26 @@ export const metadata: Metadata = {
   // Open Graph Configuration
   openGraph: {
     type: 'website',
-    siteName: 'Aplikasi Chat Dinamis',
-    title: 'Aplikasi Chat Dinamis - Asisten AI Modern',
+    siteName: 'SmartChat',
+    title: 'SmartChat - Intelligent Conversations',
     description:
-      'Aplikasi chat dinamis dengan teknologi AI modern, dukungan PWA untuk pengalaman offline, dan integrasi n8n untuk otomasi workflow.',
+      'SmartChat - Platform chat cerdas dengan AI untuk percakapan yang lebih produktif dan efisien. Dukungan PWA untuk pengalaman offline.',
     locale: 'id_ID',
     alternateLocale: ['en_US'],
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://your-app-domain.com',
     images: [
       {
-        url: '/images/og-image.png',
+        url: '/smartchat-logo.png',
         width: 1200,
         height: 630,
-        alt: 'Aplikasi Chat Dinamis - Screenshot',
+        alt: 'SmartChat - Intelligent Conversations',
         type: 'image/png',
       },
       {
-        url: '/images/og-image-square.png',
+        url: '/smartchat-logo.png',
         width: 1200,
         height: 1200,
-        alt: 'Aplikasi Chat Dinamis - Logo',
+        alt: 'SmartChat Logo',
         type: 'image/png',
       },
     ],
@@ -162,12 +164,12 @@ export const metadata: Metadata = {
   // Twitter Card Configuration
   twitter: {
     card: 'summary_large_image',
-    site: '@your_twitter_handle',
-    creator: '@your_twitter_handle',
-    title: 'Aplikasi Chat Dinamis - Asisten AI Modern',
+    site: '@smartchat',
+    creator: '@smartchat',
+    title: 'SmartChat - Intelligent Conversations',
     description:
-      'Aplikasi chat dinamis dengan teknologi AI modern dan dukungan PWA untuk pengalaman offline yang optimal.',
-    images: ['/images/twitter-image.png'],
+      'SmartChat - Platform chat cerdas dengan AI untuk percakapan yang lebih produktif dan efisien.',
+    images: ['/smartchat-logo.png'],
   },
 
   // Robots Configuration
@@ -206,7 +208,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#3b82f6',
+  themeColor: '#2563eb',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -237,11 +239,11 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Chat Dinamis" />
-        <meta name="application-name" content="Chat Dinamis" />
+        <meta name="apple-mobile-web-app-title" content="SmartChat" />
+        <meta name="application-name" content="SmartChat" />
 
         {/* Microsoft Tiles */}
-        <meta name="msapplication-TileColor" content="#3b82f6" />
+        <meta name="msapplication-TileColor" content="#2563eb" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
         <meta
           name="msapplication-TileImage"

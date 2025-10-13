@@ -30,6 +30,7 @@ export default function PWAInstallPrompt({
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     // Cek apakah sudah berjalan sebagai PWA
@@ -52,14 +53,19 @@ export default function PWAInstallPrompt({
 
       // Show prompt jika belum pernah di-dismiss dan belum standalone
       if (!wasDismissed && !isPWA()) {
-        setShowPrompt(true);
+        // Delay sedikit untuk animasi smooth
+        setTimeout(() => {
+          setShowPrompt(true);
+          setTimeout(() => setIsVisible(true), 50);
+        }, 1000);
       }
     };
 
     // Listen untuk appinstalled event
     const handleAppInstalled = () => {
       console.log('PWA berhasil diinstall');
-      setShowPrompt(false);
+      setIsVisible(false);
+      setTimeout(() => setShowPrompt(false), 300);
       setDeferredPrompt(null);
 
       // Tampilkan toast success
@@ -74,11 +80,13 @@ export default function PWAInstallPrompt({
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Untuk iOS, show prompt setelah delay jika belum standalone
-    if (iOS && !isPWA() && !wasDismissed) {
+    // Untuk iOS atau browser yang tidak support beforeinstallprompt
+    // Show prompt langsung jika belum standalone dan belum dismissed
+    if (!isPWA() && !wasDismissed) {
       const timer = setTimeout(() => {
         setShowPrompt(true);
-      }, 3000); // Show setelah 3 detik
+        setTimeout(() => setIsVisible(true), 50);
+      }, 1000); // Show setelah 1 detik untuk UX yang lebih baik
 
       return () => {
         clearTimeout(timer);
@@ -123,7 +131,8 @@ export default function PWAInstallPrompt({
         }
 
         setDeferredPrompt(null);
-        setShowPrompt(false);
+        setIsVisible(false);
+        setTimeout(() => setShowPrompt(false), 300);
       } catch (error) {
         console.error('Error saat install PWA:', error);
         toast.error(
@@ -138,8 +147,11 @@ export default function PWAInstallPrompt({
   };
 
   const handleDismiss = () => {
-    setShowPrompt(false);
-    setDismissed(true);
+    setIsVisible(false);
+    setTimeout(() => {
+      setShowPrompt(false);
+      setDismissed(true);
+    }, 300);
     localStorage.setItem('pwa-install-dismissed', 'true');
     onDismiss?.();
   };
@@ -150,58 +162,126 @@ export default function PWAInstallPrompt({
   }
 
   return (
-    <div
-      className={`fixed bottom-4 left-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-40 max-w-sm mx-auto ${className}`}
-    >
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0">
-          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <span className="text-xl">📱</span>
+    <>
+      {/* Backdrop overlay */}
+      <div
+        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'
+          } ${className}`}
+        onClick={handleDismiss}
+      />
+
+      {/* Modal popup */}
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none transition-all duration-300 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          }`}
+      >
+        <div
+          className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 pointer-events-auto transform"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header dengan logo SmartChat */}
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="w-24 h-24 mb-4 relative">
+              <img
+                src="/smartchat-logo.png"
+                alt="SmartChat Logo"
+                className="w-full h-full object-contain drop-shadow-lg"
+              />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Install SmartChat
+            </h2>
+            <p className="text-gray-600 text-sm">
+              Dapatkan pengalaman terbaik dengan menginstall aplikasi ke perangkat Anda
+            </p>
           </div>
-        </div>
 
-        <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-medium text-gray-900 mb-1">
-            Install Aplikasi Chat
-          </h3>
+          {/* Features list */}
+          <div className="space-y-3 mb-6">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+                <span className="text-sm">⚡</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900">Akses Cepat</p>
+                <p className="text-xs text-gray-600">Buka langsung dari home screen</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                <span className="text-sm">📱</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900">Mode Offline</p>
+                <p className="text-xs text-gray-600">Tetap bisa digunakan tanpa internet</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mt-0.5">
+                <span className="text-sm">🔔</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900">Notifikasi</p>
+                <p className="text-xs text-gray-600">Dapatkan update pesan secara real-time</p>
+              </div>
+            </div>
+          </div>
 
-          {isIOS ? (
-            <div className="text-xs text-gray-600 space-y-2">
-              <p>Untuk install di iPhone/iPad:</p>
-              <ol className="list-decimal list-inside space-y-1 text-xs">
-                <li>
-                  Tap tombol Share <span className="inline-block">📤</span>
+          {/* iOS specific instructions */}
+          {isIOS && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <p className="text-sm font-medium text-blue-900 mb-2">
+                Cara install di iPhone/iPad:
+              </p>
+              <ol className="list-decimal list-inside space-y-1.5 text-sm text-blue-800">
+                <li className="flex items-start">
+                  <span className="mr-2">1.</span>
+                  <span className="flex-1">
+                    Tap tombol Share <span className="inline-block mx-1">📤</span> di bawah
+                  </span>
                 </li>
-                <li>Pilih &quot;Add to Home Screen&quot;</li>
-                <li>Tap &quot;Add&quot; untuk konfirmasi</li>
+                <li className="flex items-start">
+                  <span className="mr-2">2.</span>
+                  <span className="flex-1">Scroll dan pilih &quot;Add to Home Screen&quot;</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">3.</span>
+                  <span className="flex-1">Tap &quot;Add&quot; untuk konfirmasi</span>
+                </li>
               </ol>
             </div>
-          ) : (
-            <p className="text-xs text-gray-600 mb-3">
-              Install aplikasi untuk akses cepat dan pengalaman yang lebih baik
-            </p>
           )}
+
+          {/* Action buttons */}
+          <div className="flex flex-col space-y-2">
+            {!isIOS && deferredPrompt && (
+              <button
+                onClick={handleInstallClick}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
+              >
+                Install Sekarang
+              </button>
+            )}
+
+            <button
+              onClick={handleDismiss}
+              className="w-full bg-gray-100 text-gray-700 font-medium py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              {isIOS ? 'Mengerti' : 'Mungkin Nanti'}
+            </button>
+          </div>
+
+          {/* Close button */}
+          <button
+            onClick={handleDismiss}
+            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Close"
+          >
+            <span className="text-gray-400 text-xl">×</span>
+          </button>
         </div>
       </div>
-
-      <div className="flex space-x-2 mt-3">
-        {!isIOS && (
-          <button
-            onClick={handleInstallClick}
-            className="flex-1 bg-blue-600 text-white text-xs font-medium py-2 px-3 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Install
-          </button>
-        )}
-
-        <button
-          onClick={handleDismiss}
-          className="flex-1 bg-gray-100 text-gray-700 text-xs font-medium py-2 px-3 rounded-md hover:bg-gray-200 transition-colors"
-        >
-          {isIOS ? 'Mengerti' : 'Nanti Saja'}
-        </button>
-      </div>
-    </div>
+    </>
   );
 }
 

@@ -1,46 +1,93 @@
-// Script untuk generate PWA icons dari SVG
-// Untuk development, kita akan menggunakan placeholder icons
-// Dalam production, gunakan tool seperti PWA Asset Generator
+/**
+ * Script untuk generate PWA icons dari logo SmartChat
+ * Menggunakan sharp untuk resize image
+ */
 
+const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
-// Placeholder base64 untuk icon sederhana (1x1 pixel transparan)
-const placeholderIcon =
-  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+const inputFile = path.join(__dirname, '../public/smartchat-logo.png');
+const outputDir = path.join(__dirname, '../public/icons');
 
-// Ukuran icon yang diperlukan untuk PWA
-const iconSizes = [72, 96, 128, 144, 152, 192, 384, 512];
-
-// Buat direktori icons jika belum ada
-const iconsDir = path.join(__dirname, '../public/icons');
-if (!fs.existsSync(iconsDir)) {
-  fs.mkdirSync(iconsDir, { recursive: true });
+// Pastikan directory icons ada
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
 }
 
-// Generate placeholder icons
-iconSizes.forEach(size => {
-  const filename = `icon-${size}x${size}.png`;
-  const filepath = path.join(iconsDir, filename);
+async function generateIcons() {
+  console.log('🎨 Generating PWA icons from SmartChat logo...\n');
 
-  // Untuk development, kita buat file kosong
-  // Dalam production, gunakan tool proper untuk convert SVG ke PNG
-  fs.writeFileSync(
-    filepath,
-    Buffer.from(placeholderIcon.split(',')[1], 'base64')
-  );
-  console.log(`Generated ${filename}`);
-});
+  try {
+    // Generate icons untuk berbagai ukuran
+    for (const size of sizes) {
+      const outputFile = path.join(outputDir, `icon-${size}x${size}.png`);
+      
+      await sharp(inputFile)
+        .resize(size, size, {
+          fit: 'contain',
+          background: { r: 255, g: 255, b: 255, alpha: 1 }
+        })
+        .png()
+        .toFile(outputFile);
+      
+      console.log(`✅ Generated: icon-${size}x${size}.png`);
+    }
 
-// Generate apple-touch-icon
-const appleIconPath = path.join(iconsDir, 'apple-touch-icon.png');
-fs.writeFileSync(
-  appleIconPath,
-  Buffer.from(placeholderIcon.split(',')[1], 'base64')
-);
-console.log('Generated apple-touch-icon.png');
+    // Generate Apple Touch Icon (180x180)
+    const appleTouchIcon = path.join(outputDir, 'apple-touch-icon.png');
+    await sharp(inputFile)
+      .resize(180, 180, {
+        fit: 'contain',
+        background: { r: 255, g: 255, b: 255, alpha: 1 }
+      })
+      .png()
+      .toFile(appleTouchIcon);
+    
+    console.log('✅ Generated: apple-touch-icon.png');
 
-console.log('✅ Placeholder icons generated successfully!');
-console.log(
-  '📝 Note: Replace with actual icons using a tool like PWA Asset Generator'
-);
+    // Generate favicon (32x32)
+    const favicon32 = path.join(__dirname, '../public/icons/icon-32x32.png');
+    await sharp(inputFile)
+      .resize(32, 32, {
+        fit: 'contain',
+        background: { r: 255, g: 255, b: 255, alpha: 1 }
+      })
+      .png()
+      .toFile(favicon32);
+    
+    console.log('✅ Generated: icon-32x32.png');
+
+    // Generate favicon (16x16)
+    const favicon16 = path.join(__dirname, '../public/icons/icon-16x16.png');
+    await sharp(inputFile)
+      .resize(16, 16, {
+        fit: 'contain',
+        background: { r: 255, g: 255, b: 255, alpha: 1 }
+      })
+      .png()
+      .toFile(favicon16);
+    
+    console.log('✅ Generated: icon-16x16.png');
+
+    // Generate favicon.ico dari icon 32x32
+    const faviconIco = path.join(__dirname, '../public/favicon.ico');
+    await sharp(inputFile)
+      .resize(32, 32, {
+        fit: 'contain',
+        background: { r: 255, g: 255, b: 255, alpha: 1 }
+      })
+      .png()
+      .toFile(faviconIco);
+    
+    console.log('✅ Generated: favicon.ico');
+
+    console.log('\n🎉 All icons generated successfully!');
+  } catch (error) {
+    console.error('❌ Error generating icons:', error);
+    process.exit(1);
+  }
+}
+
+generateIcons();
