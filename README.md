@@ -1,6 +1,6 @@
-# Aplikasi Chat Dinamis
+# SmartChat - Intelligent Conversations
 
-Aplikasi chat dinamis yang dibangun dengan Next.js 15, Tailwind CSS, dan dukungan Progressive Web App (PWA). Aplikasi ini terintegrasi dengan n8n webhook untuk pemrosesan pesan dan dapat berfungsi secara offline.
+SmartChat adalah platform chat cerdas dengan AI yang dibangun dengan Next.js 15, Tailwind CSS, dan dukungan Progressive Web App (PWA). Aplikasi ini terintegrasi dengan n8n webhook untuk pemrosesan pesan dan dapat berfungsi secara offline.
 
 ## ✨ Fitur Utama
 
@@ -193,7 +193,7 @@ Lihat `next.config.ts` untuk detail konfigurasi security.
 **Desktop (Chrome/Edge):**
 
 1. Klik icon install di address bar
-2. Atau: Menu → Install Aplikasi Chat Dinamis
+2. Atau: Menu → Install SmartChat
 
 **Mobile (Android):**
 

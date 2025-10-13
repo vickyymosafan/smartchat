@@ -1,4 +1,4 @@
-# Security Policy untuk Aplikasi Chat Dinamis
+# Security Policy untuk SmartChat
 # https://securitytxt.org/
 
 Contact: mailto:security@your-domain.com

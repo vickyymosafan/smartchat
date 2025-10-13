@@ -181,17 +181,17 @@ export default function PWAInstallPrompt({
         >
           {/* Header dengan logo SmartChat */}
           <div className="flex flex-col items-center text-center mb-6">
-            <div className="w-24 h-24 mb-4 relative">
+            <div className="w-20 h-20 mb-4 relative">
               <img
                 src="/smartchat-logo.png"
                 alt="SmartChat Logo"
-                className="w-full h-full object-contain drop-shadow-lg"
+                className="w-full h-full object-contain drop-shadow-lg rounded-2xl"
               />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
               Install SmartChat
             </h2>
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
               Dapatkan pengalaman terbaik dengan menginstall aplikasi ke perangkat Anda
             </p>
           </div>

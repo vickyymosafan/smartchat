@@ -63,9 +63,9 @@ export function generateWebApplicationSchema(): WebApplicationSchema {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'Aplikasi Chat Dinamis',
+    name: 'SmartChat - Intelligent Conversations',
     description:
-      'Aplikasi chat dinamis dengan teknologi AI modern, dukungan PWA untuk pengalaman offline, dan integrasi n8n untuk otomasi workflow.',
+      'SmartChat - Platform chat cerdas dengan AI untuk percakapan yang lebih produktif dan efisien. Dukungan PWA untuk pengalaman offline dan integrasi n8n untuk otomasi workflow.',
     url: baseUrl,
     applicationCategory: 'CommunicationApplication',
     operatingSystem: 'Web Browser, iOS, Android',
@@ -77,7 +77,7 @@ export function generateWebApplicationSchema(): WebApplicationSchema {
     },
     author: {
       '@type': 'Organization',
-      name: 'Aplikasi Chat Dinamis Team',
+      name: 'SmartChat Team',
     },
     featureList: [
       'Chat AI dengan respons real-time',
@@ -106,10 +106,10 @@ export function generateOrganizationSchema(): OrganizationSchema {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Aplikasi Chat Dinamis',
-    description: 'Tim pengembang aplikasi chat dinamis dengan teknologi modern',
+    name: 'SmartChat',
+    description: 'Tim pengembang SmartChat - Platform chat cerdas dengan teknologi AI modern',
     url: baseUrl,
-    logo: `${baseUrl}/icons/icon-512x512.png`,
+    logo: `${baseUrl}/smartchat-logo.png`,
     sameAs: [
       // Tambahkan social media links jika ada
       // 'https://twitter.com/your_handle',
@@ -129,9 +129,9 @@ export function generateWebsiteSchema(): WebsiteSchema {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Aplikasi Chat Dinamis',
+    name: 'SmartChat - Intelligent Conversations',
     description:
-      'Aplikasi chat dinamis dengan teknologi AI modern dan dukungan PWA',
+      'SmartChat - Platform chat cerdas dengan AI untuk percakapan yang lebih produktif dan efisien. Dukungan PWA untuk pengalaman offline.',
     url: baseUrl,
     potentialAction: {
       '@type': 'SearchAction',

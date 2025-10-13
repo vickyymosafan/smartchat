@@ -84,7 +84,7 @@ export default function SEOHead({
 
     // Update page-specific meta tags
     if (title) {
-      document.title = `${title} | Aplikasi Chat Dinamis`;
+      document.title = `${title} | SmartChat`;
     }
 
     if (description) {
@@ -141,7 +141,7 @@ export default function SEOHead({
     return () => {
       // Reset title jika perlu
       if (title) {
-        document.title = 'Aplikasi Chat Dinamis - Asisten AI Modern';
+        document.title = 'SmartChat - Intelligent Conversations';
       }
     };
   }, [title, description, canonicalUrl, keywords, ogImage, noStructuredData]);
@@ -155,7 +155,7 @@ export default function SEOHead({
  */
 export function useSEO() {
   const updatePageTitle = (title: string) => {
-    document.title = `${title} | Aplikasi Chat Dinamis`;
+    document.title = `${title} | SmartChat`;
   };
 
   const updateMetaDescription = (description: string) => {

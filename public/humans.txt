@@ -1,8 +1,8 @@
 # humanstxt.org/
-# Aplikasi Chat Dinamis - Tim Pengembang
+# SmartChat - Tim Pengembang
 
 /* TEAM */
-Developer: Aplikasi Chat Dinamis Team
+Developer: SmartChat Team
 Contact: team [at] your-domain.com
 Twitter: @your_twitter_handle
 From: Indonesia
