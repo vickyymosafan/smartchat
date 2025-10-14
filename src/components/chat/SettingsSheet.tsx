@@ -13,17 +13,12 @@ import {
   Download,
   Trash2,
   Info,
-  Sun,
-  Moon,
-  Monitor,
   Check,
   Smartphone,
   Zap,
   Wifi,
   Bell,
 } from 'lucide-react';
-import { useTheme } from '@/hooks/useTheme';
-import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -46,7 +41,6 @@ interface SettingsSheetProps {
  * 
  * Menampilkan settings aplikasi dengan fitur:
  * - Install PWA (Progressive Web App)
- * - Theme selection (Light/Dark/System)
  * - Clear chat history
  * - About information
  */
@@ -55,7 +49,6 @@ export function SettingsSheet({
   onOpenChange,
   onClearHistory,
 }: SettingsSheetProps) {
-  const { theme, setTheme } = useTheme();
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [canInstall, setCanInstall] = useState(false);
@@ -160,86 +153,65 @@ export function SettingsSheet({
     }
   };
 
-  /**
-   * Theme options
-   */
-  const themeOptions = [
-    {
-      value: 'light' as const,
-      label: 'Light',
-      icon: Sun,
-      description: 'Tema terang',
-    },
-    {
-      value: 'dark' as const,
-      label: 'Dark',
-      icon: Moon,
-      description: 'Tema gelap',
-    },
-    {
-      value: 'system' as const,
-      label: 'System',
-      icon: Monitor,
-      description: 'Ikuti sistem',
-    },
-  ];
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>Pengaturan</SheetTitle>
-          <SheetDescription>
+      <SheetContent
+        side="right"
+        className="w-full sm:w-[90vw] sm:max-w-[400px] md:max-w-[440px] lg:max-w-[480px] overflow-y-auto p-0"
+      >
+        <SheetHeader className="px-4 sm:px-5 md:px-6 pt-4 sm:pt-5 md:pt-6 pb-3 sm:pb-4">
+          <SheetTitle className="text-base sm:text-lg">Pengaturan</SheetTitle>
+          <SheetDescription className="text-xs sm:text-sm">
             Kelola preferensi dan pengaturan aplikasi Anda
           </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6 space-y-6">
+        <div className="px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6 space-y-4 sm:space-y-5 md:space-y-6">
           {/* Install App Section */}
           {!isInstalled && (canInstall || isIOS) && (
             <section>
-              <h3 className="text-sm font-semibold mb-3">Install Aplikasi</h3>
-              
+              <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3">Install Aplikasi</h3>
+
               {/* Install Card */}
-              <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-4 space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                    <Download className="h-5 w-5 text-white" />
+              <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-3 sm:p-4 space-y-2.5 sm:space-y-3">
+                <div className="flex items-start gap-2.5 sm:gap-3">
+                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                    <Download className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-sm mb-1">
+                    <h4 className="font-semibold text-xs sm:text-sm mb-0.5 sm:mb-1">
                       Install SmartChat
                     </h4>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[11px] sm:text-xs text-muted-foreground leading-snug">
                       Dapatkan pengalaman terbaik dengan menginstall aplikasi
                     </p>
                   </div>
                 </div>
 
                 {/* Features */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs">
-                    <Zap className="h-3.5 w-3.5 text-blue-600" />
+                <div className="space-y-1.5 sm:space-y-2">
+                  <div className="flex items-center gap-2 text-[11px] sm:text-xs">
+                    <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
                     <span>Akses cepat dari home screen</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <Wifi className="h-3.5 w-3.5 text-blue-600" />
+                  <div className="flex items-center gap-2 text-[11px] sm:text-xs">
+                    <Wifi className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
                     <span>Bekerja offline</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <Bell className="h-3.5 w-3.5 text-blue-600" />
+                  <div className="flex items-center gap-2 text-[11px] sm:text-xs">
+                    <Bell className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
                     <span>Notifikasi real-time</span>
                   </div>
                 </div>
 
                 {/* iOS Instructions */}
                 {isIOS && (
-                  <div className="bg-white/50 dark:bg-black/20 rounded-md p-3 space-y-2">
-                    <p className="text-xs font-medium flex items-center gap-2">
-                      <Smartphone className="h-3.5 w-3.5" />
+                  <div className="bg-white/50 dark:bg-black/20 rounded-md p-2.5 sm:p-3 space-y-1.5 sm:space-y-2">
+                    <p className="text-[11px] sm:text-xs font-medium flex items-center gap-2">
+                      <Smartphone className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
                       Cara install di iOS:
                     </p>
-                    <ol className="text-xs space-y-1 pl-5 list-decimal text-muted-foreground">
+                    <ol className="text-[11px] sm:text-xs space-y-0.5 sm:space-y-1 pl-4 sm:pl-5 list-decimal text-muted-foreground">
                       <li>Tap tombol Share di browser</li>
                       <li>Pilih &quot;Add to Home Screen&quot;</li>
                       <li>Tap &quot;Add&quot; untuk konfirmasi</li>
@@ -251,10 +223,10 @@ export function SettingsSheet({
                 {!isIOS && deferredPrompt && (
                   <Button
                     onClick={handleInstall}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm h-8 sm:h-9"
                     size="sm"
                   >
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                     Install Sekarang
                   </Button>
                 )}
@@ -265,16 +237,16 @@ export function SettingsSheet({
           {/* Already Installed Message */}
           {isInstalled && (
             <section>
-              <div className="rounded-lg border bg-green-50 dark:bg-green-950/20 p-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-600 flex items-center justify-center">
-                    <Check className="h-5 w-5 text-white" />
+              <div className="rounded-lg border bg-green-50 dark:bg-green-950/20 p-3 sm:p-4">
+                <div className="flex items-center gap-2.5 sm:gap-3">
+                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-green-600 flex items-center justify-center">
+                    <Check className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-sm text-green-900 dark:text-green-100 mb-1">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-xs sm:text-sm text-green-900 dark:text-green-100 mb-0.5 sm:mb-1">
                       Aplikasi Terinstall
                     </h4>
-                    <p className="text-xs text-green-700 dark:text-green-300">
+                    <p className="text-[11px] sm:text-xs text-green-700 dark:text-green-300 leading-snug">
                       SmartChat sudah terinstall di perangkat Anda
                     </p>
                   </div>
@@ -283,61 +255,16 @@ export function SettingsSheet({
             </section>
           )}
 
-          {/* Theme Section */}
-          <section>
-            <h3 className="text-sm font-semibold mb-3">Tema</h3>
-            <div className="space-y-2">
-              {themeOptions.map(option => {
-                const Icon = option.icon;
-                const isActive = theme === option.value;
-
-                return (
-                  <button
-                    key={option.value}
-                    onClick={() => setTheme(option.value)}
-                    className={cn(
-                      'w-full flex items-center gap-3 p-3 rounded-lg border transition-all',
-                      'hover:bg-accent/50',
-                      isActive
-                        ? 'border-primary bg-accent'
-                        : 'border-border bg-background'
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center',
-                        isActive
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-muted-foreground'
-                      )}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <div className="font-medium text-sm">{option.label}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {option.description}
-                      </div>
-                    </div>
-                    {isActive && (
-                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-
           {/* Actions Section */}
           <section>
-            <h3 className="text-sm font-semibold mb-3">Tindakan</h3>
+            <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3">Tindakan</h3>
             <div className="space-y-2">
               <Button
                 variant="outline"
-                className="w-full justify-start"
+                className="w-full justify-start text-xs sm:text-sm h-9 sm:h-10"
                 onClick={handleClearHistory}
               >
-                <Trash2 className="h-4 w-4 mr-2" />
+                <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                 Hapus Riwayat Chat
               </Button>
             </div>
@@ -345,24 +272,24 @@ export function SettingsSheet({
 
           {/* About Section */}
           <section>
-            <h3 className="text-sm font-semibold mb-3">Tentang</h3>
-            <div className="rounded-lg border p-4 space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
-                  <Info className="h-5 w-5" />
+            <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3">Tentang</h3>
+            <div className="rounded-lg border p-3 sm:p-4 space-y-2.5 sm:space-y-3">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-accent flex items-center justify-center">
+                  <Info className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-sm">SmartChat</h4>
-                  <p className="text-xs text-muted-foreground">Versi 1.0.0</p>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-xs sm:text-sm">SmartChat</h4>
+                  <p className="text-[11px] sm:text-xs text-muted-foreground">Versi 1.0.0</p>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
                 Platform chat cerdas dengan AI untuk percakapan yang lebih
                 produktif dan efisien. Dibangun dengan Next.js 15 dan Tailwind
                 CSS.
               </p>
               <div className="pt-2 border-t">
-                <p className="text-xs text-muted-foreground">
+                <p className="text-[11px] sm:text-xs text-muted-foreground">
                   © 2025 SmartChat. All rights reserved.
                 </p>
               </div>
