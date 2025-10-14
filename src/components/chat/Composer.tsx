@@ -16,8 +16,9 @@ import {
   TooltipContent,
 } from '@/components/ui/tooltip';
 import type { ComposerProps } from '@/types/chat';
-import { cn } from '@/lib/utils';
+import { cn, validateMessage as validateMessageUtil } from '@/lib/utils';
 import { saveInputDraft, loadInputDraft, clearInputDraft } from '@/lib/storage';
+import { DEFAULT_CONFIG } from '@/lib/constants';
 
 /**
  * Composer - Input area component untuk mengirim pesan
@@ -39,7 +40,7 @@ export function Composer({
   isLoading = false,
   isOnline = true,
   placeholder = 'Ketik pesan Anda di sini...',
-  maxLength = 5000,
+  maxLength = DEFAULT_CONFIG.MAX_MESSAGE_LENGTH,
 }: ComposerProps) {
   // State untuk message input
   const [message, setMessage] = useState('');
@@ -68,7 +69,7 @@ export function Composer({
 
   /**
    * Validation function dengan debounce
-   * Validasi dilakukan setelah 300ms user berhenti mengetik
+   * Menggunakan shared validation utility
    */
   const validateMessage = useCallback(
     (value: string) => {
@@ -79,25 +80,11 @@ export function Composer({
 
       // Set new timer untuk debounce validation
       debounceTimerRef.current = setTimeout(() => {
-        // Check if message is empty (after trim)
-        if (value.trim().length === 0 && value.length > 0) {
-          setValidationError('Pesan tidak boleh hanya berisi spasi');
-          return;
-        }
-
-        // Check if message exceeds max length
-        if (value.length > maxLength) {
-          setValidationError(
-            `Pesan terlalu panjang (maksimal ${maxLength} karakter)`
-          );
-          return;
-        }
-
-        // Clear error if validation passes
-        setValidationError(null);
+        const validation = validateMessageUtil(value);
+        setValidationError(validation.isValid ? null : validation.error || null);
       }, 300);
     },
-    [maxLength]
+    []
   );
 
   /**

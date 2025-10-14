@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Menu, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { TopBarProps } from '@/types/chat';
 import { preloadSidePanel } from '@/lib/lazyComponents';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 
 /**
  * StatusChip Component
@@ -92,25 +92,8 @@ export function TopBar({
   showSidebarToggle = false,
   onSidebarToggle,
 }: TopBarProps) {
-  // Detect online/offline status
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    // Set initial status
-    setIsOnline(navigator.onLine);
-
-    // Listen to online/offline events
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
+  // Use shared online status hook (no duplicate listeners!)
+  const isOnline = useOnlineStatus();
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

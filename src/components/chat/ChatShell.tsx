@@ -7,9 +7,12 @@ import {
   useContext,
   Suspense,
   lazy,
+  useMemo,
+  useCallback,
 } from 'react';
 import { useChat } from '@/hooks/useChatStreaming';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import type { ChatShellProps, Message } from '@/types/chat';
 import { TopBar } from './TopBar';
 import { MessageList } from './MessageList';
@@ -20,7 +23,9 @@ import {
   loadLastReadMessageId,
   saveSidebarState,
   loadSidebarState,
+  saveUIState,
 } from '@/lib/storage';
+import { MOCK_CHAT_HISTORY } from '@/lib/constants';
 
 // Lazy load non-critical components untuk optimasi bundle size
 const CommandPalette = lazy(() =>
@@ -32,9 +37,6 @@ const SidePanel = lazy(() =>
 const SettingsSheet = lazy(() =>
   import('./SettingsSheet').then(mod => ({ default: mod.SettingsSheet }))
 );
-
-// Type import untuk ChatItem
-import type { ChatItem } from './SidePanel';
 
 /**
  * Interface untuk ChatContext
@@ -86,8 +88,8 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
   const { messages, isLoading, error, send, regenerate, stop, append, retry } =
     useChat(initialMessages, sessionId);
 
-  // Online/offline detection state
-  const [isOnline, setIsOnline] = useState(true);
+  // Online/offline detection menggunakan custom hook (no duplicate listeners!)
+  const isOnline = useOnlineStatus();
 
   // State untuk command palette
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
@@ -109,96 +111,30 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
     }
   );
 
-  // Mock chat history data (untuk demo purposes)
-  const [chatHistory] = useState<ChatItem[]>([
-    {
-      id: '1',
-      title: 'Cara membuat aplikasi React',
-      preview:
-        'Saya ingin belajar membuat aplikasi React dari awal. Bisa bantu?',
-      timestamp: Date.now() - 3600000, // 1 hour ago
-      unreadCount: 2,
-      isPinned: true,
-    },
-    {
-      id: '2',
-      title: 'Pertanyaan tentang TypeScript',
-      preview: 'Bagaimana cara menggunakan generics di TypeScript?',
-      timestamp: Date.now() - 7200000, // 2 hours ago
-      isPinned: true,
-    },
-    {
-      id: '3',
-      title: 'Setup Tailwind CSS',
-      preview: 'Langkah-langkah setup Tailwind CSS di Next.js',
-      timestamp: Date.now() - 86400000, // 1 day ago
-    },
-    {
-      id: '4',
-      title: 'Optimasi performa web',
-      preview: 'Tips untuk meningkatkan performa website',
-      timestamp: Date.now() - 172800000, // 2 days ago
-      unreadCount: 1,
-    },
-    {
-      id: '5',
-      title: 'Belajar API REST',
-      preview: 'Penjelasan tentang RESTful API dan best practices',
-      timestamp: Date.now() - 259200000, // 3 days ago
-    },
-  ]);
+  // Use mock chat history from constants (no hardcoded data!)
+  const chatHistory = useMemo(() => MOCK_CHAT_HISTORY, []);
 
   /**
-   * Setup online/offline detection
-   * Mendengarkan event online dan offline dari browser
+   * Batch persist UI state when sidebar or messages change
+   * Optimized to reduce localStorage writes
    */
   useEffect(() => {
-    // Set initial online status
-    setIsOnline(navigator.onLine);
-
-    // Event handler untuk online event
-    const handleOnline = () => {
-      setIsOnline(true);
-      console.log('Connection restored');
+    const updates: Record<string, any> = {
+      sidebarOpen,
     };
 
-    // Event handler untuk offline event
-    const handleOffline = () => {
-      setIsOnline(false);
-      console.log('Connection lost');
-    };
-
-    // Add event listeners
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    // Cleanup event listeners on unmount
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  /**
-   * Persist sidebar state when it changes
-   */
-  useEffect(() => {
-    saveSidebarState(sidebarOpen);
-  }, [sidebarOpen]);
-
-  /**
-   * Update last read message ID when messages change
-   * Save the ID of the last message in the list
-   */
-  useEffect(() => {
+    // Update last read message ID if messages changed
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
       if (lastMessage.id !== lastReadMessageId) {
         setLastReadMessageId(lastMessage.id);
-        saveLastReadMessageId(lastMessage.id);
+        updates.lastReadMessageId = lastMessage.id;
       }
     }
-  }, [messages, lastReadMessageId]);
+
+    // Batch save to localStorage (single write operation)
+    saveUIState(updates);
+  }, [sidebarOpen, messages, lastReadMessageId]);
 
   /**
    * Preload CommandPalette saat Ctrl key ditekan
@@ -207,7 +143,7 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         // Preload CommandPalette saat Ctrl/Cmd ditekan
-        import('./CommandPalette').catch(() => {});
+        import('./CommandPalette').catch(() => { });
       }
     };
 
@@ -282,16 +218,21 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
 
   /**
    * Handler untuk retry failed message
+   * Memoized untuk prevent unnecessary re-renders
    */
-  const handleRetry = (messageId: string) => {
-    console.log('Retry message:', messageId);
-    retry(messageId);
-  };
+  const handleRetry = useCallback(
+    (messageId: string) => {
+      console.log('Retry message:', messageId);
+      retry(messageId);
+    },
+    [retry]
+  );
 
   /**
    * Handler untuk new chat action
+   * Memoized untuk prevent unnecessary re-renders
    */
-  const handleNewChat = () => {
+  const handleNewChat = useCallback(() => {
     if (messages.length > 0) {
       if (
         window.confirm('Mulai percakapan baru? Pesan saat ini akan hilang.')
@@ -301,12 +242,13 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
     } else {
       window.location.reload();
     }
-  };
+  }, [messages.length]);
 
   /**
    * Handler untuk clear history action
+   * Memoized untuk prevent unnecessary re-renders
    */
-  const handleClearHistory = () => {
+  const handleClearHistory = useCallback(() => {
     if (messages.length > 0) {
       if (
         window.confirm(
@@ -316,33 +258,36 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
         window.location.reload();
       }
     }
-  };
+  }, [messages.length]);
 
   /**
    * Handler untuk open settings action
+   * Memoized untuk prevent unnecessary re-renders
    */
-  const handleOpenSettings = () => {
+  const handleOpenSettings = useCallback(() => {
     setSettingsOpen(true);
-  };
+  }, []);
 
   /**
    * Handler untuk toggle sidebar
+   * Memoized untuk prevent unnecessary re-renders
    */
-  const handleSidebarToggle = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const handleSidebarToggle = useCallback(() => {
+    setSidebarOpen(prev => !prev);
+  }, []);
 
   /**
    * Handler untuk select chat dari history
+   * Memoized untuk prevent unnecessary re-renders
    */
-  const handleChatSelect = (chatId: string) => {
+  const handleChatSelect = useCallback((chatId: string) => {
     console.log('Selected chat:', chatId);
     // TODO: Load chat history untuk chatId yang dipilih
     // Untuk demo, kita hanya log dan close sidebar di mobile
     if (window.innerWidth < 768) {
       setSidebarOpen(false);
     }
-  };
+  }, []);
 
   return (
     <ChatContext.Provider value={contextValue}>

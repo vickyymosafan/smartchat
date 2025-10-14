@@ -62,9 +62,9 @@ export function MessageList({
   const userScrollingRef = useRef<boolean>(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
-  const [animatedMessages, setAnimatedMessages] = useState<Set<string>>(
-    new Set()
-  );
+  
+  // Track previous message count untuk detect new messages
+  const prevMessageCountRef = useRef(messages.length);
 
   // Group messages by date dengan useMemo untuk performance
   const groupedItems = useMemo(() => groupMessagesByDate(messages), [messages]);
@@ -99,19 +99,7 @@ export function MessageList({
     150
   );
 
-  useEffect(() => {
-    const newMessageIds = messages
-      .filter(msg => !animatedMessages.has(msg.id))
-      .map(msg => msg.id);
 
-    if (newMessageIds.length > 0) {
-      setAnimatedMessages(prev => {
-        const updated = new Set(prev);
-        newMessageIds.forEach(id => updated.add(id));
-        return updated;
-      });
-    }
-  }, [messages, animatedMessages]);
 
   // Setup IntersectionObserver untuk detect apakah user di bottom
   useEffect(() => {
@@ -142,6 +130,9 @@ export function MessageList({
     if (isAtBottomRef.current && !userScrollingRef.current) {
       debouncedScroll();
     }
+    
+    // Update previous message count
+    prevMessageCountRef.current = messages.length;
   }, [messages, debouncedScroll]);
 
   // Handle scroll button visibility dan detect manual scroll
@@ -214,18 +205,10 @@ export function MessageList({
           {virtualizer.getVirtualItems().map(virtualItem => {
             const item = groupedItems[virtualItem.index];
 
-            // Check if this message should be animated
-            const shouldAnimate =
-              item.type === 'message' &&
-              item.message &&
-              !animatedMessages.has(item.message.id);
-
-            // Calculate stagger delay based on index for multiple new messages
-            // Only apply delay to messages that are being animated
-            // Cap maksimal di 300ms untuk menghindari delay yang terlalu lama
-            const staggerDelay = shouldAnimate
-              ? Math.min(virtualItem.index * 0.05, 0.3)
-              : 0;
+            // Check if this is a new message (simple check based on message count)
+            const isNewMessage = 
+              item.type === 'message' && 
+              virtualItem.index >= prevMessageCountRef.current;
 
             return (
               <div
@@ -246,13 +229,8 @@ export function MessageList({
                   <motion.div
                     className="pb-4"
                     variants={messageVariants}
-                    initial={shouldAnimate ? 'hidden' : 'visible'}
+                    initial={isNewMessage ? 'hidden' : 'visible'}
                     animate="visible"
-                    transition={{
-                      duration: 0.2,
-                      ease: [0, 0, 0.2, 1],
-                      delay: staggerDelay,
-                    }}
                   >
                     <MessageBubble
                       message={item.message!}
