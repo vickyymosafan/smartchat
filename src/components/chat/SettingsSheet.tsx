@@ -283,16 +283,16 @@ export function SettingsSheet({
                   <p className="text-[11px] sm:text-xs text-muted-foreground">Versi 1.0.0</p>
                 </div>
               </div>
-              <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed">
-                Platform chat cerdas dengan AI untuk percakapan yang lebih
-                produktif dan efisien. Dibangun dengan Next.js 15 dan Tailwind
-                CSS.
+              <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed font-mono whitespace-pre-wrap">
+                {`/**
+                * SmartChat v1.0.0
+                * Intelligent chat platform powered by AI
+                * Tech stack: Next.js 15, Tailwind CSS
+                * Developer: Vicky Mosafan
+                * UX Support: Riyan
+                * (c) 2025 SmartChat. All rights reserved.
+                */`}
               </p>
-              <div className="pt-2 border-t">
-                <p className="text-[11px] sm:text-xs text-muted-foreground">
-                  © 2025 SmartChat. All rights reserved.
-                </p>
-              </div>
             </div>
           </section>
         </div>
