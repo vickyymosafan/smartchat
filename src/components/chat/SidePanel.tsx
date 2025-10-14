@@ -7,17 +7,13 @@ import {
   Pin,
   MessageSquare,
   Clock,
-  ChevronLeft,
-  X,
 } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -80,54 +76,56 @@ function ChatItemComponent({
   };
 
   return (
-    <motion.button
+    <button
       onClick={onClick}
       className={cn(
-        'group relative w-full rounded-lg border p-3 text-left transition-all',
-        'hover:bg-accent hover:border-accent-foreground/20',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        isActive && 'bg-accent border-accent-foreground/20'
+        'group relative w-full rounded-lg border p-3 text-left transition-colors',
+        'hover:bg-accent/50 hover:border-accent-foreground/10',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+        'active:scale-[0.98] transition-transform',
+        isActive && 'bg-accent border-accent-foreground/20 shadow-sm'
       )}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.15 }}
     >
-      {/* Pinned indicator */}
-      {chat.isPinned && (
-        <div className="absolute top-2 right-2">
-          <Pin className="h-3 w-3 text-muted-foreground" />
-        </div>
-      )}
-
-      {/* Chat title */}
-      <div className="mb-1 flex items-start justify-between gap-2">
+      {/* Chat title and timestamp */}
+      <div className="mb-1.5 flex items-start justify-between gap-2">
         <h3
           className={cn(
-            'line-clamp-1 text-sm font-medium',
+            'line-clamp-1 text-sm font-medium leading-tight',
+            chat.isPinned && 'pr-5',
             isActive ? 'text-foreground' : 'text-foreground/90'
           )}
         >
           {chat.title}
         </h3>
-        <span className="shrink-0 text-xs text-muted-foreground">
+        <span className="shrink-0 text-xs text-muted-foreground leading-tight">
           {formatTimestamp(chat.timestamp)}
         </span>
       </div>
 
+      {/* Pinned indicator - positioned absolutely to not affect layout */}
+      {chat.isPinned && (
+        <div className="absolute top-3 right-3">
+          <Pin className="h-3 w-3 text-muted-foreground/60 fill-muted-foreground/20" />
+        </div>
+      )}
+
       {/* Chat preview */}
-      <p className="line-clamp-2 text-xs text-muted-foreground">
+      <p className="line-clamp-2 text-xs text-muted-foreground leading-relaxed">
         {chat.preview}
       </p>
 
       {/* Unread badge */}
       {chat.unreadCount && chat.unreadCount > 0 && (
-        <div className="mt-2">
-          <Badge variant="default" className="h-5 px-2 text-xs">
+        <div className="mt-2 flex items-center">
+          <Badge
+            variant="default"
+            className="h-5 rounded-full px-2 text-[10px] font-medium"
+          >
             {chat.unreadCount > 99 ? '99+' : chat.unreadCount}
           </Badge>
         </div>
       )}
-    </motion.button>
+    </button>
   );
 }
 
@@ -144,12 +142,7 @@ function ChatList({
   onChatSelect?: (chatId: string) => void;
 }) {
   if (chats.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <MessageSquare className="mb-3 h-12 w-12 text-muted-foreground/50" />
-        <p className="text-sm text-muted-foreground">Belum ada percakapan</p>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -202,22 +195,12 @@ export function SidePanel({
   /**
    * Sidebar content yang akan digunakan di mobile (Sheet) dan desktop (collapsible)
    */
-  const SidebarContent = () => (
+  const SidebarContent = ({ isMobile = false }: { isMobile?: boolean }) => (
     <div className="flex h-full flex-col">
       {/* Header dengan search */}
       <div className="border-b p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Percakapan</h2>
-          {/* Close button untuk mobile */}
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className="md:hidden"
-            onClick={() => onOpenChange(false)}
-            aria-label="Tutup sidebar"
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </div>
 
         {/* Search input */}
@@ -236,11 +219,37 @@ export function SidePanel({
 
       {/* Chat lists */}
       <div className="flex-1 overflow-y-auto p-4">
+        {/* Empty state - no chats at all */}
+        {chats.length === 0 && !searchQuery && (
+          <div className="flex h-full flex-col items-center justify-center py-12 text-center">
+            <MessageSquare className="mb-3 h-12 w-12 text-muted-foreground/40" />
+            <p className="text-sm font-medium text-muted-foreground">
+              Belum ada percakapan
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground/70">
+              Mulai chat baru untuk memulai
+            </p>
+          </div>
+        )}
+
+        {/* Empty state - search no results */}
+        {filteredChats.length === 0 && searchQuery && (
+          <div className="flex h-full flex-col items-center justify-center py-12 text-center">
+            <Search className="mb-3 h-12 w-12 text-muted-foreground/40" />
+            <p className="text-sm font-medium text-muted-foreground">
+              Tidak ditemukan
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground/70">
+              Tidak ada percakapan yang cocok dengan "{searchQuery}"
+            </p>
+          </div>
+        )}
+
         {/* Pinned chats section */}
         {pinnedChats.length > 0 && (
           <div className="mb-6">
-            <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-              <Pin className="h-3 w-3" />
+            <div className="mb-2.5 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+              <Pin className="h-3.5 w-3.5" />
               <span>Disematkan</span>
             </div>
             <ChatList
@@ -255,8 +264,8 @@ export function SidePanel({
         {regularChats.length > 0 && (
           <div>
             {pinnedChats.length > 0 && (
-              <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                <Clock className="h-3 w-3" />
+              <div className="mb-2.5 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                <Clock className="h-3.5 w-3.5" />
                 <span>Terbaru</span>
               </div>
             )}
@@ -267,16 +276,6 @@ export function SidePanel({
             />
           </div>
         )}
-
-        {/* Empty state saat search tidak menemukan hasil */}
-        {filteredChats.length === 0 && searchQuery && (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Search className="mb-3 h-12 w-12 text-muted-foreground/50" />
-            <p className="text-sm text-muted-foreground">
-              Tidak ada percakapan yang cocok dengan "{searchQuery}"
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -285,26 +284,32 @@ export function SidePanel({
     <>
       {/* Mobile: Sheet slide-over (< 768px) */}
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="left" className="w-[85%] p-0 sm:max-w-sm md:hidden">
+        <SheetContent
+          side="left"
+          className="w-[85vw] max-w-[320px] p-0 md:hidden"
+        >
           <SheetTitle className="sr-only">Percakapan</SheetTitle>
-          <SidebarContent />
+          <SidebarContent isMobile={true} />
         </SheetContent>
       </Sheet>
 
       {/* Desktop: Collapsible sidebar (>= 768px) */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {open && (
           <motion.aside
-            initial={{ x: -320, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -320, opacity: 0 }}
+            key="sidebar-desktop"
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 320, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
             transition={{
-              duration: 0.24,
-              ease: [0, 0, 0.2, 1], // ease-out
+              duration: 0.2,
+              ease: [0.4, 0, 0.2, 1],
             }}
-            className="hidden h-full w-80 border-r bg-background md:block"
+            className="hidden h-full shrink-0 overflow-hidden border-r bg-background md:block"
           >
-            <SidebarContent />
+            <div className="h-full w-80">
+              <SidebarContent isMobile={false} />
+            </div>
           </motion.aside>
         )}
       </AnimatePresence>
