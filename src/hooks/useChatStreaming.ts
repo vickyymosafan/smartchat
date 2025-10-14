@@ -10,7 +10,7 @@ export interface UseChatReturn {
   messages: Message[];
   isLoading: boolean;
   error: string | null;
-  send: (content: string) => Promise<void>;
+  send: (content: string, overrideConversationId?: string) => Promise<void>;
   regenerate: () => Promise<void>;
   stop: () => void;
   append: (message: Message) => void;
@@ -40,7 +40,7 @@ export function useChat(
   };
 
   const sendWithStreaming = useCallback(
-    async (content: string, messageId: string): Promise<void> => {
+    async (content: string, messageId: string, overrideConversationId?: string): Promise<void> => {
       abortControllerRef.current = new AbortController();
 
       try {
@@ -128,20 +128,25 @@ export function useChat(
         }
 
         // Save assistant response to database after streaming completes
+        // Use overrideConversationId if provided, otherwise fall back to options
+        const conversationIdToUse = overrideConversationId || options?.conversationId;
+        
         console.log('🔍 Checking save conditions:', {
-          hasConversationId: !!options?.conversationId,
-          conversationId: options?.conversationId,
+          hasConversationId: !!conversationIdToUse,
+          conversationId: conversationIdToUse,
+          overrideConversationId,
+          optionsConversationId: options?.conversationId,
           hasUser: !!options?.user,
           userId: options?.user?.id,
           hasContent: !!accumulatedContent,
           contentLength: accumulatedContent?.length,
         });
 
-        if (options?.conversationId && options?.user && accumulatedContent) {
+        if (conversationIdToUse && options?.user && accumulatedContent) {
           try {
             console.log('💾 Attempting to save assistant response...');
             await saveMessage(
-              options.conversationId,
+              conversationIdToUse,
               'assistant',
               accumulatedContent,
               options.user
@@ -207,7 +212,7 @@ export function useChat(
   );
 
   const send = useCallback(
-    async (content: string): Promise<void> => {
+    async (content: string, overrideConversationId?: string): Promise<void> => {
       if (!content.trim()) {
         setError('Pesan tidak boleh kosong');
         toast.error('Pesan tidak boleh kosong');
@@ -227,7 +232,7 @@ export function useChat(
       setMessages(prev => [...prev, userMessage]);
 
       try {
-        await sendWithStreaming(content.trim(), userMessage.id);
+        await sendWithStreaming(content.trim(), userMessage.id, overrideConversationId);
       } catch (err) {
         // Error already handled
       } finally {

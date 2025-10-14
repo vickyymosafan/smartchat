@@ -171,11 +171,13 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
         console.log('✅ User message saved');
 
         console.log('🚀 Sending message to AI...', { conversationId, userId: user.id });
-        // Send message via chat hook (will trigger streaming and save assistant response)
-        await send(content);
+        // Send message via chat hook with conversationId override
+        // This ensures the newly created conversationId is used immediately
+        // without waiting for React state to update
+        await send(content, conversationId);
 
         // Note: Assistant response will be saved automatically after streaming completes
-        // in useChatStreaming.ts using the conversationId from options
+        // in useChatStreaming.ts using the overrideConversationId parameter
       } catch (error: any) {
         console.error('Error sending message:', error);
 
