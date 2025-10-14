@@ -61,24 +61,10 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     storageKey: 'smartchat-auth',
-    flowType: 'pkce',
   },
   global: {
     headers: {
       'x-application-name': 'smartchat',
-      'Content-Type': 'application/json',
-    },
-    fetch: (url, options = {}) => {
-      // Add custom fetch with better error handling
-      return fetch(url, {
-        ...options,
-        mode: 'cors',
-        credentials: 'omit',
-        headers: {
-          ...options.headers,
-          'Content-Type': 'application/json',
-        },
-      });
     },
   },
 });
