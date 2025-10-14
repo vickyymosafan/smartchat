@@ -98,9 +98,21 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   // State untuk sidebar (load from storage on mount)
+  // Default true untuk desktop/laptop (>= 768px)
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     const stored = loadSidebarState();
-    return stored ?? false;
+    
+    // Jika ada stored value, gunakan itu
+    if (stored !== undefined) {
+      return stored;
+    }
+    
+    // Default: true untuk desktop (>= 768px), false untuk mobile
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 768;
+    }
+    
+    return true; // Default true untuk SSR
   });
 
   // Track last read message ID
@@ -113,6 +125,37 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
 
   // Use mock chat history from constants (no hardcoded data!)
   const chatHistory = useMemo(() => MOCK_CHAT_HISTORY, []);
+
+  /**
+   * Handle window resize untuk auto-open/close sidebar
+   * Desktop (>= 768px): Auto open sidebar
+   * Mobile (< 768px): Keep closed unless user opens it
+   */
+  useEffect(() => {
+    const handleResize = () => {
+      const isDesktop = window.innerWidth >= 768;
+      const stored = loadSidebarState();
+      
+      // Jika desktop dan sidebar closed (dan tidak ada stored preference), buka otomatis
+      if (isDesktop && !sidebarOpen && stored === undefined) {
+        setSidebarOpen(true);
+      }
+      // Jika mobile dan sidebar open (dan tidak ada stored preference), tutup otomatis
+      else if (!isDesktop && sidebarOpen && stored === undefined) {
+        setSidebarOpen(false);
+      }
+    };
+
+    // Add resize listener
+    window.addEventListener('resize', handleResize);
+
+    // Initial check
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [sidebarOpen]);
 
   /**
    * Batch persist UI state when sidebar or messages change

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -180,6 +180,24 @@ export function SidePanel({
   onChatSelect,
 }: SidePanelProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Track if current device is mobile (< 768px)
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768;
+    }
+    return false;
+  });
+
+  // Update isMobile on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Filter chats berdasarkan search query
   const filteredChats = chats.filter(
@@ -282,37 +300,39 @@ export function SidePanel({
 
   return (
     <>
-      {/* Mobile: Sheet slide-over (< 768px) */}
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent
-          side="left"
-          className="w-[85vw] max-w-[320px] p-0 md:hidden"
-        >
-          <SheetTitle className="sr-only">Percakapan</SheetTitle>
-          <SidebarContent isMobile={true} />
-        </SheetContent>
-      </Sheet>
-
-      {/* Desktop: Collapsible sidebar (>= 768px) */}
-      <AnimatePresence mode="wait">
-        {open && (
-          <motion.aside
-            key="sidebar-desktop"
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 320, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{
-              duration: 0.2,
-              ease: [0.4, 0, 0.2, 1],
-            }}
-            className="hidden h-full shrink-0 overflow-hidden border-r bg-background md:block"
+      {/* Mobile: Sheet slide-over (< 768px) - Only render on mobile */}
+      {isMobile ? (
+        <Sheet open={open} onOpenChange={onOpenChange}>
+          <SheetContent
+            side="left"
+            className="w-[85vw] max-w-[320px] p-0"
           >
-            <div className="h-full w-80">
-              <SidebarContent isMobile={false} />
-            </div>
-          </motion.aside>
-        )}
-      </AnimatePresence>
+            <SheetTitle className="sr-only">Percakapan</SheetTitle>
+            <SidebarContent isMobile={true} />
+          </SheetContent>
+        </Sheet>
+      ) : (
+        /* Desktop: Collapsible sidebar (>= 768px) - Only render on desktop */
+        <AnimatePresence mode="wait">
+          {open && (
+            <motion.aside
+              key="sidebar-desktop"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 320, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{
+                duration: 0.2,
+                ease: [0.4, 0, 0.2, 1],
+              }}
+              className="h-full shrink-0 overflow-hidden border-r bg-background"
+            >
+              <div className="h-full w-80">
+                <SidebarContent isMobile={false} />
+              </div>
+            </motion.aside>
+          )}
+        </AnimatePresence>
+      )}
     </>
   );
 }

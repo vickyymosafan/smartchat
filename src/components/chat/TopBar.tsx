@@ -107,7 +107,7 @@ export function TopBar({
               onClick={onSidebarToggle}
               onMouseEnter={preloadSidePanel}
               onFocus={preloadSidePanel}
-              className="h-9 w-9 shrink-0 lg:hidden"
+              className="h-9 w-9 shrink-0"
               aria-label="Toggle sidebar"
             >
               <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
