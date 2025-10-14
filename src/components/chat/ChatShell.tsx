@@ -158,14 +158,19 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
           const title = firstWords.length > 50 ? firstWords.substring(0, 50) + '...' : firstWords;
 
           // Pass user to createConversation
+          console.log('📝 Creating new conversation...');
           const conversation = await createConversation(title, user);
           conversationId = conversation.id;
+          console.log('✅ Conversation created:', conversationId);
           setCurrentConversationId(conversationId);
         }
 
+        console.log('💾 Saving user message...', { conversationId, userId: user.id });
         // Save user message to database FIRST
         await saveMessage(conversationId, 'user', content, user);
+        console.log('✅ User message saved');
 
+        console.log('🚀 Sending message to AI...', { conversationId, userId: user.id });
         // Send message via chat hook (will trigger streaming and save assistant response)
         await send(content);
 

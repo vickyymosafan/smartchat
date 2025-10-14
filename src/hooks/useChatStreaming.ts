@@ -128,8 +128,18 @@ export function useChat(
         }
 
         // Save assistant response to database after streaming completes
+        console.log('🔍 Checking save conditions:', {
+          hasConversationId: !!options?.conversationId,
+          conversationId: options?.conversationId,
+          hasUser: !!options?.user,
+          userId: options?.user?.id,
+          hasContent: !!accumulatedContent,
+          contentLength: accumulatedContent?.length,
+        });
+
         if (options?.conversationId && options?.user && accumulatedContent) {
           try {
+            console.log('💾 Attempting to save assistant response...');
             await saveMessage(
               options.conversationId,
               'assistant',
@@ -145,8 +155,12 @@ export function useChat(
               toast.error('Sesi berakhir. Response tidak tersimpan.');
             } else if (saveError.message?.includes('Unauthorized')) {
               toast.error('Tidak dapat menyimpan response.');
+            } else {
+              toast.error('Gagal menyimpan response AI.');
             }
           }
+        } else {
+          console.warn('⚠️ Cannot save assistant response - missing required data');
         }
 
         setError(null);
