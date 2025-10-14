@@ -101,7 +101,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data: https://fonts.gstatic.com;",
-              "connect-src 'self' https://phydmwetwfvfmvdxvpue.supabase.co https://vickymosafan3.app.n8n.cloud",
+              "connect-src 'self' https://phydmwetwfvfmvdxvpue.supabase.co https://vickymosafan3.app.n8n.cloud https://fonts.googleapis.com",
               "manifest-src 'self'",
               "worker-src 'self' blob:",
               "frame-ancestors 'self'",
