@@ -88,9 +88,17 @@ src/
 │   ├── layout.tsx         # Root layout
 │   └── page.tsx           # Halaman utama
 ├── components/            # React components
-│   ├── ChatInterface.tsx  # Komponen utama chat
-│   ├── MessageList.tsx    # Daftar pesan
-│   ├── MessageInput.tsx   # Input form
+│   ├── chat/              # Chat UI components (NEW UI)
+│   │   ├── ChatShell.tsx  # Main chat container
+│   │   ├── TopBar.tsx     # Header dengan branding
+│   │   ├── MessageList.tsx # Daftar pesan
+│   │   ├── MessageBubble.tsx # Bubble pesan individual
+│   │   ├── Composer.tsx   # Input form
+│   │   ├── EmptyState.tsx # Welcome screen
+│   │   ├── SidePanel.tsx  # Chat history sidebar
+│   │   ├── CommandPalette.tsx # Keyboard shortcuts
+│   │   └── SettingsSheet.tsx # Settings panel
+│   ├── ui/                # Reusable UI components
 │   └── ...
 ├── contexts/              # React contexts
 ├── hooks/                 # Custom hooks
@@ -145,7 +153,7 @@ NEXT_PUBLIC_N8N_WEBHOOK_URL=https://vickymosafan2.app.n8n.cloud/webhook/...
 NODE_ENV=production
 
 # UI Configuration
-NEXT_PUBLIC_ENABLE_NEW_UI=true
+# (ChatShell NEW UI digunakan secara default)
 
 # PWA
 NEXT_PUBLIC_ENABLE_PWA=true

@@ -1,11 +1,10 @@
-import ChatInterfaceWrapper from '@/components/ChatInterfaceWrapper';
+import { ChatShell } from '@/components/chat/ChatShell';
 
 /**
  * Home page - Entry point aplikasi chat
  *
- * Menggunakan ChatInterfaceWrapper untuk conditional rendering
- * antara UI lama dan UI baru berdasarkan feature flag
+ * Menggunakan ChatShell (NEW UI) dengan redesign modern
  */
 export default function Home() {
-  return <ChatInterfaceWrapper />;
+  return <ChatShell />;
 }

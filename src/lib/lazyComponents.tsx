@@ -25,24 +25,13 @@ export const LazyPWAProvider = dynamic(
 );
 
 /**
- * Lazy load Chat components untuk code splitting
- *
- * DEPRECATED: Use ChatInterfaceWrapper directly instead
- * This export is kept for backward compatibility
+ * Lazy load ChatShell (NEW UI) untuk code splitting
  */
-export const LazyChatInterface = dynamic(
-  () => import('@/components/ChatInterface'),
-  {
-    ssr: false, // Chat interface menggunakan browser APIs
-  }
-);
-
-/**
- * Lazy load ChatInterfaceWrapper untuk conditional rendering
- * Wrapper ini akan memilih antara UI lama atau baru berdasarkan feature flag
- */
-export const LazyChatInterfaceWrapper = dynamic(
-  () => import('@/components/ChatInterfaceWrapper'),
+export const LazyChatShell = dynamic(
+  () =>
+    import('@/components/chat/ChatShell').then(mod => ({
+      default: mod.ChatShell,
+    })),
   {
     ssr: false, // Chat interface menggunakan browser APIs
   }
