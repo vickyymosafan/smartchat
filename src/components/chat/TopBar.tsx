@@ -1,11 +1,12 @@
 'use client';
 
-import { Menu, Settings } from 'lucide-react';
+import { Menu, Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { TopBarProps } from '@/types/chat';
 import { preloadSidePanel } from '@/lib/lazyComponents';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { useAuth } from '@/contexts/AuthContext';
 
 /**
  * StatusChip Component
@@ -94,6 +95,7 @@ export function TopBar({
 }: TopBarProps) {
   // Use shared online status hook (no duplicate listeners!)
   const isOnline = useOnlineStatus();
+  const { signOut, user } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -133,6 +135,12 @@ export function TopBar({
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <StatusChip isOnline={isOnline} />
 
+          {user && (
+            <div className="hidden sm:flex items-center gap-2 px-2 py-1 rounded-lg bg-accent/50 text-xs">
+              <span className="text-muted-foreground">{user.email}</span>
+            </div>
+          )}
+
           <Button
             variant="ghost"
             size="icon"
@@ -141,6 +149,16 @@ export function TopBar({
             className="h-9 w-9 shrink-0"
           >
             <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={signOut}
+            aria-label="Logout"
+            className="h-9 w-9 shrink-0"
+          >
+            <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         </div>
       </div>

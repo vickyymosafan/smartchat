@@ -13,6 +13,7 @@ import {
 import { useChat } from '@/hooks/useChatStreaming';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { useAuth } from '@/contexts/AuthContext';
 import type { ChatShellProps, Message } from '@/types/chat';
 import { TopBar } from './TopBar';
 import { MessageList } from './MessageList';
@@ -25,7 +26,12 @@ import {
   loadSidebarState,
   saveUIState,
 } from '@/lib/storage';
-import { MOCK_CHAT_HISTORY } from '@/lib/constants';
+import {
+  createConversation,
+  saveMessage,
+  getMessages,
+} from '@/lib/conversationService';
+import { toast } from 'sonner';
 
 // Lazy load non-critical components untuk optimasi bundle size
 const CommandPalette = lazy(() =>
@@ -84,6 +90,12 @@ export function useChatContext() {
  * @param sessionId - ID sesi chat untuk tracking (opsional)
  */
 export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
+  // Auth state
+  const { user } = useAuth();
+
+  // Current conversation ID
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(sessionId || null);
+
   // Chat state management menggunakan useChat hook
   const { messages, isLoading, error, send, regenerate, stop, append, retry } =
     useChat(initialMessages, sessionId);
@@ -123,8 +135,39 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
     }
   );
 
-  // Use mock chat history from constants (no hardcoded data!)
-  const chatHistory = useMemo(() => MOCK_CHAT_HISTORY, []);
+  /**
+   * Enhanced send function that saves to database
+   */
+  const handleSend = useCallback(
+    async (content: string) => {
+      try {
+        let conversationId = currentConversationId;
+
+        // Create new conversation if this is the first message
+        if (!conversationId) {
+          const firstWords = content.split(' ').slice(0, 5).join(' ');
+          const title = firstWords.length > 50 ? firstWords.substring(0, 50) + '...' : firstWords;
+          
+          const conversation = await createConversation(title);
+          conversationId = conversation.id;
+          setCurrentConversationId(conversationId);
+        }
+
+        // Send message via chat hook
+        await send(content);
+
+        // Save user message to database
+        await saveMessage(conversationId, 'user', content);
+
+        // Note: Assistant response will be saved after streaming completes
+        // This should be handled in the useChat hook or after response is received
+      } catch (error) {
+        console.error('Error sending message:', error);
+        toast.error('Gagal mengirim pesan');
+      }
+    },
+    [currentConversationId, send]
+  );
 
   /**
    * Handle window resize untuk auto-open/close sidebar
@@ -276,16 +319,9 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
    * Memoized untuk prevent unnecessary re-renders
    */
   const handleNewChat = useCallback(() => {
-    if (messages.length > 0) {
-      if (
-        window.confirm('Mulai percakapan baru? Pesan saat ini akan hilang.')
-      ) {
-        window.location.reload();
-      }
-    } else {
-      window.location.reload();
-    }
-  }, [messages.length]);
+    setCurrentConversationId(null);
+    window.location.reload();
+  }, []);
 
   /**
    * Handler untuk clear history action
@@ -323,14 +359,22 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
    * Handler untuk select chat dari history
    * Memoized untuk prevent unnecessary re-renders
    */
-  const handleChatSelect = useCallback((chatId: string) => {
-    console.log('Selected chat:', chatId);
-    // TODO: Load chat history untuk chatId yang dipilih
-    // Untuk demo, kita hanya log dan close sidebar di mobile
-    if (window.innerWidth < 768) {
-      setSidebarOpen(false);
+  const handleChatSelect = useCallback(async (chatId: string) => {
+    try {
+      setCurrentConversationId(chatId);
+      const loadedMessages = await getMessages(chatId);
+      
+      // Clear current messages and load from database
+      loadedMessages.forEach(msg => append(msg));
+      
+      if (window.innerWidth < 768) {
+        setSidebarOpen(false);
+      }
+    } catch (error) {
+      console.error('Error loading conversation:', error);
+      toast.error('Gagal memuat percakapan');
     }
-  }, []);
+  }, [append]);
 
   return (
     <ChatContext.Provider value={contextValue}>
@@ -362,9 +406,9 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
             <SidePanel
               open={sidebarOpen}
               onOpenChange={setSidebarOpen}
-              chats={chatHistory}
-              activeChatId={sessionId}
+              activeChatId={currentConversationId || undefined}
               onChatSelect={handleChatSelect}
+              onNewChat={handleNewChat}
             />
           </Suspense>
 
@@ -403,7 +447,7 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
 
         {/* Composer - Docked at bottom */}
         <Composer
-          onSend={send}
+          onSend={handleSend}
           isLoading={isLoading}
           isOnline={isOnline}
           placeholder="Ketik pesan Anda di sini..."

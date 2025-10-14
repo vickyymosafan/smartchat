@@ -7,6 +7,8 @@ import {
   Pin,
   MessageSquare,
   Clock,
+  Trash2,
+  Plus,
 } from 'lucide-react';
 import {
   Sheet,
@@ -15,7 +17,16 @@ import {
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  getConversations,
+  deleteConversation,
+  getConversationPreview,
+} from '@/lib/conversationService';
+import type { Conversation } from '@/types/database';
+import { toast } from 'sonner';
 
 /**
  * Interface untuk chat item
@@ -43,6 +54,8 @@ export interface SidePanelProps {
   activeChatId?: string;
   /** Callback saat chat item diklik */
   onChatSelect?: (chatId: string) => void;
+  /** Callback saat new chat button diklik */
+  onNewChat?: () => void;
 }
 
 /**
@@ -52,10 +65,12 @@ function ChatItemComponent({
   chat,
   isActive,
   onClick,
+  onDelete,
 }: {
   chat: ChatItem;
   isActive: boolean;
   onClick: () => void;
+  onDelete?: (e: React.MouseEvent) => void;
 }) {
   // Format timestamp menjadi relative time
   const formatTimestamp = (timestamp: number) => {
@@ -125,6 +140,17 @@ function ChatItemComponent({
           </Badge>
         </div>
       )}
+
+      {/* Delete button - show on hover */}
+      {onDelete && (
+        <button
+          onClick={onDelete}
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-destructive/10"
+          aria-label="Hapus percakapan"
+        >
+          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+        </button>
+      )}
     </button>
   );
 }
@@ -136,10 +162,12 @@ function ChatList({
   chats,
   activeChatId,
   onChatSelect,
+  onDelete,
 }: {
   chats: ChatItem[];
   activeChatId?: string;
   onChatSelect?: (chatId: string) => void;
+  onDelete?: (chatId: string, e: React.MouseEvent) => void;
 }) {
   if (chats.length === 0) {
     return null;
@@ -153,6 +181,7 @@ function ChatList({
           chat={chat}
           isActive={chat.id === activeChatId}
           onClick={() => onChatSelect?.(chat.id)}
+          onDelete={onDelete ? (e) => onDelete(chat.id, e) : undefined}
         />
       ))}
     </div>
@@ -178,8 +207,13 @@ export function SidePanel({
   chats = [],
   activeChatId,
   onChatSelect,
+  onNewChat,
 }: SidePanelProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversationPreviews, setConversationPreviews] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   
   // Track if current device is mobile (< 768px)
   const [isMobile, setIsMobile] = useState(() => {
@@ -188,6 +222,36 @@ export function SidePanel({
     }
     return false;
   });
+
+  // Fetch conversations from Supabase
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchConversations = async () => {
+      try {
+        setLoading(true);
+        const data = await getConversations();
+        setConversations(data);
+
+        // Fetch previews for each conversation
+        const previews: Record<string, string> = {};
+        await Promise.all(
+          data.map(async (conv) => {
+            const preview = await getConversationPreview(conv.id);
+            previews[conv.id] = preview;
+          })
+        );
+        setConversationPreviews(previews);
+      } catch (error) {
+        console.error('Error fetching conversations:', error);
+        toast.error('Gagal memuat percakapan');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConversations();
+  }, [user]);
 
   // Update isMobile on window resize
   useEffect(() => {
@@ -199,8 +263,17 @@ export function SidePanel({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Convert conversations to ChatItem format
+  const chatItems: ChatItem[] = conversations.map((conv) => ({
+    id: conv.id,
+    title: conv.title,
+    preview: conversationPreviews[conv.id] || 'Belum ada pesan',
+    timestamp: new Date(conv.updated_at).getTime(),
+    isPinned: false,
+  }));
+
   // Filter chats berdasarkan search query
-  const filteredChats = chats.filter(
+  const filteredChats = chatItems.filter(
     chat =>
       chat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       chat.preview.toLowerCase().includes(searchQuery.toLowerCase())
@@ -209,6 +282,24 @@ export function SidePanel({
   // Separate pinned and regular chats
   const pinnedChats = filteredChats.filter(chat => chat.isPinned);
   const regularChats = filteredChats.filter(chat => !chat.isPinned);
+
+  // Handle delete conversation
+  const handleDeleteConversation = async (conversationId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!confirm('Hapus percakapan ini? Tindakan tidak dapat dibatalkan.')) {
+      return;
+    }
+
+    try {
+      await deleteConversation(conversationId);
+      setConversations(prev => prev.filter(c => c.id !== conversationId));
+      toast.success('Percakapan berhasil dihapus');
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      toast.error('Gagal menghapus percakapan');
+    }
+  };
 
   /**
    * Sidebar content yang akan digunakan di mobile (Sheet) dan desktop (collapsible)
@@ -219,6 +310,14 @@ export function SidePanel({
       <div className="border-b p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Percakapan</h2>
+          <Button
+            size="icon-sm"
+            variant="ghost"
+            onClick={onNewChat}
+            aria-label="Percakapan baru"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Search input */}
@@ -237,8 +336,18 @@ export function SidePanel({
 
       {/* Chat lists */}
       <div className="flex-1 overflow-y-auto p-4">
+        {/* Loading state */}
+        {loading && (
+          <div className="flex h-full flex-col items-center justify-center py-12 text-center">
+            <MessageSquare className="mb-3 h-12 w-12 text-muted-foreground/40 animate-pulse" />
+            <p className="text-sm font-medium text-muted-foreground">
+              Memuat percakapan...
+            </p>
+          </div>
+        )}
+
         {/* Empty state - no chats at all */}
-        {chats.length === 0 && !searchQuery && (
+        {!loading && conversations.length === 0 && !searchQuery && (
           <div className="flex h-full flex-col items-center justify-center py-12 text-center">
             <MessageSquare className="mb-3 h-12 w-12 text-muted-foreground/40" />
             <p className="text-sm font-medium text-muted-foreground">
@@ -264,7 +373,7 @@ export function SidePanel({
         )}
 
         {/* Pinned chats section */}
-        {pinnedChats.length > 0 && (
+        {!loading && pinnedChats.length > 0 && (
           <div className="mb-6">
             <div className="mb-2.5 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
               <Pin className="h-3.5 w-3.5" />
@@ -274,12 +383,13 @@ export function SidePanel({
               chats={pinnedChats}
               activeChatId={activeChatId}
               onChatSelect={onChatSelect}
+              onDelete={handleDeleteConversation}
             />
           </div>
         )}
 
         {/* Regular chats section */}
-        {regularChats.length > 0 && (
+        {!loading && regularChats.length > 0 && (
           <div>
             {pinnedChats.length > 0 && (
               <div className="mb-2.5 flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
@@ -291,6 +401,7 @@ export function SidePanel({
               chats={regularChats}
               activeChatId={activeChatId}
               onChatSelect={onChatSelect}
+              onDelete={handleDeleteConversation}
             />
           </div>
         )}

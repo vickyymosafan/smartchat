@@ -23,6 +23,7 @@ import ResourcePreloader, {
 import SEOHead, { SEOMonitor } from '@/components/SEOHead';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { TranslationProvider } from '@/components/providers/TranslationProvider';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
@@ -306,16 +307,18 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <TranslationProvider>
-            <ErrorBoundary>
-              <LazyPWAProvider>
-                {children}
-                <ResourcePreloader />
-                <PerformanceMonitor />
-                <SEOHead />
-                <SEOMonitor />
-                <Toaster />
-              </LazyPWAProvider>
-            </ErrorBoundary>
+            <AuthProvider>
+              <ErrorBoundary>
+                <LazyPWAProvider>
+                  {children}
+                  <ResourcePreloader />
+                  <PerformanceMonitor />
+                  <SEOHead />
+                  <SEOMonitor />
+                  <Toaster />
+                </LazyPWAProvider>
+              </ErrorBoundary>
+            </AuthProvider>
           </TranslationProvider>
         </ThemeProvider>
       </body>
