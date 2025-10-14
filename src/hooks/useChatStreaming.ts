@@ -14,6 +14,7 @@ export interface UseChatReturn {
   regenerate: () => Promise<void>;
   stop: () => void;
   append: (message: Message) => void;
+  replaceMessages: (messages: Message[]) => void;
   retry: (messageId: string) => Promise<void>;
 }
 
@@ -188,7 +189,7 @@ export function useChat(
         streamingMessageIdRef.current = null;
       }
     },
-    [sessionId]
+    [sessionId, options?.conversationId, options?.user]
   );
 
   const send = useCallback(
@@ -266,6 +267,10 @@ export function useChat(
     setMessages(prev => [...prev, message]);
   }, []);
 
+  const replaceMessages = useCallback((newMessages: Message[]): void => {
+    setMessages(newMessages);
+  }, []);
+
   const retry = useCallback(
     async (messageId: string): Promise<void> => {
       const failedMessage = messages.find(msg => msg.id === messageId);
@@ -305,6 +310,7 @@ export function useChat(
     regenerate,
     stop,
     append,
+    replaceMessages,
     retry,
   };
 }

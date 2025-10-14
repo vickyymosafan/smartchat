@@ -97,7 +97,7 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(sessionId || null);
 
   // Chat state management menggunakan useChat hook
-  const { messages, isLoading, error, send, regenerate, stop, append, retry } =
+  const { messages, isLoading, error, send, regenerate, stop, append, replaceMessages, retry } =
     useChat(initialMessages, sessionId, {
       conversationId: currentConversationId,
       user: user,
@@ -116,17 +116,17 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
   // Default true untuk desktop/laptop (>= 768px)
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     const stored = loadSidebarState();
-    
+
     // Jika ada stored value, gunakan itu
     if (stored !== undefined) {
       return stored;
     }
-    
+
     // Default: true untuk desktop (>= 768px), false untuk mobile
     if (typeof window !== 'undefined') {
       return window.innerWidth >= 768;
     }
-    
+
     return true; // Default true untuk SSR
   });
 
@@ -156,24 +156,24 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
         if (!conversationId) {
           const firstWords = content.split(' ').slice(0, 5).join(' ');
           const title = firstWords.length > 50 ? firstWords.substring(0, 50) + '...' : firstWords;
-          
+
           // Pass user to createConversation
           const conversation = await createConversation(title, user);
           conversationId = conversation.id;
           setCurrentConversationId(conversationId);
         }
 
-        // Send message via chat hook
-        await send(content);
-
-        // Save user message to database with user validation
+        // Save user message to database FIRST
         await saveMessage(conversationId, 'user', content, user);
 
-        // Note: Assistant response will be saved after streaming completes
-        // This should be handled in the useChat hook or after response is received
+        // Send message via chat hook (will trigger streaming and save assistant response)
+        await send(content);
+
+        // Note: Assistant response will be saved automatically after streaming completes
+        // in useChatStreaming.ts using the conversationId from options
       } catch (error: any) {
         console.error('Error sending message:', error);
-        
+
         // Show user-friendly error messages
         if (error.message?.includes('not authenticated')) {
           toast.error('Sesi Anda telah berakhir. Silakan login kembali.');
@@ -196,7 +196,7 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
     const handleResize = () => {
       const isDesktop = window.innerWidth >= 768;
       const stored = loadSidebarState();
-      
+
       // Jika desktop dan sidebar closed (dan tidak ada stored preference), buka otomatis
       if (isDesktop && !sidebarOpen && stored === undefined) {
         setSidebarOpen(true);
@@ -387,16 +387,16 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
       setCurrentConversationId(chatId);
       // Pass user to getMessages for validation
       const loadedMessages = await getMessages(chatId, user);
-      
-      // Clear current messages and load from database
-      loadedMessages.forEach(msg => append(msg));
-      
+
+      // Replace all messages with loaded messages from database
+      replaceMessages(loadedMessages);
+
       if (window.innerWidth < 768) {
         setSidebarOpen(false);
       }
     } catch (error: any) {
       console.error('Error loading conversation:', error);
-      
+
       if (error.message?.includes('not authenticated')) {
         toast.error('Sesi Anda telah berakhir. Silakan login kembali.');
       } else if (error.message?.includes('Unauthorized')) {
@@ -405,7 +405,7 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
         toast.error('Gagal memuat percakapan');
       }
     }
-  }, [append, user]);
+  }, [replaceMessages, user]);
 
   return (
     <ChatContext.Provider value={contextValue}>

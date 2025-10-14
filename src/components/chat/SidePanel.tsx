@@ -143,13 +143,25 @@ function ChatItemComponent({
 
       {/* Delete button - show on hover */}
       {onDelete && (
-        <button
-          onClick={onDelete}
-          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-destructive/10"
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent bubbling to parent button
+            onDelete(e);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              onDelete(e as any);
+            }
+          }}
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-destructive/10 cursor-pointer"
           aria-label="Hapus percakapan"
         >
           <Trash2 className="h-3.5 w-3.5 text-destructive" />
-        </button>
+        </div>
       )}
     </button>
   );
