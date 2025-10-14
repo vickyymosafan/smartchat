@@ -42,7 +42,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 # PWA
-/public/sw.js
+# Note: sw.js is manually created, not auto-generated, so it should be committed
+# /public/sw.js
 /public/workbox-*.js
 
 # IDE
