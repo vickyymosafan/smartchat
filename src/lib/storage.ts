@@ -182,39 +182,5 @@ export function loadLastReadMessageId(): string | null | undefined {
   return state.lastReadMessageId;
 }
 
-/**
- * Clear all UI state
- */
-export function clearUIState(): boolean {
-  if (!isLocalStorageAvailable()) {
-    return false;
-  }
-
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-    return true;
-  } catch (error) {
-    console.error('Failed to clear UI state:', error);
-    return false;
-  }
-}
-
-/**
- * Get storage size in bytes
- * @returns Size in bytes or -1 if unavailable
- */
-export function getStorageSize(): number {
-  if (!isLocalStorageAvailable()) {
-    return -1;
-  }
-
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      return 0;
-    }
-    return new Blob([stored]).size;
-  } catch {
-    return -1;
-  }
-}
+// Removed unused functions: clearUIState() and getStorageSize()
+// These functions were not used anywhere in the codebase

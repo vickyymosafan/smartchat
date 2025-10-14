@@ -230,21 +230,31 @@ export function SidePanel({
     const fetchConversations = async () => {
       try {
         setLoading(true);
-        const data = await getConversations();
+        // Pass user to avoid duplicate auth calls
+        const data = await getConversations(user);
         setConversations(data);
 
         // Fetch previews for each conversation
         const previews: Record<string, string> = {};
         await Promise.all(
           data.map(async (conv) => {
-            const preview = await getConversationPreview(conv.id);
+            // Pass user to avoid duplicate auth calls
+            const preview = await getConversationPreview(conv.id, user);
             previews[conv.id] = preview;
           })
         );
         setConversationPreviews(previews);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching conversations:', error);
-        toast.error('Gagal memuat percakapan');
+        
+        // Show user-friendly error message
+        const errorMessage = error?.message || 'Gagal memuat percakapan';
+        toast.error(errorMessage);
+        
+        // If authentication error, might need to re-login
+        if (errorMessage.includes('not authenticated')) {
+          toast.error('Silakan login kembali');
+        }
       } finally {
         setLoading(false);
       }

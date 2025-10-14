@@ -240,29 +240,6 @@ class ChatService {
   }
 
   /**
-   * Fungsi untuk mengecek status koneksi
-   */
-  async checkConnection(): Promise<boolean> {
-    try {
-      const response = await this.fetchWithTimeout(
-        `${this.baseUrl}/api/chat`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-          },
-        },
-        5000 // 5 detik timeout untuk health check
-      );
-
-      // Expect 405 Method Not Allowed, yang berarti endpoint ada
-      return response.status === 405;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  /**
    * Update konfigurasi retry
    */
   updateRetryConfig(config: Partial<RetryConfig>): void {

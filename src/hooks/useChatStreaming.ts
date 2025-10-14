@@ -3,6 +3,8 @@
 import { useState, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
 import type { Message } from '@/types/chat';
+import type { User } from '@supabase/supabase-js';
+import { saveMessage } from '@/lib/conversationService';
 
 export interface UseChatReturn {
   messages: Message[];
@@ -15,9 +17,15 @@ export interface UseChatReturn {
   retry: (messageId: string) => Promise<void>;
 }
 
+export interface UseChatOptions {
+  conversationId?: string | null;
+  user?: User | null;
+}
+
 export function useChat(
   initialMessages: Message[] = [],
-  sessionId?: string
+  sessionId?: string,
+  options?: UseChatOptions
 ): UseChatReturn {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
@@ -114,6 +122,28 @@ export function useChat(
               }
             } catch (e) {
               console.error('Error parsing stream chunk:', e);
+            }
+          }
+        }
+
+        // Save assistant response to database after streaming completes
+        if (options?.conversationId && options?.user && accumulatedContent) {
+          try {
+            await saveMessage(
+              options.conversationId,
+              'assistant',
+              accumulatedContent,
+              options.user
+            );
+            console.log('✅ Assistant response saved to database');
+          } catch (saveError: any) {
+            console.error('❌ Failed to save assistant response:', saveError);
+            // Don't throw error here to avoid breaking the UI
+            // User can still see the message even if save fails
+            if (saveError.message?.includes('not authenticated')) {
+              toast.error('Sesi berakhir. Response tidak tersimpan.');
+            } else if (saveError.message?.includes('Unauthorized')) {
+              toast.error('Tidak dapat menyimpan response.');
             }
           }
         }

@@ -267,15 +267,6 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
 
-        {/* Security Headers */}
-        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta httpEquiv="X-Frame-Options" content="DENY" />
-        <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
-        <meta
-          httpEquiv="Referrer-Policy"
-          content="strict-origin-when-cross-origin"
-        />
-
         {/* Performance Hints */}
         <meta httpEquiv="Accept-CH" content="DPR, Viewport-Width, Width" />
 

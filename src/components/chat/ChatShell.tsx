@@ -91,14 +91,17 @@ export function useChatContext() {
  */
 export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
   // Auth state
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   // Current conversation ID
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(sessionId || null);
 
   // Chat state management menggunakan useChat hook
   const { messages, isLoading, error, send, regenerate, stop, append, retry } =
-    useChat(initialMessages, sessionId);
+    useChat(initialMessages, sessionId, {
+      conversationId: currentConversationId,
+      user: user,
+    });
 
   // Online/offline detection menggunakan custom hook (no duplicate listeners!)
   const isOnline = useOnlineStatus();
@@ -140,6 +143,12 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
    */
   const handleSend = useCallback(
     async (content: string) => {
+      // Check if user is authenticated
+      if (!user) {
+        toast.error('Anda harus login terlebih dahulu untuk mengirim pesan');
+        return;
+      }
+
       try {
         let conversationId = currentConversationId;
 
@@ -148,7 +157,8 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
           const firstWords = content.split(' ').slice(0, 5).join(' ');
           const title = firstWords.length > 50 ? firstWords.substring(0, 50) + '...' : firstWords;
           
-          const conversation = await createConversation(title);
+          // Pass user to createConversation
+          const conversation = await createConversation(title, user);
           conversationId = conversation.id;
           setCurrentConversationId(conversationId);
         }
@@ -156,17 +166,25 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
         // Send message via chat hook
         await send(content);
 
-        // Save user message to database
-        await saveMessage(conversationId, 'user', content);
+        // Save user message to database with user validation
+        await saveMessage(conversationId, 'user', content, user);
 
         // Note: Assistant response will be saved after streaming completes
         // This should be handled in the useChat hook or after response is received
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error sending message:', error);
-        toast.error('Gagal mengirim pesan');
+        
+        // Show user-friendly error messages
+        if (error.message?.includes('not authenticated')) {
+          toast.error('Sesi Anda telah berakhir. Silakan login kembali.');
+        } else if (error.message?.includes('Unauthorized')) {
+          toast.error('Anda tidak memiliki akses ke percakapan ini.');
+        } else {
+          toast.error('Gagal mengirim pesan. Silakan coba lagi.');
+        }
       }
     },
-    [currentConversationId, send]
+    [currentConversationId, send, user]
   );
 
   /**
@@ -361,8 +379,14 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
    */
   const handleChatSelect = useCallback(async (chatId: string) => {
     try {
+      if (!user) {
+        toast.error('Anda harus login untuk melihat percakapan');
+        return;
+      }
+
       setCurrentConversationId(chatId);
-      const loadedMessages = await getMessages(chatId);
+      // Pass user to getMessages for validation
+      const loadedMessages = await getMessages(chatId, user);
       
       // Clear current messages and load from database
       loadedMessages.forEach(msg => append(msg));
@@ -370,11 +394,18 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
       if (window.innerWidth < 768) {
         setSidebarOpen(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading conversation:', error);
-      toast.error('Gagal memuat percakapan');
+      
+      if (error.message?.includes('not authenticated')) {
+        toast.error('Sesi Anda telah berakhir. Silakan login kembali.');
+      } else if (error.message?.includes('Unauthorized')) {
+        toast.error('Anda tidak memiliki akses ke percakapan ini.');
+      } else {
+        toast.error('Gagal memuat percakapan');
+      }
     }
-  }, [append]);
+  }, [append, user]);
 
   return (
     <ChatContext.Provider value={contextValue}>
@@ -448,9 +479,9 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
         {/* Composer - Docked at bottom */}
         <Composer
           onSend={handleSend}
-          isLoading={isLoading}
+          isLoading={isLoading || authLoading}
           isOnline={isOnline}
-          placeholder="Ketik pesan Anda di sini..."
+          placeholder={authLoading ? "Memuat..." : "Ketik pesan Anda di sini..."}
           maxLength={5000}
         />
 

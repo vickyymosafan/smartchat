@@ -61,11 +61,22 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     storageKey: 'smartchat-auth',
+    flowType: 'pkce',
   },
   global: {
     headers: {
       'x-application-name': 'smartchat',
     },
+    fetch: (url, options = {}) => {
+      // Log fetch requests for debugging
+      if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_DEBUG === 'true') {
+        console.log('🌐 Supabase fetch:', url);
+      }
+      return fetch(url, options);
+    },
+  },
+  db: {
+    schema: 'public',
   },
 });
 

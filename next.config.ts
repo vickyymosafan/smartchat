@@ -87,7 +87,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
-              "connect-src 'self' https://vickymosafan2.app.n8n.cloud",
+              "connect-src 'self' https://phydmwetwfvfmvdxvpue.supabase.co https://vickymosafan3.app.n8n.cloud",
               "manifest-src 'self'",
               "worker-src 'self' blob:",
               "frame-ancestors 'self'",
