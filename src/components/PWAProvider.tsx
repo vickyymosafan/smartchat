@@ -108,7 +108,7 @@ export default function PWAProvider({ children }: PWAProviderProps) {
 
       {/* Update available notification */}
       {updateAvailable && (
-        <div className="fixed bottom-4 left-4 right-4 bg-blue-600 text-white rounded-lg p-4 shadow-lg z-50 max-w-sm mx-auto">
+        <div className="fixed bottom-4 left-4 right-4 bg-blue-600 dark:bg-blue-500 text-white rounded-lg p-4 shadow-lg z-50 max-w-sm mx-auto">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Update Tersedia</p>
@@ -124,7 +124,7 @@ export default function PWAProvider({ children }: PWAProviderProps) {
                   window.location.reload();
                 }
               }}
-              className="ml-4 bg-white text-blue-600 px-3 py-1 rounded text-sm font-medium hover:bg-blue-50 transition-colors"
+              className="ml-4 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 px-3 py-1 rounded text-sm font-medium hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors"
             >
               Update
             </button>

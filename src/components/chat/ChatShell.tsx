@@ -15,7 +15,6 @@ import { TopBar } from './TopBar';
 import { MessageList } from './MessageList';
 import { EmptyState } from './EmptyState';
 import { Composer } from './Composer';
-import { useTheme } from '@/hooks/useTheme';
 import {
   saveLastReadMessageId,
   loadLastReadMessageId,
@@ -101,9 +100,6 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
     const stored = loadSidebarState();
     return stored ?? false;
   });
-
-  // Theme management
-  const { setTheme, theme } = useTheme();
 
   // Track last read message ID
   const [lastReadMessageId, setLastReadMessageId] = useState<string | null>(
@@ -323,15 +319,6 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
   };
 
   /**
-   * Handler untuk toggle theme action
-   */
-  const handleToggleTheme = () => {
-    const newTheme =
-      theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light';
-    setTheme(newTheme);
-  };
-
-  /**
    * Handler untuk open settings action
    */
   const handleOpenSettings = () => {
@@ -447,7 +434,6 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
               onNewChat={handleNewChat}
               onClearHistory={handleClearHistory}
               onOpenSettings={handleOpenSettings}
-              onToggleTheme={handleToggleTheme}
             />
           )}
         </Suspense>

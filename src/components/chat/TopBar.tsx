@@ -5,7 +5,6 @@ import { Menu, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { TopBarProps } from '@/types/chat';
-import { ThemeToggle } from './ThemeToggle';
 import { preloadSidePanel } from '@/lib/lazyComponents';
 
 /**
@@ -160,9 +159,6 @@ export function TopBar({
           >
             <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
-
-          {/* ThemeToggle untuk switch light/dark/system theme */}
-          <ThemeToggle />
         </div>
       </div>
     </header>

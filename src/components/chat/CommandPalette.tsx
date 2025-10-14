@@ -9,8 +9,6 @@ import {
   Settings,
   MessageCircle,
   Keyboard,
-  Moon,
-  Sun,
 } from 'lucide-react';
 import {
   CommandDialog,
@@ -57,8 +55,6 @@ interface CommandPaletteProps {
   onClearHistory?: () => void;
   /** Callback untuk open settings action */
   onOpenSettings?: () => void;
-  /** Callback untuk toggle theme action */
-  onToggleTheme?: () => void;
 }
 
 /**
@@ -85,7 +81,6 @@ export function CommandPalette({
   onNewChat,
   onClearHistory,
   onOpenSettings,
-  onToggleTheme,
 }: CommandPaletteProps) {
   // State untuk search query
   const [search, setSearch] = useState('');
@@ -190,14 +185,6 @@ export function CommandPalette({
     },
 
     // Settings
-    {
-      id: 'toggle-theme',
-      label: 'Toggle Theme',
-      description: 'Switch between light and dark mode',
-      icon: Moon,
-      onSelect: () => onToggleTheme?.(),
-      category: 'settings',
-    },
     {
       id: 'open-settings',
       label: 'Open Settings',

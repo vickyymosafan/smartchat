@@ -224,7 +224,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${plusJakartaSans.variable} ${inter.variable}`}>
+    <html lang="id" className={`${plusJakartaSans.variable} ${inter.variable} light`}>
       <head>
         {/* Favicons dan Icons */}
         <link rel="icon" href="/favicon.ico" />

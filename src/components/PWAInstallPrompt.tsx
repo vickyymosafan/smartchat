@@ -199,41 +199,41 @@ export default function PWAInstallPrompt({
           {/* Features list */}
           <div className="space-y-3 mb-6">
             <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+              <div className="flex-shrink-0 w-6 h-6 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center mt-0.5">
                 <span className="text-sm">⚡</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Akses Cepat</p>
-                <p className="text-xs text-gray-600">Buka langsung dari home screen</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Akses Cepat</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Buka langsung dari home screen</p>
               </div>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+              <div className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center mt-0.5">
                 <span className="text-sm">📱</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Mode Offline</p>
-                <p className="text-xs text-gray-600">Tetap bisa digunakan tanpa internet</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Mode Offline</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Tetap bisa digunakan tanpa internet</p>
               </div>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mt-0.5">
+              <div className="flex-shrink-0 w-6 h-6 bg-purple-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center mt-0.5">
                 <span className="text-sm">🔔</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Notifikasi</p>
-                <p className="text-xs text-gray-600">Dapatkan update pesan secara real-time</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Notifikasi</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Dapatkan update pesan secara real-time</p>
               </div>
             </div>
           </div>
 
           {/* iOS specific instructions */}
           {isIOS && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <p className="text-sm font-medium text-blue-900 mb-2">
+            <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800/50 rounded-lg p-4 mb-6">
+              <p className="text-sm font-medium text-blue-900 dark:text-blue-200 mb-2">
                 Cara install di iPhone/iPad:
               </p>
-              <ol className="list-decimal list-inside space-y-1.5 text-sm text-blue-800">
+              <ol className="list-decimal list-inside space-y-1.5 text-sm text-blue-800 dark:text-blue-300">
                 <li className="flex items-start">
                   <span className="mr-2">1.</span>
                   <span className="flex-1">
@@ -257,7 +257,7 @@ export default function PWAInstallPrompt({
             {!isIOS && deferredPrompt && (
               <button
                 onClick={handleInstallClick}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 dark:hover:from-blue-600 dark:hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
               >
                 Install Sekarang
               </button>
@@ -265,7 +265,7 @@ export default function PWAInstallPrompt({
 
             <button
               onClick={handleDismiss}
-              className="w-full bg-gray-100 text-gray-700 font-medium py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+              className="w-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium py-3 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               {isIOS ? 'Mengerti' : 'Mungkin Nanti'}
             </button>

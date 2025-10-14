@@ -173,9 +173,9 @@ export function SettingsSheet({
               <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3">Install Aplikasi</h3>
 
               {/* Install Card */}
-              <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-3 sm:p-4 space-y-2.5 sm:space-y-3">
+              <div className="rounded-lg border bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 p-3 sm:p-4 space-y-2.5 sm:space-y-3">
                 <div className="flex items-start gap-2.5 sm:gap-3">
-                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center">
                     <Download className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -191,22 +191,22 @@ export function SettingsSheet({
                 {/* Features */}
                 <div className="space-y-1.5 sm:space-y-2">
                   <div className="flex items-center gap-2 text-[11px] sm:text-xs">
-                    <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
+                    <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                     <span>Akses cepat dari home screen</span>
                   </div>
                   <div className="flex items-center gap-2 text-[11px] sm:text-xs">
-                    <Wifi className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
+                    <Wifi className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                     <span>Bekerja offline</span>
                   </div>
                   <div className="flex items-center gap-2 text-[11px] sm:text-xs">
-                    <Bell className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 flex-shrink-0" />
+                    <Bell className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                     <span>Notifikasi real-time</span>
                   </div>
                 </div>
 
                 {/* iOS Instructions */}
                 {isIOS && (
-                  <div className="bg-white/50 dark:bg-black/20 rounded-md p-2.5 sm:p-3 space-y-1.5 sm:space-y-2">
+                  <div className="bg-white/50 dark:bg-white/5 rounded-md p-2.5 sm:p-3 space-y-1.5 sm:space-y-2">
                     <p className="text-[11px] sm:text-xs font-medium flex items-center gap-2">
                       <Smartphone className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
                       Cara install di iOS:
@@ -223,7 +223,7 @@ export function SettingsSheet({
                 {!isIOS && deferredPrompt && (
                   <Button
                     onClick={handleInstall}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm h-8 sm:h-9"
+                    className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-xs sm:text-sm h-8 sm:h-9"
                     size="sm"
                   >
                     <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
@@ -237,13 +237,13 @@ export function SettingsSheet({
           {/* Already Installed Message */}
           {isInstalled && (
             <section>
-              <div className="rounded-lg border bg-green-50 dark:bg-green-950/20 p-3 sm:p-4">
+              <div className="rounded-lg border bg-green-50 dark:bg-green-900/30 p-3 sm:p-4">
                 <div className="flex items-center gap-2.5 sm:gap-3">
-                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-green-600 flex items-center justify-center">
+                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-green-600 dark:bg-green-500 flex items-center justify-center">
                     <Check className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-xs sm:text-sm text-green-900 dark:text-green-100 mb-0.5 sm:mb-1">
+                    <h4 className="font-semibold text-xs sm:text-sm text-green-900 dark:text-green-200 mb-0.5 sm:mb-1">
                       Aplikasi Terinstall
                     </h4>
                     <p className="text-[11px] sm:text-xs text-green-700 dark:text-green-300 leading-snug">
