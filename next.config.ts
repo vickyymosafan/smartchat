@@ -9,6 +9,18 @@ const nextConfig: NextConfig = {
   // Optimasi untuk production
   output: 'standalone',
 
+  // Compiler optimizations untuk better performance
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+
+  // Experimental optimizations untuk LCP
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
+
   // Skip ESLint dan TypeScript checks saat build (untuk deploy cepat)
   eslint: {
     ignoreDuringBuilds: true,
@@ -83,10 +95,12 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
-              "style-src 'self' 'unsafe-inline'",
+              process.env.NODE_ENV === 'development'
+                ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
+                : "script-src 'self' 'unsafe-inline'",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;",
               "img-src 'self' data: https: blob:",
-              "font-src 'self' data:",
+              "font-src 'self' data: https://fonts.gstatic.com;",
               "connect-src 'self' https://phydmwetwfvfmvdxvpue.supabase.co https://vickymosafan3.app.n8n.cloud",
               "manifest-src 'self'",
               "worker-src 'self' blob:",

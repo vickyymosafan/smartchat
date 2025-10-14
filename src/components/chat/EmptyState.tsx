@@ -2,6 +2,7 @@
 
 import { MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 /**
  * Props untuk EmptyState component
@@ -52,6 +53,17 @@ export function EmptyState({
   onSuggestionClick,
   suggestions = defaultSuggestions,
 }: EmptyStateProps) {
+  // Track initial mount to skip animation for better LCP
+  const [isInitialMount, setIsInitialMount] = useState(true);
+
+  useEffect(() => {
+    // Mark initial mount as complete after first render
+    const timer = setTimeout(() => {
+      setIsInitialMount(false);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleSuggestionClick = (suggestion: string) => {
     if (onSuggestionClick) {
       onSuggestionClick(suggestion);
@@ -60,9 +72,9 @@ export function EmptyState({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={isInitialMount ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: [0, 0, 0.2, 1] }}
+      transition={{ duration: isInitialMount ? 0 : 0.3, ease: [0, 0, 0.2, 1] }}
       className="flex h-full items-center justify-center p-4 sm:p-6 lg:p-8"
     >
       <div className="w-full max-w-[90%] sm:max-w-md text-center">

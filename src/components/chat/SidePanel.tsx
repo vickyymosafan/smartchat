@@ -235,6 +235,9 @@ export function SidePanel({
     return false;
   });
 
+  // Track if this is the initial mount to skip animation
+  const [isInitialMount, setIsInitialMount] = useState(true);
+
   // Fetch conversations from Supabase
   useEffect(() => {
     if (!user) return;
@@ -283,6 +286,15 @@ export function SidePanel({
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Mark initial mount as complete after first render
+  useEffect(() => {
+    // Set to false after initial render to enable animations
+    const timer = setTimeout(() => {
+      setIsInitialMount(false);
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   // Convert conversations to ChatItem format
@@ -450,11 +462,11 @@ export function SidePanel({
           {open && (
             <motion.aside
               key="sidebar-desktop"
-              initial={{ width: 0, opacity: 0 }}
+              initial={isInitialMount ? { width: 320, opacity: 1 } : { width: 0, opacity: 0 }}
               animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{
-                duration: 0.2,
+                duration: isInitialMount ? 0 : 0.2,
                 ease: [0.4, 0, 0.2, 1],
               }}
               className="h-full shrink-0 overflow-hidden border-r bg-background"

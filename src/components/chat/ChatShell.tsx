@@ -436,7 +436,9 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
           {/* SidePanel untuk chat history - Lazy loaded */}
           <Suspense
             fallback={
-              <div className="hidden h-full w-80 border-r bg-background md:block" />
+              sidebarOpen ? (
+                <div className="hidden h-full w-80 shrink-0 border-r bg-background md:block" />
+              ) : null
             }
           >
             <SidePanel

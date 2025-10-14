@@ -1,20 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import './globals.css';
-
-// Configure Plus Jakarta Sans as primary font
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-sans',
-});
-
-// Configure Inter as fallback font
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-sans-fallback',
-});
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { LazyPWAProvider } from '@/lib/lazyComponents';
 import ResourcePreloader, {
@@ -225,7 +210,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${plusJakartaSans.variable} ${inter.variable} light`}>
+    <html lang="id" className="light">
       <head>
         {/* Favicons dan Icons */}
         <link rel="icon" href="/favicon.ico" />
@@ -251,8 +236,12 @@ export default function RootLayout({
           content="/icons/mstile-144x144.png"
         />
 
+        {/* Google Fonts - Plus Jakarta Sans */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet" />
+
         {/* DNS Prefetch untuk performa */}
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//vickymosafan2.app.n8n.cloud" />
 
         {/* Preconnect untuk resources penting */}
@@ -263,9 +252,16 @@ export default function RootLayout({
         />
         <link
           rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
           href="https://vickymosafan2.app.n8n.cloud"
           crossOrigin="anonymous"
         />
+
+
 
         {/* Performance Hints */}
         <meta httpEquiv="Accept-CH" content="DPR, Viewport-Width, Width" />
