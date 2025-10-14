@@ -125,23 +125,6 @@ export function loadUIState(): UIState {
 }
 
 /**
- * Save theme preference
- * @param theme - Theme to save
- */
-export function saveTheme(theme: 'light' | 'dark' | 'system'): boolean {
-  return saveUIState({ theme });
-}
-
-/**
- * Load theme preference
- * @returns Theme or undefined if not set
- */
-export function loadTheme(): 'light' | 'dark' | 'system' | undefined {
-  const state = loadUIState();
-  return state.theme;
-}
-
-/**
  * Save sidebar open/closed state
  * @param isOpen - Whether sidebar is open
  */
