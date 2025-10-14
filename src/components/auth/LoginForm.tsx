@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { testSupabaseConnection } from '@/lib/supabaseTest';
+import { EnvCheck } from '@/components/debug/EnvCheck';
 
 export function LoginForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -51,8 +52,9 @@ export function LoginForm() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md p-8">
+    <>
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md p-8">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold">SmartChat</h1>
           <p className="mt-2 text-muted-foreground">
@@ -157,5 +159,9 @@ export function LoginForm() {
         </div>
       </Card>
     </div>
+    
+    {/* Debug Panel - Only show if there's an error */}
+    {connectionStatus === 'error' && <EnvCheck />}
+  </>
   );
 }
