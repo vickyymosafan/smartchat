@@ -7,7 +7,8 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig: NextConfig = {
   // Optimasi untuk production
-  output: 'standalone',
+  // Note: 'standalone' output removed for Vercel deployment
+  // Vercel handles optimization automatically
 
   // Compiler optimizations untuk better performance
   compiler: {
