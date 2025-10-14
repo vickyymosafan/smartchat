@@ -284,14 +284,14 @@ export function SettingsSheet({
                 </div>
               </div>
               <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed font-mono whitespace-pre-wrap">
-                {`/**
-                * SmartChat v1.0.0
-                * Intelligent chat platform powered by AI
-                * Tech stack: Next.js 15, Tailwind CSS
-                * Developer: Vicky Mosafan
-                * UX Support: Riyan
-                * (c) 2025 SmartChat. All rights reserved.
-                */`}
+{`/**
+ * SmartChat v1.0.0
+ * Intelligent chat platform powered by AI
+ * Tech stack: Next.js 15, Tailwind CSS
+ * Developer: Vicky Mosafan
+ * UX Support: Riyan
+ * (c) 2025 SmartChat. All rights reserved.
+ */`}
               </p>
             </div>
           </section>
