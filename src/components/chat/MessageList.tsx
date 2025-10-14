@@ -62,7 +62,7 @@ export function MessageList({
   const userScrollingRef = useRef<boolean>(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
-  
+
   // Track previous message count untuk detect new messages
   const prevMessageCountRef = useRef(messages.length);
 
@@ -130,7 +130,7 @@ export function MessageList({
     if (isAtBottomRef.current && !userScrollingRef.current) {
       debouncedScroll();
     }
-    
+
     // Update previous message count
     prevMessageCountRef.current = messages.length;
   }, [messages, debouncedScroll]);
@@ -143,7 +143,7 @@ export function MessageList({
     const handleScroll = () => {
       const { scrollHeight, scrollTop, clientHeight } = scrollElement;
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-      
+
       // Update scroll button visibility
       setShowScrollButton(distanceFromBottom > 150);
 
@@ -185,15 +185,17 @@ export function MessageList({
   }
 
   return (
-    <div className="relative flex-1 overflow-hidden">
-      <div
-        ref={parentRef}
-        role="log"
-        aria-label="Chat message history"
-        aria-live="polite"
-        aria-atomic="false"
-        className="chat-scroll h-full overflow-y-auto py-4 pb-4 sm:py-6 sm:pb-6 lg:py-8 lg:pb-8"
-      >
+    // Full-width scroll container - NO wrapper, langsung scroll di root
+    <div
+      ref={parentRef}
+      role="log"
+      aria-label="Chat message history"
+      aria-live="polite"
+      aria-atomic="false"
+      className="chat-scroll relative flex-1 overflow-y-auto"
+    >
+      {/* Centered content wrapper dengan max-width constraints */}
+      <div className="mx-auto w-full max-w-full px-4 py-4 sm:max-w-2xl sm:px-6 sm:py-6 lg:max-w-4xl lg:px-8 lg:py-8 xl:max-w-6xl">
         <div
           ref={contentRef}
           style={{
@@ -206,8 +208,8 @@ export function MessageList({
             const item = groupedItems[virtualItem.index];
 
             // Check if this is a new message (simple check based on message count)
-            const isNewMessage = 
-              item.type === 'message' && 
+            const isNewMessage =
+              item.type === 'message' &&
               virtualItem.index >= prevMessageCountRef.current;
 
             return (
@@ -269,7 +271,7 @@ export function MessageList({
         <div ref={bottomSentinelRef} className="h-px" aria-hidden="true" />
       </div>
 
-      {/* Scroll-to-bottom button dengan fade animation */}
+      {/* Scroll-to-bottom button dengan fade animation - positioned relative to scroll container */}
       <Button
         onClick={() => {
           scrollToBottom();

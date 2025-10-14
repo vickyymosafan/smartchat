@@ -325,39 +325,36 @@ export function ChatShell({ initialMessages = [], sessionId }: ChatShellProps) {
             />
           </Suspense>
 
-          {/* Main chat area dengan semantic HTML */}
+          {/* Main chat area dengan semantic HTML - Full width untuk scrollbar di pojok kanan */}
           <main
             id="main-chat-content"
             className="flex flex-1 flex-col overflow-hidden"
           >
-            {/* Container dengan responsive max-width constraints */}
-            <div className="mx-auto flex h-full w-full max-w-full flex-col sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
-              {/* Conditional rendering: EmptyState atau MessageList */}
-              {messages.length === 0 ? (
-                <EmptyState
-                  onSuggestionClick={suggestion => {
-                    send(suggestion);
-                  }}
-                />
-              ) : (
-                <MessageList
-                  messages={messages}
-                  isLoading={isLoading}
-                  onCopy={content => {
-                    navigator.clipboard.writeText(content);
-                    console.log('Copied:', content);
-                  }}
-                  onRegenerate={messageId => {
-                    console.log('Regenerate:', messageId);
-                    regenerate();
-                  }}
-                  onReaction={(messageId, reaction) => {
-                    console.log('Reaction:', messageId, reaction);
-                  }}
-                  onRetry={handleRetry}
-                />
-              )}
-            </div>
+            {/* Conditional rendering: EmptyState atau MessageList */}
+            {messages.length === 0 ? (
+              <EmptyState
+                onSuggestionClick={suggestion => {
+                  send(suggestion);
+                }}
+              />
+            ) : (
+              <MessageList
+                messages={messages}
+                isLoading={isLoading}
+                onCopy={content => {
+                  navigator.clipboard.writeText(content);
+                  console.log('Copied:', content);
+                }}
+                onRegenerate={messageId => {
+                  console.log('Regenerate:', messageId);
+                  regenerate();
+                }}
+                onReaction={(messageId, reaction) => {
+                  console.log('Reaction:', messageId, reaction);
+                }}
+                onRetry={handleRetry}
+              />
+            )}
           </main>
         </div>
 
