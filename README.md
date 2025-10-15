@@ -16,52 +16,167 @@ SmartChat adalah platform chat cerdas dengan AI yang dibangun dengan Next.js 15,
 
 ### Prasyarat
 
-- Node.js 18+
-- npm atau yarn
-- Git
+**System Requirements:**
+- **Node.js 18.17+** atau **20.0+** (Recommended: Node.js 20 LTS atau lebih baru)
+- **npm 9+** (included dengan Node.js) atau **yarn 1.22+** atau **pnpm 8+**
+- **Git** untuk version control
+
+**Verifikasi instalasi:**
+```bash
+node --version   # Harus >= 18.17
+npm --version    # Harus >= 9.0
+```
 
 ### Instalasi
 
-1. Clone repository:
+1. **Clone repository:**
 
 ```bash
 git clone <repository-url>
-cd aplikasi-chat-dinamis
+cd smartchat
 ```
 
-2. Install dependencies:
+2. **Install dependencies:**
 
 ```bash
 npm install
 ```
 
-3. Setup environment variables:
+**Catatan:** Proses instalasi akan menginstall semua dependencies yang diperlukan:
+
+**Core Dependencies:**
+- Next.js 15.5.4 (React 19.1.0)
+- TypeScript 5
+- Tailwind CSS 4
+- Supabase Client 2.75.0
+
+**UI Libraries:**
+- Radix UI components (Dialog, Dropdown, Tooltip, dll)
+- Lucide React (icons)
+- Framer Motion (animations)
+- shadcn/ui components
+
+**State & Data:**
+- Zustand (state management)
+- TanStack Virtual (virtualization)
+- React Markdown (markdown rendering)
+
+**Development Tools:**
+- ESLint & Prettier (code quality)
+- TypeScript ESLint
+- Bundle Analyzer
+
+3. **Setup environment variables:**
 
 ```bash
+# Windows (Command Prompt)
+copy .env.local.example .env.local
+
+# Windows (PowerShell)
+Copy-Item .env.local.example .env.local
+
+# Linux/Mac
 cp .env.local.example .env.local
 ```
 
-Edit `.env.local` dan sesuaikan dengan konfigurasi Anda.
+**Edit `.env.local` dan sesuaikan konfigurasi:**
 
-4. Jalankan development server:
+```env
+# Required - Ubah sesuai kebutuhan
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_N8N_WEBHOOK_URL=https://your-n8n-instance.app.n8n.cloud/webhook/your-webhook-id
+
+# Optional - Supabase (jika menggunakan authentication)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+
+# Optional - PWA & Debug
+NEXT_PUBLIC_ENABLE_PWA=true
+NEXT_PUBLIC_DEBUG=true
+NODE_ENV=development
+```
+
+4. **Jalankan development server:**
 
 ```bash
 npm run dev
 ```
 
-5. Buka [http://localhost:3000](http://localhost:3000) di browser.
+Server akan berjalan di [http://localhost:3000](http://localhost:3000)
 
-## 📦 Scripts
+5. **Verifikasi instalasi:**
+
+Buka browser dan akses `http://localhost:3000`. Anda akan melihat interface chat SmartChat.
+
+### Troubleshooting Instalasi
+
+**Jika mengalami error saat `npm install`:**
 
 ```bash
-# Development
-npm run dev          # Jalankan development server
-npm run build        # Build untuk production
-npm run start        # Jalankan production server
-npm run lint         # Lint kode dengan ESLint
+# Clear cache dan reinstall
+npm cache clean --force
+rm -rf node_modules package-lock.json  # Linux/Mac
+# atau
+rmdir /s /q node_modules & del package-lock.json  # Windows CMD
+npm install
+```
 
-# Utilities
-npm run analyze      # Analyze bundle size
+**Jika port 3000 sudah digunakan:**
+
+```bash
+# Gunakan port lain
+npm run dev -- -p 3001
+```
+
+**Jika ada error TypeScript:**
+
+```bash
+# Rebuild TypeScript
+npm run type-check
+```
+
+## 📦 Available Scripts
+
+### Development
+```bash
+npm run dev                    # Start dev server dengan Turbopack
+npm run build                  # Build untuk production dengan Turbopack
+npm run start                  # Start production server
+npm run build:production       # Build dengan NODE_ENV=production
+npm run start:production       # Start dengan NODE_ENV=production
+```
+
+### Code Quality
+```bash
+npm run lint                   # Run ESLint
+npm run lint:fix              # Auto-fix ESLint issues
+npm run format                # Format code dengan Prettier
+npm run format:check          # Check Prettier formatting
+npm run type-check            # TypeScript type checking
+```
+
+### Testing & Verification
+```bash
+npm run test:performance      # Performance testing
+npm run test:lighthouse       # Lighthouse audit
+npm run test:accessibility    # Accessibility verification
+npm run test:contrast         # Color contrast checking
+npm run test:bundle           # Build dan test performance
+```
+
+### Deployment
+```bash
+npm run predeployment         # Pre-deployment checks (type, lint, build, verify)
+npm run deployment:verify     # Post-deployment verification
+```
+
+### Utilities
+```bash
+npm run generate:icons        # Generate PWA icons
+npm run build:analyze         # Analyze bundle size dengan Bundle Analyzer
+npm run audit:security        # Security audit (production only)
+npm run audit:all             # Full security audit
+npm run verify:build          # Verify production build
 ```
 
 ## 🔧 Konfigurasi
@@ -241,12 +356,48 @@ npm run test:coverage
 
 ## 🛠️ Tech Stack
 
-- **Framework:** Next.js 15 (App Router)
-- **Styling:** Tailwind CSS
-- **Language:** TypeScript
-- **PWA:** Service Worker + Manifest
+### Core
+- **Framework:** Next.js 15.5.4 (App Router) dengan Turbopack
+- **Language:** TypeScript 5
+- **Runtime:** React 19.1.0
+- **Styling:** Tailwind CSS 4 dengan CSS Variables
+
+### UI & Components
+- **Component Library:** Radix UI primitives
+- **Design System:** shadcn/ui (New York style)
+- **Icons:** Lucide React (0.545.0)
+- **Animations:** Framer Motion (12.23.22)
+- **Fonts:** Geist font family
+- **Command Palette:** cmdk
+
+### State Management & Data
+- **Global State:** Zustand (5.0.8)
+- **Context:** React Context (Auth, Chat)
+- **Backend:** Supabase (2.75.0)
+- **Virtualization:** TanStack Virtual (3.13.12)
+
+### Content & Markdown
+- **Markdown:** react-markdown (10.1.0)
+- **Syntax Highlighting:** rehype-highlight (7.0.2)
+- **GFM Support:** remark-gfm (4.0.1)
+- **Raw HTML:** rehype-raw (7.0.0)
+
+### Developer Tools
+- **Linting:** ESLint 9 + TypeScript ESLint
+- **Formatting:** Prettier 3.6.2
+- **Bundle Analysis:** @next/bundle-analyzer
+- **Type Checking:** TypeScript strict mode
+
+### Features
+- **PWA:** Service Worker + Web Manifest
+- **Theme:** next-themes (dark/light mode)
+- **Notifications:** Sonner (2.0.7)
 - **API Integration:** n8n Webhook
-- **Deployment:** Vercel
+- **Deployment:** Vercel (optimized)
+
+### Utilities
+- **Class Management:** clsx, tailwind-merge, class-variance-authority
+- **Animations:** tw-animate-css
 
 ## 📝 License
 
