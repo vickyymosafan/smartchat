@@ -6,6 +6,47 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Generate unique message ID
+ */
+export function generateMessageId(): string {
+  return `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+}
+
+/**
+ * Map error to Indonesian message
+ */
+export function mapErrorToIndonesian(error: any): string {
+  const message = error?.message || '';
+  
+  if (message.includes('fetch') || message.includes('network')) {
+    return 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+  }
+  if (message.includes('not authenticated')) {
+    return 'Sesi Anda telah berakhir. Silakan login kembali.';
+  }
+  if (message.includes('Unauthorized')) {
+    return 'Anda tidak memiliki akses.';
+  }
+  if (message.includes('Invalid login credentials') || message.includes('Invalid')) {
+    return 'Email atau password salah.';
+  }
+  if (message.includes('Email not confirmed')) {
+    return 'Email belum diverifikasi. Silakan cek email Anda.';
+  }
+  if (message.includes('User already registered')) {
+    return 'Email sudah terdaftar. Silakan login.';
+  }
+  if (message.includes('Invalid email')) {
+    return 'Format email tidak valid.';
+  }
+  if (message.includes('Password')) {
+    return 'Password harus minimal 6 karakter.';
+  }
+  
+  return message || 'Terjadi kesalahan yang tidak diketahui.';
+}
+
+/**
  * Format Unix timestamp to time only (HH:MM)
  */
 export function formatTimeOnly(timestamp: number): string {

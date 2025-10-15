@@ -10,6 +10,7 @@ import {
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { mapErrorToIndonesian } from '@/lib/utils';
 
 interface AuthContextType {
   user: User | null;
@@ -82,16 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const errorMessage = result.error || 'Signup failed';
         console.error('❌ API Route signup error:', errorMessage);
         
-        // Handle specific error cases
-        if (errorMessage.includes('User already registered')) {
-          toast.error('Email sudah terdaftar. Silakan login.');
-        } else if (errorMessage.includes('Invalid email')) {
-          toast.error('Format email tidak valid.');
-        } else if (errorMessage.includes('Password')) {
-          toast.error('Password harus minimal 6 karakter.');
-        } else {
-          toast.error(errorMessage);
-        }
+        const friendlyMessage = mapErrorToIndonesian({ message: errorMessage });
+        toast.error(friendlyMessage);
         
         return { error: { message: errorMessage } as AuthError };
       }
@@ -127,11 +120,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error('❌ Unexpected error during signUp:', error);
       
-      if (error.message.includes('fetch') || error.message.includes('network')) {
-        toast.error('Tidak dapat terhubung ke server. Periksa koneksi internet Anda.');
-      } else {
-        toast.error(`Terjadi kesalahan: ${error.message || 'Unknown error'}`);
-      }
+      const friendlyMessage = mapErrorToIndonesian(error);
+      toast.error(friendlyMessage);
       
       return { error: { message: error.message } as AuthError };
     }
@@ -157,16 +147,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const errorMessage = result.error || 'Signin failed';
         console.error('❌ API Route signin error:', errorMessage);
         
-        // Handle specific error cases
-        if (errorMessage.includes('Invalid login credentials') || errorMessage.includes('Invalid')) {
-          toast.error('Email atau password salah.');
-        } else if (errorMessage.includes('Email not confirmed')) {
-          toast.error('Email belum diverifikasi. Silakan cek email Anda.');
-        } else if (errorMessage.includes('not found')) {
-          toast.error('Akun tidak ditemukan. Silakan daftar terlebih dahulu.');
-        } else {
-          toast.error(errorMessage);
-        }
+        const friendlyMessage = mapErrorToIndonesian({ message: errorMessage });
+        toast.error(friendlyMessage);
         
         return { error: { message: errorMessage } as AuthError };
       }
@@ -202,11 +184,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error('❌ Unexpected error during signIn:', error);
       
-      if (error.message.includes('fetch') || error.message.includes('network')) {
-        toast.error('Tidak dapat terhubung ke server. Periksa koneksi internet Anda.');
-      } else {
-        toast.error(`Terjadi kesalahan: ${error.message || 'Unknown error'}`);
-      }
+      const friendlyMessage = mapErrorToIndonesian(error);
+      toast.error(friendlyMessage);
       
       return { error: { message: error.message } as AuthError };
     }

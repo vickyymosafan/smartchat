@@ -8,6 +8,7 @@ export interface UIState {
   sidebarOpen?: boolean;
   inputDraft?: string;
   lastReadMessageId?: string | null;
+  chatMessages?: any[];
 }
 
 const STORAGE_KEY = 'smartchat-ui-state';
@@ -181,6 +182,3 @@ export function loadLastReadMessageId(): string | null | undefined {
   const state = loadUIState();
   return state.lastReadMessageId;
 }
-
-// Removed unused functions: clearUIState() and getStorageSize()
-// These functions were not used anywhere in the codebase

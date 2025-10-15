@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import type { Message } from '@/types/chat';
 import type { User } from '@supabase/supabase-js';
 import { saveMessage } from '@/lib/conversationService';
+import { generateMessageId } from '@/lib/utils';
 
 export interface UseChatReturn {
   messages: Message[];
@@ -34,10 +35,6 @@ export function useChat(
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const streamingMessageIdRef = useRef<string | null>(null);
-
-  const generateMessageId = (): string => {
-    return `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-  };
 
   const sendWithStreaming = useCallback(
     async (content: string, messageId: string, overrideConversationId?: string): Promise<void> => {

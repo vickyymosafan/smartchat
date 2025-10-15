@@ -8,6 +8,8 @@ import React, {
   ReactNode,
 } from 'react';
 import { ChatState, Message } from '@/types/chat';
+import { generateMessageId } from '@/lib/utils';
+import { saveUIState, loadUIState } from '@/lib/storage';
 
 /**
  * Interface untuk ChatContext
@@ -28,7 +30,6 @@ type ChatAction =
   | { type: 'ADD_MESSAGE'; payload: Message }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_ONLINE_STATUS'; payload: boolean }
   | { type: 'CLEAR_MESSAGES' }
   | { type: 'LOAD_MESSAGES'; payload: Message[] };
 
@@ -39,7 +40,7 @@ const initialState: ChatState = {
   messages: [],
   isLoading: false,
   error: null,
-  isOnline: true,
+  isOnline: true, // Note: This is managed by useOnlineStatus hook in components
 };
 
 /**
@@ -65,12 +66,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...state,
         error: action.payload,
         isLoading: false,
-      };
-
-    case 'SET_ONLINE_STATUS':
-      return {
-        ...state,
-        isOnline: action.payload,
       };
 
     case 'CLEAR_MESSAGES':
@@ -118,58 +113,21 @@ export function ChatProvider({
   });
 
   /**
-   * Generate unique ID untuk pesan
-   */
-  const generateMessageId = (): string => {
-    return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  };
-
-  /**
-   * Load messages dari local storage saat komponen mount
+   * Load messages dari storage saat komponen mount
    */
   useEffect(() => {
-    try {
-      const savedMessages = localStorage.getItem('chat_messages');
-      if (savedMessages) {
-        const parsedMessages: Message[] = JSON.parse(savedMessages);
-        dispatch({ type: 'LOAD_MESSAGES', payload: parsedMessages });
-      }
-    } catch (error) {
-      console.error('Error loading messages from localStorage:', error);
+    const uiState = loadUIState();
+    if (uiState.chatMessages) {
+      dispatch({ type: 'LOAD_MESSAGES', payload: uiState.chatMessages });
     }
   }, []);
 
   /**
-   * Save messages ke local storage setiap kali messages berubah
+   * Save messages ke storage setiap kali messages berubah
    */
   useEffect(() => {
-    try {
-      localStorage.setItem('chat_messages', JSON.stringify(state.messages));
-    } catch (error) {
-      console.error('Error saving messages to localStorage:', error);
-    }
+    saveUIState({ chatMessages: state.messages });
   }, [state.messages]);
-
-  /**
-   * Monitor online/offline status
-   */
-  useEffect(() => {
-    const handleOnline = () =>
-      dispatch({ type: 'SET_ONLINE_STATUS', payload: true });
-    const handleOffline = () =>
-      dispatch({ type: 'SET_ONLINE_STATUS', payload: false });
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    // Set initial online status
-    dispatch({ type: 'SET_ONLINE_STATUS', payload: navigator.onLine });
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
 
   /**
    * Helper function untuk menambah pesan baru
@@ -204,11 +162,7 @@ export function ChatProvider({
    */
   const clearMessages = () => {
     dispatch({ type: 'CLEAR_MESSAGES' });
-    try {
-      localStorage.removeItem('chat_messages');
-    } catch (error) {
-      console.error('Error clearing messages from localStorage:', error);
-    }
+    saveUIState({ chatMessages: [] });
   };
 
   const contextValue: ChatContextType = {
